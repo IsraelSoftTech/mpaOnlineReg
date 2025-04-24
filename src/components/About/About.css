@@ -1,0 +1,221 @@
+/* Global styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.about-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  width: 100%;
+}
+
+/* Navbar styles */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: #F3F4F6;
+}
+
+.logo img {
+  width: 50px;
+  height: 50px;
+  font-weight: bold;
+}
+
+.nav-links {
+  display: flex;
+  gap: 2rem;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: #8d8b8b;
+  font-weight: 500;
+}
+
+.nav-links a.active {
+  color: #1a237e;
+  font-weight: bold;
+}
+
+/* Main content styles */
+.main-content {
+  flex: 1;
+  padding: 0;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.about-header {
+  text-align: center;
+  padding: 2rem;
+  background-color: #fff;
+  border-bottom: 1px solid #eee;
+}
+
+.about-header h1 {
+  color: #1a237e;
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.about-header h1::after {
+  content: '';
+  position: absolute;
+  bottom: -0.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50px;
+  height: 3px;
+  background-color: #ff9800;
+}
+
+.about-header p {
+  color: #666;
+  font-size: 1.1rem;
+}
+
+.departments-container {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.department-card {
+  display: flex;
+  gap: 2rem;
+  padding: 2rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.department-content {
+  flex: 1;
+}
+
+.department-content h2 {
+  color: #1a237e;
+  margin-bottom: 1rem;
+  font-size: 1.8rem;
+}
+
+.department-content p {
+  color: #666;
+  line-height: 1.6;
+}
+
+.department-image {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.department-image img {
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+/* Footer styles */
+.footer {
+  background-color: #F3F4F6;
+  padding: 1.5rem 2rem;
+  margin-top: auto;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.footer-logo {
+  color: #ff9800;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.footer-text {
+  color: #1a237e;
+  font-weight: 500;
+}
+
+.social-links {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.social-icons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.social-icons a {
+  text-decoration: none;
+  font-size: 1.2rem;
+  color: #1a237e;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .navbar {
+    padding: 1rem;
+  }
+
+  .nav-links {
+    gap: 1rem;
+  }
+
+  .department-card {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .department-image {
+    order: -1;
+  }
+
+  .department-image img {
+    max-width: 100%;
+  }
+
+  .footer-content {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+
+  .social-links {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .about-header h1 {
+    font-size: 2rem;
+  }
+
+  .department-card {
+    padding: 1.5rem;
+  }
+
+  .department-content h2 {
+    font-size: 1.5rem;
+  }
+} 
