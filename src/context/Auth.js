@@ -2,6 +2,8 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -21,7 +23,7 @@ export const AuthProvider = ({ children }) => {
 
   const verifyToken = async (token) => {
     try {
-      const response = await axios.get('http://localhost:5000/api/auth/verify-token', {
+      const response = await axios.get(`${API_URL}/auth/verify-token`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -43,7 +45,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (username, password) => {
     try {
       setError(null);
-      const response = await axios.post('http://localhost:5000/api/auth/login', {
+      const response = await axios.post(`${API_URL}/auth/signin`, {
         username,
         password
       });
@@ -66,7 +68,7 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     try {
       setError(null);
-      const response = await axios.post('http://localhost:5000/api/auth/register', userData);
+      const response = await axios.post(`${API_URL}/auth/signup`, userData);
 
       if (response.data.success) {
         return { success: true };
@@ -89,7 +91,7 @@ export const AuthProvider = ({ children }) => {
   const resetPassword = async (username, newPassword) => {
     try {
       setError(null);
-      const response = await axios.post('http://localhost:5000/api/auth/reset-password', {
+      const response = await axios.post(`${API_URL}/auth/reset-password`, {
         username,
         newPassword
       });
