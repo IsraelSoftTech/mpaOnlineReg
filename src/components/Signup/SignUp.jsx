@@ -160,7 +160,7 @@ const SignUp = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post(`${API_URL}/auth/signup`, {
+      const response = await axios.post(`${API_URL}/api/auth/signup`, {
         fullName: formData.fullName,
         username: formData.username,
         email: formData.email,
