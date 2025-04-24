@@ -5,7 +5,7 @@ import logo from '../../assets/logo.png';
 import { FaFacebookF, FaInstagram, FaYoutube, FaTiktok, FaUser, FaEnvelope, FaEye, FaEyeSlash } from 'react-icons/fa';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL;
+const API_URL = process.env.REACT_APP_API_URL || 'https://mpaonlinebackend.onrender.com';
 
 const SignUp = () => {
   const navigate = useNavigate();

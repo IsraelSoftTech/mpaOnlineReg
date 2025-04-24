@@ -5,7 +5,7 @@ import logo from '../../assets/logo.png';
 import { FaFacebookF, FaInstagram, FaYoutube, FaTiktok, FaUser, FaEye, FaEyeSlash } from 'react-icons/fa';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL;
+const API_URL = process.env.REACT_APP_API_URL || 'https://mpaonlinebackend.onrender.com';
 
 const SignIn = () => {
   const navigate = useNavigate();
@@ -32,22 +32,34 @@ const SignIn = () => {
     setLoading(true);
 
     try {
+      console.log('Sending request to:', `${API_URL}/api/auth/signin`);
       const response = await axios.post(`${API_URL}/api/auth/signin`, formData);
       
-      // Store token and user data
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data.user));
-      
-      if (rememberMe) {
-        localStorage.setItem('rememberedUser', formData.username);
+      if (response.data.token && response.data.user) {
+        // Store token and user data
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('user', JSON.stringify(response.data.user));
+        
+        if (rememberMe) {
+          localStorage.setItem('rememberedUser', formData.username);
+        } else {
+          localStorage.removeItem('rememberedUser');
+        }
+        
+        // Redirect to user dashboard
+        navigate('/dashboard');
       } else {
-        localStorage.removeItem('rememberedUser');
+        setError('Invalid response from server');
       }
-      
-      // Redirect to user dashboard
-      navigate('/dashboard');
     } catch (error) {
-      setError(error.response?.data?.message || 'Invalid credentials');
+      console.error('Signin error:', error);
+      if (error.response) {
+        setError(error.response.data.message || 'Invalid credentials');
+      } else if (error.request) {
+        setError('No response from server. Please try again.');
+      } else {
+        setError('An error occurred. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
