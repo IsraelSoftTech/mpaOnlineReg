@@ -5,6 +5,8 @@ import logo from '../../assets/logo.png';
 import { FaFacebookF, FaInstagram, FaYoutube, FaTiktok, FaUser, FaEye, FaEyeSlash } from 'react-icons/fa';
 import axios from 'axios';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const SignIn = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -30,7 +32,7 @@ const SignIn = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/signin', formData);
+      const response = await axios.post(`${API_URL}/api/auth/signin`, formData);
       
       // Store token and user data
       localStorage.setItem('token', response.data.token);

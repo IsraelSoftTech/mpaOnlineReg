@@ -5,6 +5,8 @@ import logo from '../../assets/logo.png';
 import { FaFacebookF, FaInstagram, FaYoutube, FaTiktok, FaUser, FaEnvelope, FaEye, FaEyeSlash } from 'react-icons/fa';
 import axios from 'axios';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const SignUp = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -134,6 +136,11 @@ const SignUp = () => {
       ...prev,
       [name]: value
     }));
+
+    // Update password strength
+    if (name === 'password') {
+      setPasswordStrength(checkPasswordStrength(value));
+    }
   };
 
   const togglePasswordVisibility = (field) => {
@@ -153,7 +160,7 @@ const SignUp = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/signup', {
+      const response = await axios.post(`${API_URL}/auth/signup`, {
         fullName: formData.fullName,
         username: formData.username,
         email: formData.email,
