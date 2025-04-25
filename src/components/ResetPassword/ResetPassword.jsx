@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './ResetPassword.css';
 import logo from '../../assets/logo.png';
@@ -6,11 +6,11 @@ import { FaEye, FaEyeSlash, FaUser, FaEnvelope, FaInstagram, FaFacebookF, FaTikt
 import axios from 'axios';
 import emailjs from '@emailjs/browser';
 
-const API_URL = process.env.REACT_APP_API_URL;
+const API_URL = process.env.REACT_APP_API_URL || 'https://mpaonlinebackend.onrender.com';
 
 const ResetPassword = () => {
   const navigate = useNavigate();
-  const [step, setStep] = useState(1); // 1: Request Code, 2: Reset Password, 3: Success
+  const [step, setStep] = useState(1); // 1: Enter credentials, 2: Enter code and new password
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -29,6 +29,7 @@ const ResetPassword = () => {
   const [isFormValid, setIsFormValid] = useState(false);
   const [generatedCode, setGeneratedCode] = useState('');
   const [codeExpiration, setCodeExpiration] = useState(null);
+  const [remainingSeconds, setRemainingSeconds] = useState(60);
 
   // EmailJS configuration
   const EMAILJS_SERVICE_ID = "service_ak50y3m";
@@ -36,21 +37,28 @@ const ResetPassword = () => {
   const EMAILJS_PUBLIC_KEY = "udVeGDLa-4ZwbJE0q";
 
   useEffect(() => {
-    // Initialize EmailJS with your public key
     emailjs.init(EMAILJS_PUBLIC_KEY);
   }, []);
 
   useEffect(() => {
-    // Check for code expiration
-    if (codeExpiration && Date.now() > codeExpiration) {
-      setGeneratedCode('');
-      setCodeExpiration(null);
-      if (step === 2) {
-        setError('Reset code has expired. Please request a new code.');
-        setStep(1);
-      }
+    if (codeExpiration) {
+      const timer = setInterval(() => {
+        const now = Date.now();
+        const secondsLeft = Math.max(0, Math.ceil((codeExpiration - now) / 1000));
+        setRemainingSeconds(secondsLeft);
+
+        if (secondsLeft === 0) {
+          clearInterval(timer);
+          setGeneratedCode('');
+          setCodeExpiration(null);
+          setError('Reset code has expired. Please request a new code.');
+          setStep(1);
+        }
+      }, 1000);
+
+      return () => clearInterval(timer);
     }
-  }, [codeExpiration, step]);
+  }, [codeExpiration]);
 
   const generateResetCode = () => {
     return Math.floor(100000 + Math.random() * 900000).toString();
@@ -103,6 +111,9 @@ const ResetPassword = () => {
       } else if (formData.newPassword.length < 8) {
         errors.newPassword = 'Password must be at least 8 characters';
         isValid = false;
+      } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}/.test(formData.newPassword)) {
+        errors.newPassword = 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character';
+        isValid = false;
       }
       if (formData.newPassword !== formData.confirmPassword) {
         errors.confirmPassword = 'Passwords do not match';
@@ -124,20 +135,31 @@ const ResetPassword = () => {
     if (name === 'newPassword') {
       setPasswordStrength(checkPasswordStrength(value));
     }
+
+    // Validate form after each change
+    validateForm();
   };
+
+  useEffect(() => {
+    // Validate form when formData changes
+    validateForm();
+  }, [formData]);
 
   const checkPasswordStrength = (password) => {
     if (password.length === 0) return '';
     if (password.length < 8) return 'Too Short';
 
-    const hasLetters = /[a-zA-Z]/.test(password);
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
     const hasNumbers = /\d/.test(password);
     const hasSymbols = /[!@#$%^&*(),.?":{}|<>]/.test(password);
 
-    if (hasLetters && hasNumbers && hasSymbols) {
+    if (hasUpperCase && hasLowerCase && hasNumbers && hasSymbols) {
       return 'Very Strong';
-    } else if ((hasLetters && hasNumbers) || (hasLetters && hasSymbols) || (hasNumbers && hasSymbols)) {
+    } else if ((hasUpperCase && hasLowerCase && hasNumbers) || (hasUpperCase && hasLowerCase && hasSymbols)) {
       return 'Strong';
+    } else if ((hasUpperCase && hasLowerCase) || (hasUpperCase && hasNumbers) || (hasLowerCase && hasNumbers)) {
+      return 'Medium';
     } else {
       return 'Weak';
     }
@@ -158,15 +180,25 @@ const ResetPassword = () => {
     setError('');
     
     try {
-      // Generate a new reset code
+      // Verify user exists
+      const verifyResponse = await axios.post(`${API_URL}/api/auth/verify-user`, {
+        username: formData.username,
+        email: formData.email
+      });
+
+      if (!verifyResponse.data.user) {
+        throw new Error('User not found or email does not match');
+      }
+
+      // Generate and send reset code
       const newCode = generateResetCode();
       setGeneratedCode(newCode);
+      setCodeExpiration(Date.now() + 60 * 1000); // 60 seconds expiration
 
-      // Send the reset code via email
       const emailSent = await sendResetCodeEmail(formData.email, newCode);
       
       if (emailSent) {
-        setSuccess('Reset code has been sent to your email. Code will expire in 1 minute.');
+        setSuccess('Reset code has been sent to your email. Code will expire in 60 seconds.');
         setTimeout(() => {
           setStep(2);
           setSuccess('');
@@ -175,7 +207,8 @@ const ResetPassword = () => {
         throw new Error('Failed to send reset code email');
       }
     } catch (error) {
-      setError(error.message || 'Failed to send reset code');
+      console.error('Request code error:', error);
+      setError(error.response?.data?.message || error.message || 'Failed to send reset code');
       setGeneratedCode('');
       setCodeExpiration(null);
     } finally {
@@ -197,16 +230,20 @@ const ResetPassword = () => {
       }
 
       // Update password in backend
-      const response = await axios.post(`${API_URL}/auth/reset-password`, {
+      const response = await axios.post(`${API_URL}/api/auth/reset-password`, {
         username: formData.username,
         email: formData.email,
         newPassword: formData.newPassword
       });
       
-      setSuccess('Password reset successful! Redirecting to login...');
-      setTimeout(() => {
-        navigate('/login');
-      }, 2000);
+      if (response.data.message) {
+        setSuccess('Password reset successful! Redirecting to login...');
+        setTimeout(() => {
+          navigate('/login');
+        }, 2000);
+      } else {
+        throw new Error('Failed to reset password');
+      }
     } catch (error) {
       console.error('Reset password error:', error.response || error);
       if (error.response?.status === 404) {
@@ -219,17 +256,13 @@ const ResetPassword = () => {
     }
   };
 
-  const handleLogin = () => {
-    navigate('/login');
-  };
-
   const renderStep = () => {
     switch (step) {
       case 1:
         return (
           <>
-            <h1 className="reset-title">Password forgotten</h1>
-            <p className="reset-subtitle">Fill inputs to request for a password request code</p>
+            <h1 className="reset-title">Reset Password</h1>
+            <p className="reset-subtitle">Enter your username and email to receive a reset code</p>
             
             <form onSubmit={handleRequestCode} className="input-group">
               <div className="input-container">
@@ -239,6 +272,7 @@ const ResetPassword = () => {
                   placeholder="Username"
                   value={formData.username}
                   onChange={handleChange}
+                  required
                 />
                 <FaUser className="input-icon" />
               </div>
@@ -250,6 +284,7 @@ const ResetPassword = () => {
                   placeholder="Email"
                   value={formData.email}
                   onChange={handleChange}
+                  required
                 />
                 <FaEnvelope className="input-icon" />
               </div>
@@ -259,7 +294,7 @@ const ResetPassword = () => {
                 className={`reset-button ${!isFormValid || loading ? 'disabled' : ''}`}
                 disabled={!isFormValid || loading}
               >
-                Request Reset Code
+                {loading ? 'Sending...' : 'Request Reset Code'}
               </button>
             </form>
           </>
@@ -268,17 +303,22 @@ const ResetPassword = () => {
       case 2:
         return (
           <>
-            <h1 className="reset-title">Reset Password</h1>
+            <h1 className="reset-title">Enter Reset Code</h1>
             <p className="reset-subtitle">Enter the code sent to your email and your new password</p>
+            
+            <div className="countdown-timer">
+              Time remaining: {remainingSeconds} seconds
+            </div>
             
             <form onSubmit={handleResetPassword} className="input-group">
               <div className="input-container">
                 <input
                   type="text"
                   name="resetCode"
-                  placeholder="Reset Code"
+                  placeholder="Enter reset code"
                   value={formData.resetCode}
                   onChange={handleChange}
+                  required
                 />
               </div>
 
@@ -289,6 +329,7 @@ const ResetPassword = () => {
                   placeholder="New password"
                   value={formData.newPassword}
                   onChange={handleChange}
+                  required
                 />
                 {showPassword.new ? (
                   <FaEyeSlash
@@ -301,12 +342,13 @@ const ResetPassword = () => {
                     onClick={() => togglePasswordVisibility('new')}
                   />
                 )}
-                {formData.newPassword && (
-                  <span className={`password-strength ${passwordStrength.toLowerCase().replace(' ', '-')}`}>
-                    {passwordStrength}
-                  </span>
-                )}
               </div>
+
+              {passwordStrength && (
+                <div className={`password-strength ${passwordStrength.toLowerCase().replace(' ', '-')}`}>
+                  Password Strength: {passwordStrength}
+                </div>
+              )}
 
               <div className="input-container">
                 <input
@@ -315,6 +357,7 @@ const ResetPassword = () => {
                   placeholder="Confirm password"
                   value={formData.confirmPassword}
                   onChange={handleChange}
+                  required
                 />
                 {showPassword.confirm ? (
                   <FaEyeSlash
@@ -334,24 +377,9 @@ const ResetPassword = () => {
                 className={`reset-button ${!isFormValid || loading ? 'disabled' : ''}`}
                 disabled={!isFormValid || loading}
               >
-                Password reset
+                {loading ? 'Resetting...' : 'Reset Password'}
               </button>
             </form>
-          </>
-        );
-
-      case 3:
-        return (
-          <>
-            <h1 className="reset-title">Reset Complete</h1>
-            <p className="reset-subtitle">Password reset complete</p>
-            
-            <button 
-              onClick={handleLogin}
-              className="reset-button"
-            >
-              Login
-            </button>
           </>
         );
 
@@ -400,4 +428,4 @@ const ResetPassword = () => {
   );
 };
 
-export default ResetPassword; 
+export default ResetPassword;
