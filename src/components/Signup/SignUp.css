@@ -56,20 +56,20 @@
 
 .signup-card {
   background: white;
-  padding: 1rem;
+  padding: 1.5rem;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   width: 100%;
   max-width: 500px;
-  max-height: 95vh;
-  overflow-y: auto;
+  max-height: 71vh;
+ 
 }
 
 .signup-title {
   color: #1a237e;
   text-align: center;
   margin-bottom: 1rem;
-  font-size: 1.5rem;
+
   position: relative;
 }
 
@@ -390,3 +390,4 @@
   font-size: 0.75rem;
   margin-top: 0.2rem;
 } 
+/* --------------------------------------------------included---------------------- */

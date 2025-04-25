@@ -19,8 +19,16 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem 2rem;
-  background-color: #F3F4F6;
+color: #F3F4F6;
+background: #1a237e;
+ 
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
 }
+
 
 .logo img {
   width: 50px;
@@ -35,12 +43,12 @@
 
 .nav-links a {
   text-decoration: none;
-  color: #8d8b8b;
+  color: #c7c5c5;
   font-weight: 500;
 }
 
 .nav-links a.active {
-  color: #1a237e;
+  color: #fff;
   font-weight: bold;
 }
 
@@ -219,3 +227,69 @@
     font-size: 1.5rem;
   }
 } 
+
+
+/* ------------------------------------------- */
+
+.department-images {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  padding: 1rem 0;
+}
+
+.image-holder {
+  width: 100%;
+  aspect-ratio: 1/1;
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.image-holder img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 8px;
+}
+
+/* Medium screens: 2-column grid */
+@media (max-width: 1024px) {
+  .department-images {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Small screens: 1-column grid with side margins */
+@media (max-width: 600px) {
+  .department-images {
+    grid-template-columns: 1fr;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .image-holder {
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+/* Add horizontal padding to department text on small screens */
+@media (max-width: 600px) {
+  .department-content {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+
+@media (min-width: 769px) {
+  .about-header {
+    padding-top: 6rem; /* Adds space below the fixed navbar */
+  }
+}
+@media (max-width: 768px) {
+  .about-header {
+    padding-top: 5rem; /* Adjust this if your navbar is taller/shorter on mobile */
+  }
+}
