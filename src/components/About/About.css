@@ -293,3 +293,23 @@ background: #1a237e;
     padding-top: 5rem; /* Adjust this if your navbar is taller/shorter on mobile */
   }
 }
+
+.content-wrapper {
+  padding: 0 5vw; /* Responsive horizontal padding */
+  max-width: 1200px; /* Limit width on large screens */
+  margin: 0 auto; /* Center on wide screens */
+  box-sizing: border-box; /* Includes padding in width calculations */
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+}
+
+@media (max-width: 768px) {
+  .content-wrapper {
+    padding: 0 4vw;
+  }
+}
+
+@media (max-width: 480px) {
+  .content-wrapper {
+    padding: 0 3vw;
+  }
+}

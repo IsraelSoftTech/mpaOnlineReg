@@ -45,17 +45,20 @@ const About = () => {
       </nav>
 
       <div className="about-header">
-        <h1>MPASAT</h1>
-        <p>Reg. No. 697/L/MINESEC/SG/DESG/SDSEPESG/SSGEPESG of 1/12/2022,MILE 3 NKWEN BAMENDA, Tel: +237 679953185
-</p>
-  <p>A Unique Secondary and High School bridging the gap between grammar,technical,commercial and vocational education in Cameroon and the world at large.</p>
-<h1>OUR UNIQUENESS</h1>
-       <p>We blend Theory and Practicals. We give students good theory and take them for practise.</p>
-         <h1>OUR VISION</h1>
-       
-    
-        <p>We envisage to change the change the eduactional system of Cameroon to a productive one in the next 5 years to come.</p>
-        <h1>OUR VOCATIONAL TRAINING PROGRAMS</h1>
+      <div class="content-wrapper">
+  <h1>MPASAT</h1>
+  <p>Reg. No. 697/L/MINESEC/SG/DESG/SDSEPESG/SSGEPESG of 1/12/2022, MILE 3 NKWEN BAMENDA, Tel: +237 679953185</p>
+  <p>A Unique Secondary and High School bridging the gap between grammar, technical, commercial and vocational education in Cameroon and the world at large.</p>
+
+  <h1>OUR UNIQUENESS</h1>
+  <p>We blend Theory and Practicals. We give students good theory and take them for practise.</p>
+
+  <h1>OUR VISION</h1>
+  <p>We envisage to change the educational system of Cameroon to a productive one in the next 5 years to come.</p>
+
+  <h1>OUR VOCATIONAL TRAINING PROGRAMS</h1>
+</div>
+
       </div>
 
       <main className="main-content">
