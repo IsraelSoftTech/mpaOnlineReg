@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './SignIn.css';
 import logo from '../../assets/logo.png';
-import { FaFacebookF, FaInstagram, FaYoutube, FaTiktok, FaUser, FaEye, FaEyeSlash } from 'react-icons/fa';
+import { FaFacebookF, FaInstagram, FaYoutube, FaTiktok, FaUser, FaEye, FaEyeSlash, FaBars, FaTimes } from 'react-icons/fa';
 import axios from 'axios';
 
 const API_URL = process.env.REACT_APP_API_URL || 'https://mpaonlinebackend.onrender.com';
 
 const SignIn = () => {
   const navigate = useNavigate();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [formData, setFormData] = useState({
     username: '',
     password: ''
@@ -65,13 +66,21 @@ const SignIn = () => {
     }
   };
 
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
   return (
     <div className="signin-container">
       <nav className="navbar">
-        <Link to="/" className="logo">
-          <img src={logo} alt="logo" />
-        </Link>
-        <div className="nav-links">
+        <div className="logo">
+          <img src={logo} alt="MPASAT Logo" />
+        </div>
+        <h1 className="site-title">MPASAT</h1>
+        <div className="menu-icon" onClick={toggleMenu}>
+          {isMenuOpen ? <FaTimes /> : <FaBars />}
+        </div>
+        <div className={`nav-links ${isMenuOpen ? 'active' : ''}`}>
           <Link to="/about">About Us</Link>
           <Link to="/login" className="active">Sign In</Link>
           <Link to="/register">Sign Up</Link>

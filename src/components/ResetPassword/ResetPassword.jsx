@@ -141,9 +141,8 @@ const ResetPassword = () => {
   };
 
   useEffect(() => {
-    // Validate form when formData changes
     validateForm();
-  }, [formData]);
+  }, [formData, validateForm]);
 
   const checkPasswordStrength = (password) => {
     if (password.length === 0) return '';

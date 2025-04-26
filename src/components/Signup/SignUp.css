@@ -14,18 +14,35 @@
 
 /* Navbar styles */
 .navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.3rem 1rem;
-  background-color: #F3F4F6;
-  height: 60px;
+  padding: 1rem 2rem;
+  background-color: #1a237e;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
 }
 
 .logo img {
-  width: 40px;
   height: 40px;
-  font-weight: bold;
+}
+
+.site-title {
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.menu-icon {
+  display: none;
+  font-size: 1.5rem;
+  color: white;
+  cursor: pointer;
 }
 
 .nav-links {
@@ -275,7 +292,7 @@
   }
 
   .navbar {
-    padding: 1rem;
+    padding: 0.8rem 1rem;
   }
 
   .nav-links {
@@ -302,6 +319,14 @@
   
   .signup-button {
     padding: 0.6rem;
+  }
+
+  .menu-icon {
+    display: block;
+  }
+
+  .site-title {
+    font-size: 1.2rem;
   }
 }
 
