@@ -110,7 +110,7 @@ const About = () => {
           <p>To provide quality education and training that equips students with the skills and knowledge needed to excel in their chosen fields.</p>
         </div>
       </div>
-
+<h4 style={{textAlign:"center",fontSize:"30px"}}>Vocational Training Departments:</h4>
       <div className="departments-container">
         {departments.map((department, index) => (
           <div key={index} className="department-section">
