@@ -6,6 +6,7 @@ import SignUp from './components/Signup/SignUp';
 import User from './components/User/User';
 import ResetPassword from './components/ResetPassword/ResetPassword';
 import About from './components/About/About';
+import Admission from './components/Admission/Admission';
 
 // Protected Route component
 const ProtectedRoute = ({ children }) => {
@@ -26,6 +27,7 @@ function App() {
           <Route path="/register" element={<SignUp />} />
           <Route path="/reset" element={<ResetPassword />} />
           <Route path="/about" element={<About />} />
+          <Route path="/admission" element={<Admission />} />
           <Route
             path="/dashboard"
             element={
