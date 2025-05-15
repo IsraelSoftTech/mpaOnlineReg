@@ -1,0 +1,330 @@
+/* User Admission Page Styles */
+.userad-wrapper {
+  min-height: 100vh;
+  background: #f3f8f7;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Inter', Arial, sans-serif;
+}
+.userad-header {
+  width: 100%;
+  background: #fff;
+  padding: 16px 24px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+}
+.userad-logo-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.userad-logo {
+  width: 40px;
+  height: 40px;
+}
+.userad-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #18316d;
+}
+.userad-nav {
+  display: flex;
+  gap: 24px;
+}
+.userad-nav-link {
+  background: none;
+  border: none;
+  color: #333;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+.userad-nav-link:hover {
+  background: #f5f6f8;
+}
+.userad-nav-link.active {
+  background: #18316d;
+  color: #fff;
+}
+.userad-nav-link.logout {
+  color: #dc3545;
+}
+.userad-main {
+  flex: 1;
+  padding: 32px;
+  background: #f5f6f8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.userad-title-main {
+  color: #18316d;
+  margin-bottom: 24px;
+  font-size: 1.8rem;
+}
+.userad-form {
+  width: 100%;
+  max-width: 800px;
+  background: #fff;
+  padding: 32px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+.form-row {
+  margin-bottom: 20px;
+}
+.form-row label {
+  display: block;
+  margin-bottom: 8px;
+  color: #333;
+  font-weight: 500;
+}
+.form-row input,
+.form-row select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+.form-row input:focus,
+.form-row select:focus {
+  outline: none;
+  border-color: #18316d;
+}
+.file-hint {
+  display: block;
+  color: #666;
+  font-size: 0.8rem;
+  margin-top: 4px;
+}
+.submit-btn {
+  width: 100%;
+  padding: 12px;
+  background: #18316d;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.submit-btn:hover {
+  background: #122654;
+}
+.submit-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+.error-message {
+  color: #dc3545;
+  font-size: 0.9rem;
+  margin-top: 4px;
+}
+.success-message {
+  background: #d4edda;
+  color: #155724;
+  padding: 16px;
+  border-radius: 4px;
+  text-align: center;
+  margin-bottom: 24px;
+  width: 100%;
+  max-width: 800px;
+}
+/* Student type selection styles */
+.form-group {
+  margin-bottom: 24px;
+}
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #333;
+  font-weight: 500;
+}
+.form-group select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  margin-top: 4px;
+}
+/* Action buttons */
+.check-status-button,
+.proceed-button {
+  padding: 12px 24px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background-color: #18316d;
+  color: white;
+}
+.check-status-button:hover,
+.proceed-button:hover {
+  background-color: #122654;
+  transform: translateY(-1px);
+}
+@media (max-width: 768px) {
+  .userad-header {
+    padding: 12px 16px;
+  }
+  .menu-toggle {
+    display: block;
+  }
+  .userad-nav {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #fff;
+    flex-direction: column;
+    padding: 16px;
+    gap: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  }
+  .userad-nav.nav-open {
+    display: flex;
+  }
+  .userad-main {
+    padding: 16px;
+  }
+  .userad-form {
+    padding: 20px;
+  }
+}
+/* Footer styles */
+.footer {
+  background: #18316d;
+  color: #fff;
+  padding: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.footer-logo {
+  font-weight: 600;
+}
+.footer-socials {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.social-icon {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+.social-icon:hover {
+  opacity: 1;
+}
+@media (max-width: 600px) {
+  .footer {
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+  }
+}
+
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  z-index: 1000;
+}
+
+@media (max-width: 900px) {
+  .userad-header, .footer {
+    padding: 0 10px;
+  }
+  .userad-form {
+    padding: 18px 8px 14px 8px;
+    max-width: 98vw;
+  }
+}
+@media (max-width: 600px) {
+  .userad-header, .footer {
+    padding: 0 6px;
+    height: 48px;
+  }
+  .userad-title {
+    font-size: 16px;
+  }
+  .userad-main {
+    padding-top: 16px;
+    padding-left: 8px;
+    padding-right: 8px;
+    box-sizing: border-box;
+  }
+  .userad-title-main {
+    font-size: 1.2rem;
+  }
+  .userad-form {
+    padding: 10px 8px 8px 8px;
+    max-width: 100vw;
+    box-sizing: border-box;
+  }
+}
+
+.form-row input[type="file"] {
+  padding: 8px;
+  border: 1px dashed #cfd8dc;
+  border-radius: 4px;
+  width: 100%;
+  cursor: pointer;
+  background: #f8f9fa;
+}
+
+.form-row input[type="file"]:hover {
+  border-color: #18316d;
+  background: #f1f3f5;
+}
+
+/* Disabled form styles */
+.form-row input:disabled,
+.form-row select:disabled,
+.form-group select:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+  opacity: 0.7;
+  border-color: #ddd;
+}
+
+.form-row input[type="file"]:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.submit-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Remove the following styles that were added for application restriction */
+.application-exists-message,
+.status-text,
+.status-text.status-pending,
+.status-text.status-admitted,
+.status-text.status-rejected {
+  display: none;
+} 
+.stutype{
+  margin: -22px;
+  text-align: left;
+  width: 100%;
+}

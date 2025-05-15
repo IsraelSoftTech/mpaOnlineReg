@@ -1,0 +1,265 @@
+/* Layout Wrappers */
+.page-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+}
+
+.header {
+  width: 100%;
+  background: #f5f6f8;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  height: 56px;
+  font-family: 'Roboto', Arial, sans-serif;
+}
+.logo {
+  color: #f7a600;
+  font-weight: 500;
+  font-size: 22px;
+  letter-spacing: 1px;
+}
+.nav {
+  display: flex;
+  gap: 32px;
+  align-items: center;
+}
+.nav a {
+  color: #222;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 400;
+  transition: color 0.2s;
+}
+.nav .active {
+  font-weight: 600;
+  color: #222;
+  border-bottom: 2px solid #f7a600;
+  padding-bottom: 2px;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+}
+
+.signup-box {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  padding: 40px 32px 32px 32px;
+  max-width: 600px;
+  width: 100%;
+  margin: 40px 0;
+}
+.signup-title {
+  text-align: center;
+  color: #18316d;
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  position: relative;
+}
+.signup-title .underline {
+  display: block;
+  width: 48px;
+  height: 3px;
+  background: #f7a600;
+  margin: 6px auto 0 auto;
+  border-radius: 2px;
+}
+.signup-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+.signup-form-group {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border: 1px solid #cfd8dc;
+  border-radius: 4px;
+  padding: 0 12px;
+  height: 44px;
+  position: relative;
+  transition: border-color 0.2s;
+}
+.signup-form-group:focus-within {
+  border-color: #18316d;
+}
+.signup-input {
+  border: none;
+  outline: none;
+  flex: 1;
+  font-size: 15px;
+  background: transparent;
+  height: 100%;
+  padding: 0 8px;
+  color: #333;
+  min-width: 0;
+}
+.signup-input::placeholder {
+  color: #999;
+}
+.signup-country-code {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 15px;
+  color: #333;
+  cursor: pointer;
+  width: 80px;
+  padding: 0 8px;
+  flex-shrink: 0;
+}
+.signup-phone-group {
+  padding-right: 12px;
+}
+.signup-icon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.signup-user-icon,
+.signup-email-icon,
+.signup-lock-icon {
+  opacity: 0.5;
+}
+.signup-user-icon { background: url('data:image/svg+xml;utf8,<svg fill="gray" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M12 14c-4.418 0-8 1.79-8 4v2h16v-2c0-2.21-3.582-4-8-4z"/></svg>') no-repeat center/contain; }
+.signup-email-icon { background: url('data:image/svg+xml;utf8,<svg fill="gray" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 13.5l8-6V6l-8 6-8-6v1.5l8 6z"/></svg>') no-repeat center/contain; }
+.signup-lock-icon { background: url('data:image/svg+xml;utf8,<svg fill="gray" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 17a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm6-7V7a6 6 0 0 0-12 0v3H4v12h16V10h-2zm-8-3a4 4 0 0 1 8 0v3H8V7z"/></svg>') no-repeat center/contain; }
+.info-icon { background: url('data:image/svg+xml;utf8,<svg fill="gray" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><rect x="11" y="10" width="2" height="6"/><rect x="11" y="7" width="2" height="2"/></svg>') no-repeat center/contain; }
+
+.icon.info-icon {
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.08);
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  opacity: 0.7;
+  margin-left: 4px;
+}
+
+.icon.info-icon:hover {
+  background: rgba(0, 0, 0, 0.15);
+  opacity: 1;
+}
+
+.signup-button {
+  background: #18316d;
+  color: #fff;
+  font-size: 17px;
+  font-weight: 500;
+  border: none;
+  border-radius: 4px;
+  height: 44px;
+  margin-top: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.signup-button:hover {
+  background: #0f2046;
+}
+.signin-link {
+  text-align: left;
+  margin-top: 16px;
+  color: #888;
+  font-size: 15px;
+}
+.signin-link b, .signin-link a {
+  color: #18316d;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* Footer */
+.footer {
+  width: 100%;
+  background: #f5f6f8;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  height: 56px;
+  font-family: 'Roboto', Arial, sans-serif;
+  font-size: 15px;
+  color: #222;
+}
+.footer-logo {
+  color: #f7a600;
+  font-weight: 500;
+  font-size: 20px;
+}
+.footer-center {
+  text-align: center;
+  flex: 1;
+}
+.footer-socials {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.social-icon {
+  width: 18px;
+  height: 18px;
+  display: inline-block;
+}
+.instagram { background: url('data:image/svg+xml;utf8,<svg fill="%23E4405F" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2.2c3.2 0 3.584.012 4.85.07 1.17.056 1.97.24 2.43.41.59.22 1.01.48 1.45.92.44.44.7.86.92 1.45.17.46.354 1.26.41 2.43.058 1.266.07 1.65.07 4.85s-.012 3.584-.07 4.85c-.056 1.17-.24 1.97-.41 2.43-.22.59-.48 1.01-.92 1.45-.44.44-.86.7-1.45.92-.46.17-1.26.354-2.43.41-1.266.058-1.65.07-4.85.07s-3.584-.012-4.85-.07c-1.17-.056-1.97-.24-2.43-.41-.59-.22-1.01-.48-1.45-.92-.44-.44-.7-.86-.92-1.45-.17-.46-.354-1.26-.41-2.43C2.212 15.784 2.2 15.4 2.2 12s.012-3.584.07-4.85c.056-1.17.24-1.97.41-2.43.22-.59.48-1.01.92-1.45.44-.44.86-.7 1.45-.92.46-.17 1.26-.354 2.43-.41C8.416 2.212 8.8 2.2 12 2.2zm0-2.2C8.736 0 8.332.012 7.052.07 5.77.128 4.77.312 4.01.54c-.77.23-1.42.54-2.07 1.19-.65.65-.96 1.3-1.19 2.07C.312 4.77.128 5.77.07 7.052.012 8.332 0 8.736 0 12c0 3.264.012 3.668.07 4.948.058 1.282.242 2.282.47 3.042.23.77.54 1.42 1.19 2.07.65.65 1.3.96 2.07 1.19.76.228 1.76.412 3.042.47C8.332 23.988 8.736 24 12 24s3.668-.012 4.948-.07c1.282-.058 2.282-.242 3.042-.47.77-.23 1.42-.54 2.07-1.19.65-.65.96-1.3 1.19-2.07.228-.76.412-1.76.47-3.042.058-1.28.07-1.684.07-4.948s-.012-3.668-.07-4.948c-.058-1.282-.242-2.282-.47-3.042-.23-.77-.54-1.42-1.19-2.07-.65-.65-1.3-.96-2.07-1.19-.76-.228-1.76-.412-3.042-.47C15.668.012 15.264 0 12 0z"/><path d="M12 5.838A6.162 6.162 0 0 0 5.838 12 6.162 6.162 0 0 0 12 18.162 6.162 6.162 0 0 0 18.162 12 6.162 6.162 0 0 0 12 5.838zm0 10.162A4 4 0 1 1 16 12a4 4 0 0 1-4 4zm6.406-11.845a1.44 1.44 0 1 1-2.88 0 1.44 1.44 0 0 1 2.88 0z"/></svg>') no-repeat center/contain; }
+.facebook { background: url('data:image/svg+xml;utf8,<svg fill="%233b5998" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M22.675 0h-21.35C.595 0 0 .592 0 1.326v21.348C0 23.408.595 24 1.326 24H12.82v-9.294H9.692V11.01h3.127V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.797.143v3.24l-1.918.001c-1.504 0-1.797.715-1.797 1.763v2.313h3.587l-.467 3.696h-3.12V24h6.116C23.406 24 24 23.408 24 22.674V1.326C24 .592 23.406 0 22.675 0"/></svg>') no-repeat center/contain; }
+.tiktok { background: url('data:image/svg+xml;utf8,<svg fill="%23000000" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12.004 2.002c0-.553.447-1 1-1h2.001c.553 0 1 .447 1 1v2.001c0 .553-.447 1-1 1h-2.001c-.553 0-1-.447-1-1V2.002zm7.998 2.001c0-.553.447-1 1-1h2.001c.553 0 1 .447 1 1v2.001c0 .553-.447 1-1 1h-2.001c-.553 0-1-.447-1-1V4.003zm-7.998 7.998c0-.553.447-1 1-1h2.001c.553 0 1 .447 1 1v2.001c0 .553-.447 1-1 1h-2.001c-.553 0-1-.447-1-1v-2.001zm7.998 2.001c0-.553.447-1 1-1h2.001c.553 0 1 .447 1 1v2.001c0 .553-.447 1-1 1h-2.001c-.553 0-1-.447-1-1v-2.001z"/></svg>') no-repeat center/contain; }
+.twitter { background: url('data:image/svg+xml;utf8,<svg fill="%23007bff" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M24 4.557a9.83 9.83 0 0 1-2.828.775 4.932 4.932 0 0 0 2.165-2.724c-.951.564-2.005.974-3.127 1.195a4.916 4.916 0 0 0-8.38 4.482C7.691 8.095 4.066 6.13 1.64 3.161c-.542.929-.856 2.01-.857 3.17 0 2.188 1.115 4.117 2.823 5.254a4.904 4.904 0 0 1-2.229-.616c-.054 2.281 1.581 4.415 3.949 4.89a4.936 4.936 0 0 1-2.224.084c.627 1.956 2.444 3.377 4.6 3.417A9.867 9.867 0 0 1 0 21.543a13.94 13.94 0 0 0 7.548 2.209c9.057 0 14.009-7.496 14.009-13.986 0-.213-.005-.425-.014-.636A9.936 9.936 0 0 0 24 4.557z"/></svg>') no-repeat center/contain; }
+
+/* Error and success messages */
+.error-message,
+.success-message {
+  background: #fff3f3;
+  color: #d32f2f;
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.success-message {
+  background: #edf7ed;
+  color: #1e4620;
+}
+
+/* Action icons (clear field, show/hide password) */
+.signup-action-icon {
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.08);
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 8px;
+  transition: all 0.2s;
+  opacity: 0.7;
+  font-size: 18px;
+}
+
+.signup-action-icon:hover {
+  background: rgba(0, 0, 0, 0.15);
+  opacity: 1;
+} 

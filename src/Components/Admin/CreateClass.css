@@ -1,0 +1,274 @@
+.admin-wrapper {
+  min-height: 100vh;
+  background: #f3f8f7;
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-header {
+  width: 100%;
+  background: #18316d;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  height: 56px;
+}
+
+.admin-logo-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.admin-title {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.admin-nav {
+  display: flex;
+  gap: 32px;
+  align-items: center;
+}
+
+.admin-nav-link {
+  color: #fff;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 400;
+  transition: color 0.2s;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  outline: none;
+}
+
+.admin-nav-link.active,
+.admin-nav-link:active {
+  font-weight: 600;
+  color: #f7a600;
+  border-bottom: 2px solid #f7a600;
+  padding-bottom: 2x;
+}
+
+.admin-main {
+  flex: 1;
+  padding:20px;
+  background: #f3f8f7;
+}
+
+.create-class-container {
+  padding: 24px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.create-class-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.create-class-header h2 {
+  color: #18316d;
+  margin: 0;
+}
+
+.create-class-btn {
+  background: #18316d;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 15px;
+  transition: background 0.2s;
+}
+
+.create-class-btn:hover {
+  background: #122654;
+}
+
+/* Table Styles */
+.classes-table-wrapper {
+  overflow-x: auto;
+  margin-top: 20px;
+  border: 1px solid #eee;
+  border-radius: 4px;
+}
+
+.classes-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 800px;
+}
+
+.classes-table th,
+.classes-table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.classes-table th {
+  background: #f8f9fa;
+  color: #18316d;
+  font-weight: 500;
+}
+
+.classes-table tr:hover {
+  background: #f8f9fa;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 32px;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.modal-content h3 {
+  color: #18316d;
+  margin: 0 0 24px 0;
+  font-size: 1.5rem;
+}
+
+.form-group {
+  margin-bottom: 24px;
+
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 10px;
+  color: #333;
+  font-weight: 500;
+  font-size: 0.95rem;
+  padding: 2px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #cfd8dc;
+  border-radius: 4px;
+  font-size: 15px;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #18316d;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 32px;
+}
+
+.cancel-btn,
+.create-btn {
+  padding: 12px 24px;
+  border-radius: 4px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cancel-btn {
+  background: #f8f9fa;
+  border: 1px solid #cfd8dc;
+  color: #333;
+}
+
+.cancel-btn:hover {
+  background: #e9ecef;
+}
+
+.create-btn {
+  background: #18316d;
+  border: none;
+  color: white;
+}
+
+.create-btn:hover {
+  background: #122654;
+}
+
+.create-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+/* Messages */
+.success-message,
+.error-message {
+  padding: 12px 16px;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+.success-message {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.error-message {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+/* Responsive Menu */
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .admin-header {
+    padding: 0 16px;
+  }
+
+  .modal-content {
+    margin: 20px;
+    padding: 20px;
+  }
+}

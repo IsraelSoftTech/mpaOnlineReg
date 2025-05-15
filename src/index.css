@@ -5,9 +5,63 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-size: 16px; /* Base font size for normal text */
+  line-height: 1.6;
+  background: #fafbfc;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+h1, .h1 {
+  font-size: 1.25rem;
+  margin: 1.2em 0 0.6em 0;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+h2, .h2 {
+  font-size: 1.75rem;
+  margin: 1em 0 0.5em 0;
+  font-weight: 600;
+}
+h3, .h3 {
+  font-size: 1.35rem;
+  margin: 0.8em 0 0.4em 0;
+  font-weight: 500;
+}
+h4, .h4 {
+  font-size: 1.1rem;
+  margin: 0.7em 0 0.3em 0;
+  font-weight: 500;
+}
+h5, .h5 {
+  font-size: 1rem;
+  margin: 0.6em 0 0.2em 0;
+  font-weight: 500;
+}
+h6, .h6 {
+  font-size: 0.95rem;
+  margin: 0.5em 0 0.2em 0;
+  font-weight: 500;
+}
+
+nav, .menu, .admin-nav, .admin-nav-link, .menu-toggle {
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+section, main, .section {
+  padding: 24px 0;
+}
+
+p, li, td, th, label, input, select, button {
+  font-size: 1rem;
+}
+
+/* Add consistent spacing for lists and paragraphs */
+p, ul, ol {
+  margin-bottom: 1em;
 }

@@ -1,0 +1,369 @@
+/* Admin Dashboard Styles */
+.admin-wrapper {
+  min-height: 100vh;
+  background: #f3f8f7;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Inter', Arial, sans-serif;
+}
+.menu-toggle{
+  color: #fff;
+}
+.admin-header {
+  width: 100%;
+  background: #18316d;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  height: 56px;
+}
+.admin-logo-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.admin-logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #fff;
+}
+.admin-title {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+.admin-nav {
+  display: flex;
+  gap: 32px;
+  align-items: center;
+}
+.admin-nav-link {
+  color: #fff;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 400;
+  transition: color 0.2s;
+  padding: 0 0 4px 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  position: relative;
+}
+
+.admin-nav-link.active {
+  font-weight: 500;
+}
+
+.admin-nav-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #f7a600;
+  border-radius: 2px;
+}
+
+.admin-main {
+  flex: 1;
+  padding: 32px 0 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.admin-overview-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: #18316d;
+  margin-bottom: 18px;
+  align-self: flex-start;
+  margin-left: 60px;
+}
+.admin-stats-grid {
+  width: 90%;
+  max-width: 1100px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 24px;
+  margin-bottom: 32px;
+}
+.admin-stat-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  padding: 24px 20px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 180px;
+  min-height: 120px;
+  position: relative;
+}
+.admin-stat-card.green {
+  background: #eafaf1;
+}
+.admin-stat-card.pink {
+  background: #fbeeee;
+}
+.admin-stat-card.yellow {
+  background: #fdf7e6;
+}
+.admin-stat-icon {
+  font-size: 32px;
+  margin-bottom: 8px;
+  color: #18316d;
+}
+.admin-stat-label {
+  font-size: 16px;
+  color: #222;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+.admin-stat-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #18316d;
+}
+.admin-edit-icon {
+  font-size: 18px;
+  color: #2196f3;
+  margin-right: 6px;
+}
+.admin-admission-rate {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.admin-admission-rate-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.admin-admission-rate-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: #4caf50;
+}
+.admin-admission-rate-label {
+  font-size: 12px;
+  color: #888;
+  margin-top: 2px;
+}
+.admin-admission-rate-details {
+  display: block;
+  font-size: 12px;
+  color: #666;
+  margin-top: 4px;
+}
+
+.admin-rejected-section {
+  width: 90%;
+  max-width: 1100px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  margin: 0 auto 32px auto;
+  padding: 24px 18px 18px 18px;
+}
+.admin-rejected-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #18316d;
+  margin-bottom: 12px;
+  text-align: center;
+}
+.admin-rejected-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+.admin-rejected-table th, .admin-rejected-table td {
+  padding: 10px 8px;
+  text-align: left;
+}
+.admin-rejected-table th {
+  color: #222;
+  font-weight: 600;
+  background: #f5f6f8;
+}
+.admin-rejected-table tr:nth-child(even) {
+  background: #f8f8f8;
+}
+
+.admin-footer {
+  width: 100%;
+  background: #fff;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 18px 32px;
+  font-size: 14px;
+  color: #222;
+  border-top: 1px solid #e0e0e0;
+  flex-wrap: wrap;
+}
+.admin-footer-left {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.admin-footer-logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #fff;
+  margin-top: 2px;
+}
+.admin-footer-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+.admin-footer-socials {
+  display: flex;
+  gap: 10px;
+  margin-top: 2px;
+}
+.admin-footer-icon {
+  font-family: 'FontAwesome';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 18px;
+  color: #18316d;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.admin-footer-icon:hover {
+  color: #2196f3;
+}
+
+.admin-weekly-comparison {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 8px;
+}
+
+.admin-week-stat {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.admin-week-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.admin-week-label {
+  font-size: 13px;
+  color: #666;
+}
+
+.admin-week-value {
+  font-size: 18px;
+  font-weight: 600;
+  color: #18316d;
+}
+
+.admin-growth-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 4px;
+  padding-top: 8px;
+  border-top: 1px solid #eee;
+}
+
+.growth-value {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.growth-value.positive {
+  color: #4caf50;
+}
+
+.growth-value.negative {
+  color: #f44336;
+}
+
+.growth-label {
+  font-size: 12px;
+  color: #666;
+  margin-top: 2px;
+}
+
+@media (max-width: 900px) {
+  .admin-stats-grid, .admin-rejected-section {
+    width: 98%;
+    max-width: 100vw;
+  }
+  .admin-main {
+    padding: 18px 0 0 0;
+  }
+  .admin-overview-title {
+    margin-left: 18px;
+  }
+  .admin-footer {
+    padding: 12px 10px;
+    font-size: 13px;
+  }
+}
+@media (max-width: 600px) {
+  .admin-header {
+    padding: 0 6px;
+    height: 48px;
+  }
+  .admin-title {
+    font-size: 16px;
+  }
+  .admin-main {
+    padding: 10px 8px 0 8px;
+    box-sizing: border-box;
+  }
+  .admin-overview-title {
+    font-size: 16px;
+    margin-left: 8px;
+  }
+  .admin-stats-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    width: 100%;
+    max-width: 100vw;
+    padding: 0 4px;
+    box-sizing: border-box;
+  }
+  .admin-stat-card {
+    min-width: 0;
+    min-height: 80px;
+    padding: 8px 4px 8px 4px;
+    font-size: 13px;
+  }
+  .admin-rejected-section {
+    padding: 10px 2px 8px 2px;
+    width: 100%;
+  }
+  .admin-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 12px;
+    padding: 10px 4px;
+  }
+  .admin-footer-right {
+    align-items: flex-start;
+    gap: 2px;
+  }
+  .admin-footer-socials {
+    gap: 8px;
+  }
+} 
