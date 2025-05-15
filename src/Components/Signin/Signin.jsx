@@ -7,7 +7,7 @@ import logo from '../../assets/logo.png';
 const Signin = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { login } = useContext(AdmissionContext);
+  const { login, setCurrentUser, setCurrentPassword, setCurrentUserData } = useContext(AdmissionContext);
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -21,8 +21,12 @@ const Signin = () => {
       const username = e.target.elements.username.value.trim();
       const password = e.target.elements.password.value;
 
-      // Check for admin login first
+      // Quick admin check first (no database query needed)
       if (username === 'admin_account' && password === 'admin_password') {
+        setCurrentUser('admin_account');
+        setCurrentPassword('admin_password');
+        setCurrentUserData({ username: 'admin_account', role: 'admin' });
+        setIsLoading(false);
         navigate('/admin');
         return;
       }
@@ -30,14 +34,22 @@ const Signin = () => {
       // For regular users, check against accounts database
       const success = await login(username, password);
       if (success) {
-        navigate('/userAdmission');
+        setIsLoading(false);
+        // Check if there was a redirect path stored
+        const redirectPath = sessionStorage.getItem('redirectAfterLogin');
+        if (redirectPath) {
+          sessionStorage.removeItem('redirectAfterLogin');
+          navigate(redirectPath);
+        } else {
+          navigate('/userAdmission');
+        }
       } else {
         setError('Invalid username or password');
+        setIsLoading(false);
       }
     } catch (err) {
       console.error('Login error:', err);
       setError('An error occurred during login. Please try again.');
-    } finally {
       setIsLoading(false);
     }
   };
@@ -51,7 +63,7 @@ const Signin = () => {
   };
 
   return (
-    <div className="signin-page-wrapper">
+    <div className="signin-container">
       <header className="app-header">
         <div className="logo-section">
           <img src={logo} alt="" className="app-logo" />
@@ -81,6 +93,8 @@ const Signin = () => {
                 title="Username can only contain letters, numbers, and underscores"
                 onChange={() => error && setError('')}
                 className="signin-input"
+                disabled={isLoading}
+                autoComplete="username"
               />
               <span className="signin-icon signin-action-icon" onClick={() => clearField('username')} title="Clear field">×</span>
             </div>
@@ -94,12 +108,14 @@ const Signin = () => {
                 minLength="6"
                 onChange={() => error && setError('')}
                 className="signin-input"
+                disabled={isLoading}
+                autoComplete="current-password"
               />
               <span 
                 className="signin-icon signin-action-icon" 
-                onClick={() => setShowPassword(!showPassword)} 
+                onClick={() => !isLoading && setShowPassword(!showPassword)} 
                 title={showPassword ? 'Hide password' : 'Show password'}
-                style={{ cursor: 'pointer' }}
+                style={{ cursor: isLoading ? 'default' : 'pointer' }}
               >
                 {showPassword ? '👁️' : '👁️‍🗨️'}
               </span>
@@ -114,7 +130,7 @@ const Signin = () => {
             </div>
             <button 
               type="submit" 
-              className="signin-button"
+              className={`signin-button${isLoading ? ' loading' : ''}`}
               disabled={isLoading}
             >
               {isLoading ? 'Signing in...' : 'Sign In'}

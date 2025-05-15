@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useRef, useEffect, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { RiMenu3Line, RiCloseFill } from 'react-icons/ri';
 import { FaPrint } from 'react-icons/fa';
@@ -6,21 +6,152 @@ import './AdminAdmission.css';
 import { AdmissionContext } from '../AdmissionContext';
 import PrintClassList from './PrintClassList';
 import { database } from '../../firebase';
-import { ref, update } from 'firebase/database';
+import { ref, update, query, orderByChild, limitToFirst, startAfter, get } from 'firebase/database';
+import logo from '../../assets/logo.png';
+
+const ITEMS_PER_PAGE = 10;
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes in milliseconds
 
 const AdminAdmission = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isPrintDialogOpen, setIsPrintDialogOpen] = useState(false);
   const [showPrintDialog, setShowPrintDialog] = useState(false);
-  const menuRef = React.useRef(null);
-  const buttonRef = React.useRef(null);
+  const menuRef = useRef(null);
+  const buttonRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
-  const { admissions } = useContext(AdmissionContext);
+  const { currentUserData } = useContext(AdmissionContext);
+
+  // Pagination and loading states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasMore, setHasMore] = useState(true);
+  const [localAdmissions, setLocalAdmissions] = useState([]);
+  const [lastKey, setLastKey] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [sortOrder, setSortOrder] = useState('newest');
+
+  // Cache management
+  const cacheKey = useMemo(() => `admissions_cache_${currentPage}_${filterStatus}_${sortOrder}`, [currentPage, filterStatus, sortOrder]);
+
+  useEffect(() => {
+    if (!currentUserData?.role === 'admin') {
+      navigate('/signin');
+      return;
+    }
+
+    loadAdmissions();
+  }, [currentPage, filterStatus, sortOrder, currentUserData, navigate]);
+
+  const loadAdmissions = async () => {
+    try {
+      setIsLoading(true);
+
+      // Check cache first
+      const cachedData = sessionStorage.getItem(cacheKey);
+      const cachedTimestamp = sessionStorage.getItem(cacheKey + '_timestamp');
+      
+      if (cachedData && cachedTimestamp) {
+        const timestamp = parseInt(cachedTimestamp);
+        if (Date.now() - timestamp < CACHE_DURATION) {
+          const { admissions, lastKey: cachedLastKey, hasMore: cachedHasMore } = JSON.parse(cachedData);
+          setLocalAdmissions(admissions);
+          setLastKey(cachedLastKey);
+          setHasMore(cachedHasMore);
+          setIsLoading(false);
+          return;
+        }
+      }
+
+      // If no cache or expired, fetch from database
+      const admissionsRef = ref(database, 'admissions');
+      let admissionsQuery = query(
+        admissionsRef,
+        orderByChild(sortOrder === 'newest' ? 'timestamp' : 'fullName'),
+        limitToFirst(ITEMS_PER_PAGE + 1)
+      );
+
+      if (lastKey && currentPage > 1) {
+        admissionsQuery = query(admissionsQuery, startAfter(lastKey));
+      }
+
+      const snapshot = await get(admissionsQuery);
+      const data = snapshot.val() || {};
+      
+      let admissions = Object.entries(data)
+        .map(([id, admission]) => ({
+          id,
+          ...admission
+        }))
+        .filter(admission => {
+          if (filterStatus === 'all') return true;
+          return admission.status.toLowerCase() === filterStatus.toLowerCase();
+        });
+
+      // Check if there are more items
+      const hasMoreItems = admissions.length > ITEMS_PER_PAGE;
+      if (hasMoreItems) {
+        admissions = admissions.slice(0, ITEMS_PER_PAGE);
+      }
+
+      // Cache the results
+      const cacheData = {
+        admissions,
+        lastKey: admissions[admissions.length - 1]?.timestamp || null,
+        hasMore: hasMoreItems
+      };
+      sessionStorage.setItem(cacheKey, JSON.stringify(cacheData));
+      sessionStorage.setItem(cacheKey + '_timestamp', Date.now().toString());
+
+      setLocalAdmissions(admissions);
+      setLastKey(admissions[admissions.length - 1]?.timestamp || null);
+      setHasMore(hasMoreItems);
+    } catch (error) {
+      console.error('Error loading admissions:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Memoize filtered and sorted admissions
+  const displayedAdmissions = useMemo(() => {
+    return localAdmissions
+      .filter(admission => {
+        if (!searchTerm) return true;
+        const searchLower = searchTerm.toLowerCase();
+        return (
+          admission.fullName?.toLowerCase().includes(searchLower) ||
+          admission.email?.toLowerCase().includes(searchLower) ||
+          admission.phoneNumber?.toLowerCase().includes(searchLower)
+        );
+      });
+  }, [localAdmissions, searchTerm]);
+
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+    window.scrollTo(0, 0);
+  };
+
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(1);
+  };
+
+  const handleFilterChange = (status) => {
+    setFilterStatus(status);
+    setCurrentPage(1);
+    setLastKey(null);
+  };
+
+  const handleSortChange = (order) => {
+    setSortOrder(order);
+    setCurrentPage(1);
+    setLastKey(null);
+  };
 
   const toggleMenu = () => setIsMenuOpen((open) => !open);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const handleClickOutside = (event) => {
       if (
         isMenuOpen &&
@@ -32,6 +163,7 @@ const AdminAdmission = () => {
         setIsMenuOpen(false);
       }
     };
+
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isMenuOpen]);
@@ -171,7 +303,7 @@ const AdminAdmission = () => {
     <div className="admin-wrapper">
       <header className="app-header">
         <div className="logo-section">
-          <img src="/logo192.png" alt="logo" className="app-logo" />
+          <img src={logo} alt="logo" className="app-logo" />
           <span className="app-brand">MPASAT</span>
         </div>
         <button
@@ -231,95 +363,140 @@ const AdminAdmission = () => {
       <main className="admin-main">
         <div className="admin-header-actions">
           <h2 className="admin-overview-title">Admission Applications</h2>
-          <button 
-            className="print-class-list-btn"
-            onClick={() => setShowPrintDialog(true)}
-          >
-            <FaPrint /> Print Class List
-          </button>
+          <div className="admin-controls">
+            <input
+              type="text"
+              placeholder="Search admissions..."
+              onChange={handleSearch}
+              className="admin-search"
+            />
+            <select 
+              onChange={(e) => handleFilterChange(e.target.value)}
+              className="admin-filter"
+              value={filterStatus}
+            >
+              <option value="all">All Status</option>
+              <option value="pending">Pending</option>
+              <option value="admitted">Admitted</option>
+              <option value="rejected">Rejected</option>
+            </select>
+            <select
+              onChange={(e) => handleSortChange(e.target.value)}
+              className="admin-sort"
+              value={sortOrder}
+            >
+              <option value="newest">Newest First</option>
+              <option value="oldest">Oldest First</option>
+              <option value="name">Name A-Z</option>
+            </select>
+            <button 
+              className="print-class-list-btn"
+              onClick={() => setShowPrintDialog(true)}
+            >
+              <FaPrint /> Print Class List
+            </button>
+          </div>
         </div>
-        <div className="adminad-table-wrapper">
-          <table className="adminad-table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Student Type</th>
-                <th>Sex</th>
-                <th>DOB</th>
-                <th>Place of Birth</th>
-                <th>Father's Name</th>
-                <th>Mother's Name</th>
-                <th>Guardian's Phone</th>
-                <th>Previous Average</th>
-                <th>Form</th>
-                <th>Department</th>
-                <th>Picture</th>
-                <th>Report Card</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {admissions && admissions.map((admission) => (
-                <tr key={admission.id}>
-                  <td>{admission.name || 'N/A'}</td>
-                  <td>{admission.studentType || 'N/A'}</td>
-                  <td>{admission.sex || 'N/A'}</td>
-                  <td>{admission.dob || 'N/A'}</td>
-                  <td>{admission.pob || 'N/A'}</td>
-                  <td>{admission.father || 'N/A'}</td>
-                  <td>{admission.mother || 'N/A'}</td>
-                  <td>{admission.guardian || 'N/A'}</td>
-                  <td>{admission.avg || 'N/A'}</td>
-                  <td>{admission.form || 'N/A'}</td>
-                  <td>{admission.vocation || 'N/A'}</td>
-                  <td>
-                    {admission.picture && (
-                      <img 
-                        src={admission.picture} 
-                        alt={admission.name || 'Student'} 
-                        className="student-picture"
-                      />
-                    )}
-                  </td>
-                  <td>
-                    {admission.report && (
-                      <button 
-                        className="adminad-link" 
-                        onClick={() => handleViewReport(admission.report)}
-                      >
-                        View Report
-                      </button>
-                    )}
-                  </td>
-                  <td>
-                    <span className={`status-badge status-${(admission.status || 'pending').toLowerCase()}`}>
-                      {admission.status || 'Pending'}
-                    </span>
-                  </td>
-                  <td>
-                    {admission.studentType === 'Old Student' && admission.status === 'Pending' && (
-                      <div className="action-buttons">
-                        <button
-                          className="admit-btn"
-                          onClick={() => handleStatusUpdate(admission.id, 'Admitted')}
-                        >
-                          Admitted
-                        </button>
-                        <button
-                          className="reject-btn"
-                          onClick={() => handleStatusUpdate(admission.id, 'Rejected')}
-                        >
-                          Fake
-                        </button>
-                      </div>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        
+        {isLoading ? (
+          <div className="loading-indicator">Loading admissions...</div>
+        ) : (
+          <>
+            <div className="adminad-table-wrapper">
+              <table className="adminad-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Student Type</th>
+                    <th>Sex</th>
+                    <th>DOB</th>
+                    <th>Place of Birth</th>
+                    <th>Father's Name</th>
+                    <th>Mother's Name</th>
+                    <th>Guardian's Phone</th>
+                    <th>Previous Average</th>
+                    <th>Form</th>
+                    <th>Department</th>
+                    <th>Picture</th>
+                    <th>Report Card</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {displayedAdmissions.map((admission) => (
+                    <tr key={admission.id}>
+                      <td>{admission.name || 'N/A'}</td>
+                      <td>{admission.studentType || 'N/A'}</td>
+                      <td>{admission.sex || 'N/A'}</td>
+                      <td>{admission.dob || 'N/A'}</td>
+                      <td>{admission.pob || 'N/A'}</td>
+                      <td>{admission.father || 'N/A'}</td>
+                      <td>{admission.mother || 'N/A'}</td>
+                      <td>{admission.guardian || 'N/A'}</td>
+                      <td>{admission.avg || 'N/A'}</td>
+                      <td>{admission.form || 'N/A'}</td>
+                      <td>{admission.vocation || 'N/A'}</td>
+                      <td>
+                        {admission.picture && (
+                          <img 
+                            src={admission.picture} 
+                            alt={admission.name || 'Student'} 
+                            className="student-picture"
+                          />
+                        )}
+                      </td>
+                      <td>
+                        {admission.report && (
+                          <button 
+                            className="adminad-link" 
+                            onClick={() => handleViewReport(admission.report)}
+                          >
+                            View Report
+                          </button>
+                        )}
+                      </td>
+                      <td>
+                        <span className={`status-badge status-${(admission.status || 'pending').toLowerCase()}`}>
+                          {admission.status || 'Pending'}
+                        </span>
+                      </td>
+                      <td>
+                        {admission.studentType === 'Old Student' && admission.status === 'Pending' && (
+                          <div className="action-buttons">
+                            <button
+                              className="admit-btn"
+                              onClick={() => handleStatusUpdate(admission.id, 'Admitted')}
+                            >
+                              Admitted
+                            </button>
+                            <button
+                              className="reject-btn"
+                              onClick={() => handleStatusUpdate(admission.id, 'Rejected')}
+                            >
+                              Fake
+                            </button>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            {hasMore && (
+              <div className="pagination-controls">
+                <button 
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  className="load-more-btn"
+                  disabled={!hasMore}
+                >
+                  Load More
+                </button>
+              </div>
+            )}
+          </>
+        )}
       </main>
       <footer className="footer">
         <div className="footer-logo">ONLINE ADMISSION</div>
@@ -337,7 +514,7 @@ const AdminAdmission = () => {
         isOpen={showPrintDialog}
         onClose={() => setShowPrintDialog(false)}
         onPrint={handlePrint}
-        admissions={admissions}
+        admissions={localAdmissions}
       />
     </div>
   );

@@ -1,17 +1,30 @@
 import React, { createContext, useState, useEffect } from 'react';
 import { database } from '../firebase';
-import { ref, push, onValue, update, get, child } from 'firebase/database';
+import { ref, push, onValue, update, get } from 'firebase/database';
 
 export const AdmissionContext = createContext();
 
 export const AdmissionProvider = ({ children }) => {
-  const [admissions, setAdmissions] = useState([]);
+  const [allAdmissions, setAllAdmissions] = useState([]);
   const [accounts, setAccounts] = useState([]);
   const [schoolClasses, setSchoolClasses] = useState([]);
   const [error, setError] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
   const [currentUserData, setCurrentUserData] = useState(null);
   const [currentPassword, setCurrentPassword] = useState(null);
+
+  // Filter admissions based on user role and current user
+  const admissions = React.useMemo(() => {
+    if (!currentUser || !currentUserData) return [];
+    
+    // If admin, return all admissions
+    if (currentUserData.role === 'admin') {
+      return allAdmissions;
+    }
+    
+    // For regular users, return only their admissions
+    return allAdmissions.filter(admission => admission.username === currentUser);
+  }, [allAdmissions, currentUser, currentUserData]);
 
   useEffect(() => {
     try {
@@ -28,9 +41,9 @@ export const AdmissionProvider = ({ children }) => {
               id,
               ...admission
             }));
-            setAdmissions(admissionsList);
+            setAllAdmissions(admissionsList);
           } else {
-            setAdmissions([]);
+            setAllAdmissions([]);
           }
         } catch (err) {
           console.error('Error processing admissions data:', err);
@@ -171,22 +184,38 @@ export const AdmissionProvider = ({ children }) => {
 
   const login = async (username, password) => {
     try {
+      // Get a direct reference to the specific user's account
       const accountsRef = ref(database, 'accounts');
-      const snapshot = await get(accountsRef);
-      const accounts = snapshot.val();
+      const query = await get(accountsRef);
+      const accounts = query.val();
       
-      if (accounts) {
-        const account = Object.values(accounts).find(
-          acc => acc.username === username && acc.password === password
-        );
+      if (!accounts) {
+        setError('Invalid credentials');
+        return false;
+      }
+
+      // Find the matching account
+      const accountEntry = Object.entries(accounts).find(([_, acc]) => 
+        acc.username === username && acc.password === password
+      );
+
+      if (accountEntry) {
+        const [id, account] = accountEntry;
+        const userData = {
+          id,
+          ...account
+        };
         
-        if (account) {
-          setCurrentUser(username);
-          setCurrentPassword(password);
-          setCurrentUserData(account);
-          setError(null);
-          return true;
-        }
+        // Set all user data at once to reduce re-renders
+        setCurrentUser(username);
+        setCurrentPassword(password);
+        setCurrentUserData(userData);
+        setError(null);
+
+        // Cache user data in sessionStorage for faster subsequent loads
+        sessionStorage.setItem('userData', JSON.stringify(userData));
+        
+        return true;
       }
       
       setError('Invalid credentials');
@@ -198,10 +227,30 @@ export const AdmissionProvider = ({ children }) => {
     }
   };
 
+  // Add a function to check for cached login
+  const checkCachedLogin = () => {
+    const cachedUserData = sessionStorage.getItem('userData');
+    if (cachedUserData) {
+      try {
+        const userData = JSON.parse(cachedUserData);
+        setCurrentUser(userData.username);
+        setCurrentPassword(userData.password);
+        setCurrentUserData(userData);
+        return true;
+      } catch (err) {
+        console.error('Error parsing cached user data:', err);
+        sessionStorage.removeItem('userData');
+      }
+    }
+    return false;
+  };
+
+  // Modify logout to clear cache
   const logout = () => {
     setCurrentUser(null);
     setCurrentPassword(null);
     setCurrentUserData(null);
+    sessionStorage.removeItem('userData');
   };
 
   const addSchoolClass = async (classData) => {
@@ -237,7 +286,7 @@ export const AdmissionProvider = ({ children }) => {
     if (currentUser) {
       try {
         // Find the user's admission
-        const admission = admissions.find(adm => adm.userId === currentUser.id);
+        const admission = allAdmissions.find(adm => adm.userId === currentUser.id);
         if (admission) {
           // Update the admission with payment status and details
           const admissionRef = ref(database, `admissions/${admission.id}`);
@@ -258,7 +307,7 @@ export const AdmissionProvider = ({ children }) => {
           await update(admissionRef, updateData);
           
           // Update local state
-          const updatedAdmissions = admissions.map(adm => {
+          const updatedAdmissions = allAdmissions.map(adm => {
             if (adm.id === admission.id) {
               return {
                 ...adm,
@@ -268,7 +317,7 @@ export const AdmissionProvider = ({ children }) => {
             return adm;
           });
           
-          setAdmissions(updatedAdmissions);
+          setAllAdmissions(updatedAdmissions);
         }
       } catch (error) {
         console.error('Error updating payment status:', error);
@@ -290,7 +339,7 @@ export const AdmissionProvider = ({ children }) => {
       await update(admissionRef, updateData);
       
       // Update local state
-      const updatedAdmissions = admissions.map(adm => {
+      const updatedAdmissions = allAdmissions.map(adm => {
         if (adm.id === admissionId) {
           return {
             ...adm,
@@ -300,7 +349,7 @@ export const AdmissionProvider = ({ children }) => {
         return adm;
       });
       
-      setAdmissions(updatedAdmissions);
+      setAllAdmissions(updatedAdmissions);
       return true;
     } catch (error) {
       console.error('Error updating admission status:', error);
@@ -310,22 +359,24 @@ export const AdmissionProvider = ({ children }) => {
   };
 
   return (
-    <AdmissionContext.Provider value={{ 
+    <AdmissionContext.Provider value={{
       admissions,
-      accounts, 
+      accounts,
       schoolClasses,
-      addAdmission,
-      addAccount,
-      addSchoolClass,
-      error, 
+      error,
       currentUser,
-      setCurrentUser,
       currentUserData,
+      addAccount,
+      addAdmission,
       updateProfile,
       login,
       logout,
+      addSchoolClass,
       updatePaymentStatus,
-      updateAdmissionStatus
+      updateAdmissionStatus,
+      setCurrentUser,
+      setCurrentPassword,
+      setCurrentUserData
     }}>
       {children}
     </AdmissionContext.Provider>

@@ -1,18 +1,22 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate, useLocation, Link } from 'react-router-dom';
+import React, { useState, useRef, useEffect, useContext } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { RiMenu3Line, RiCloseFill, RiMailSendLine, RiMessage2Line, RiSendPlaneLine } from 'react-icons/ri';
-import { ref, push, onValue, update } from 'firebase/database';
+import { ref, push, onValue, update, query, orderByChild, limitToFirst, get } from 'firebase/database';
 import { database } from '../../firebase';
+import { AdmissionContext } from '../AdmissionContext';
 import './UserContact.css';
 import logo from '../../assets/logo.png';
+
+const MESSAGES_PER_PAGE = 10;
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
 const UserContact = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { currentUser } = useContext(AdmissionContext);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showReplies, setShowReplies] = useState(false);
   const [replies, setReplies] = useState([]);
-  const [selectedMessage, setSelectedMessage] = useState(null);
   const [replyText, setReplyText] = useState('');
   const [formData, setFormData] = useState({
     fullName: '',
@@ -22,36 +26,98 @@ const UserContact = () => {
   });
   const [successMessage, setSuccessMessage] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
   const menuRef = useRef(null);
   const buttonRef = useRef(null);
 
   useEffect(() => {
-    // Fetch messages and replies for this user
-    const messagesRef = ref(database, 'messages');
-    const unsubscribe = onValue(messagesRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        const messagesList = Object.entries(data)
+    if (!currentUser) {
+      navigate('/signin');
+      return;
+    }
+
+    const loadMessages = async () => {
+      try {
+        setIsLoading(true);
+
+        // Check cache first
+        const cacheKey = `messages_${currentUser}_${page}`;
+        const cachedData = sessionStorage.getItem(cacheKey);
+        const cachedTimestamp = sessionStorage.getItem(cacheKey + '_timestamp');
+
+        if (cachedData && cachedTimestamp) {
+          const timestamp = parseInt(cachedTimestamp);
+          if (Date.now() - timestamp < CACHE_DURATION) {
+            const { messages, hasMore: cachedHasMore } = JSON.parse(cachedData);
+            setReplies(prev => page === 1 ? messages : [...prev, ...messages]);
+            setHasMore(cachedHasMore);
+            setIsLoading(false);
+            return;
+          }
+        }
+
+        // If no cache or expired, fetch from database
+        const messagesRef = ref(database, 'messages');
+        const messagesQuery = query(
+          messagesRef,
+          orderByChild('timestamp'),
+          limitToFirst(MESSAGES_PER_PAGE + 1)
+        );
+
+        const snapshot = await get(messagesQuery);
+        const data = snapshot.val() || {};
+
+        let messages = Object.entries(data)
+          .filter(([_, msg]) => msg.userId === currentUser)
           .map(([id, msg]) => ({
             id,
             ...msg,
             timestamp: new Date(msg.timestamp).toLocaleString()
           }))
           .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-        setReplies(messagesList);
 
-        // If there's a message with new replies, update its status
-        messagesList.forEach(message => {
+        // Check if there are more messages
+        const hasMoreMessages = messages.length > MESSAGES_PER_PAGE;
+        if (hasMoreMessages) {
+          messages = messages.slice(0, MESSAGES_PER_PAGE);
+        }
+
+        // Cache the results
+        const cacheData = {
+          messages,
+          hasMore: hasMoreMessages
+        };
+        sessionStorage.setItem(cacheKey, JSON.stringify(cacheData));
+        sessionStorage.setItem(cacheKey + '_timestamp', Date.now().toString());
+
+        setReplies(prev => page === 1 ? messages : [...prev, ...messages]);
+        setHasMore(hasMoreMessages);
+
+        // Update read status for new messages
+        messages.forEach(message => {
           if (message.hasNewReply) {
             const messageRef = ref(database, `messages/${message.id}`);
             update(messageRef, { hasNewReply: false });
           }
         });
+      } catch (error) {
+        console.error('Error loading messages:', error);
+        setError('Failed to load messages. Please try again.');
+      } finally {
+        setIsLoading(false);
       }
-    });
+    };
 
-    return () => unsubscribe();
-  }, []);
+    loadMessages();
+  }, [currentUser, page, navigate]);
+
+  const handleLoadMore = () => {
+    if (!isLoading && hasMore) {
+      setPage(prev => prev + 1);
+    }
+  };
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
@@ -67,6 +133,11 @@ const UserContact = () => {
     e.preventDefault();
     setError('');
 
+    if (!currentUser) {
+      setError('Please sign in to send a message');
+      return;
+    }
+
     // Validate form
     if (!formData.fullName.trim() || !formData.email.trim() || 
         !formData.phoneNumber.trim() || !formData.message.trim()) {
@@ -78,6 +149,7 @@ const UserContact = () => {
       const messagesRef = ref(database, 'messages');
       await push(messagesRef, {
         ...formData,
+        userId: currentUser,
         status: 'unread',
         timestamp: new Date().toISOString(),
         replies: [],
@@ -93,7 +165,6 @@ const UserContact = () => {
         message: ''
       });
 
-      // Clear success message after 3 seconds
       setTimeout(() => {
         setSuccessMessage('');
       }, 3000);
@@ -103,7 +174,7 @@ const UserContact = () => {
   };
 
   const handleUserReply = async (messageId) => {
-    if (!replyText.trim()) return;
+    if (!replyText.trim() || !currentUser) return;
 
     try {
       const repliesRef = ref(database, `messages/${messageId}/replies`);
@@ -111,13 +182,13 @@ const UserContact = () => {
         text: replyText,
         timestamp: new Date().toISOString(),
         from: 'user',
+        userId: currentUser,
         isRead: false
       });
 
       setReplyText('');
       setSuccessMessage('Reply sent successfully!');
       
-      // Clear success message after 3 seconds
       setTimeout(() => {
         setSuccessMessage('');
       }, 3000);
@@ -142,12 +213,12 @@ const UserContact = () => {
           {isMenuOpen ? <RiCloseFill size={24} /> : <RiMenu3Line size={24} />}
         </button>
         <nav ref={menuRef} className={`app-nav ${isMenuOpen ? 'nav-open' : ''}`}>
-          <Link to="/about" className="app-nav-link">About</Link>
-          <Link to="/admission" className="app-nav-link">Admission</Link>
-          <Link to="/checkstatus" className="app-nav-link">Check Status</Link>
-          <Link to="/contact" className={`app-nav-link${location.pathname === '/contact' ? ' active' : ''}`}>Contact</Link>
-          <Link to="/profile" className="app-nav-link">Profile</Link>
-          <button className="app-nav-link logout" onClick={() => navigate('/signin')}>Log out</button>
+          <button className={`app-nav-link${location.pathname === '/about' ? ' active' : ''}`} onClick={() => navigate('/about')}>About</button>
+          <button className={`app-nav-link${location.pathname === '/userAdmission' ? ' active' : ''}`} onClick={() => navigate('/userAdmission')}>Admission</button>
+          <button className={`app-nav-link${location.pathname === '/usertrack' ? ' active' : ''}`} onClick={() => navigate('/usertrack')}>Check Status</button>
+          <button className={`app-nav-link${location.pathname === '/contact' ? ' active' : ''}`} onClick={() => navigate('/contact')}>Contact</button>
+          <button className={`app-nav-link${location.pathname === '/profile' ? ' active' : ''}`} onClick={() => navigate('/profile')}>Profile</button>
+          <button className="app-nav-link logout" onClick={() => navigate('/about')}>Log out</button>
         </nav>
       </header>
 
@@ -223,53 +294,66 @@ const UserContact = () => {
         ) : (
           <div className="replies-container">
             <h3 className="replies-title">Your Messages & Replies</h3>
-            {replies.length === 0 ? (
+            {replies.length === 0 && !isLoading ? (
               <div className="no-replies">
                 No messages or replies yet.
               </div>
             ) : (
-              <div className="replies-list">
-                {replies.map(message => (
-                  <div key={message.id} className="reply-card">
-                    <div className="reply-header">
-                      <span className="reply-timestamp">{message.timestamp}</span>
-                      {message.hasNewReply && (
-                        <span className="new-reply-badge">New Reply</span>
-                      )}
+              <>
+                <div className="replies-list">
+                  {replies.map(message => (
+                    <div key={message.id} className="reply-card">
+                      <div className="reply-header">
+                        <span className="reply-timestamp">{message.timestamp}</span>
+                        {message.hasNewReply && (
+                          <span className="new-reply-badge">New Reply</span>
+                        )}
+                      </div>
+                      <div className="reply-content">
+                        <p className="reply-message">{message.message}</p>
+                      </div>
+                      <div className="replies-thread">
+                        {message.replies && Object.entries(message.replies).map(([replyId, reply]) => (
+                          <div key={replyId} className={`reply-bubble ${reply.from}`}>
+                            <p>{reply.text}</p>
+                            <span className="reply-time">
+                              {new Date(reply.timestamp).toLocaleString()}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="reply-input">
+                        {successMessage && (
+                          <div className="success-message">{successMessage}</div>
+                        )}
+                        <textarea
+                          value={replyText}
+                          onChange={(e) => setReplyText(e.target.value)}
+                          placeholder="Type your reply..."
+                        />
+                        <button
+                          className="send-reply-btn"
+                          onClick={() => handleUserReply(message.id)}
+                          disabled={!replyText.trim()}
+                        >
+                          <RiSendPlaneLine />
+                        </button>
+                      </div>
                     </div>
-                    <div className="reply-content">
-                      <p className="reply-message">{message.message}</p>
-                    </div>
-                    <div className="replies-thread">
-                      {message.replies && Object.entries(message.replies).map(([replyId, reply]) => (
-                        <div key={replyId} className={`reply-bubble ${reply.from}`}>
-                          <p>{reply.text}</p>
-                          <span className="reply-time">
-                            {new Date(reply.timestamp).toLocaleString()}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                    <div className="reply-input">
-                      {successMessage && (
-                        <div className="success-message">{successMessage}</div>
-                      )}
-                      <textarea
-                        value={replyText}
-                        onChange={(e) => setReplyText(e.target.value)}
-                        placeholder="Type your reply..."
-                      />
-                      <button
-                        className="send-reply-btn"
-                        onClick={() => handleUserReply(message.id)}
-                        disabled={!replyText.trim()}
-                      >
-                        <RiSendPlaneLine />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+                {isLoading && (
+                  <div className="loading-indicator">Loading messages...</div>
+                )}
+                {hasMore && !isLoading && (
+                  <button 
+                    className="load-more-btn"
+                    onClick={handleLoadMore}
+                  >
+                    Load More Messages
+                  </button>
+                )}
+              </>
             )}
           </div>
         )}

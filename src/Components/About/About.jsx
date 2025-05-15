@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { RiMenu3Line, RiCloseFill } from 'react-icons/ri';
 import { ref, onValue } from 'firebase/database';
 import { database } from '../../firebase';
@@ -69,12 +69,18 @@ const About = () => {
           {isMenuOpen ? <RiCloseFill size={24} /> : <RiMenu3Line size={24} />}
         </button>
         <nav ref={menuRef} className={`app-nav ${isMenuOpen ? 'nav-open' : ''}`}>
-          <Link to="/about" className="app-nav-link active">About</Link>
-          <Link to="/admission" className="app-nav-link">Admission</Link>
-          <Link to="/checkstatus" className="app-nav-link">Check Status</Link>
-          <Link to="/contact" className={`app-nav-link${location.pathname === '/contact' ? ' active' : ''}`}>Contact</Link>
-          <Link to="/profile" className="app-nav-link">Profile</Link>
-          <button className="app-nav-link logout" onClick={() => navigate('/signin')}>Log out</button>
+          <button 
+            className={`app-nav-link${location.pathname === '/about' ? ' active' : ''}`} 
+            onClick={() => navigate('/about')}
+          >
+            About
+          </button>
+          <button 
+            className="app-nav-link" 
+            onClick={() => navigate('/signin')}
+          >
+            Admission
+          </button>
         </nav>
       </header>
       <main className="main-content about-main">

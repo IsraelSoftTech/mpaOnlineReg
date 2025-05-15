@@ -9,7 +9,7 @@ import logo from '../../assets/logo.png';
 const UserTrack = () => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const { currentUser, admissions, updatePaymentStatus } = useContext(AdmissionContext);
+  const { currentUser, admissions, updatePaymentStatus, logout } = useContext(AdmissionContext);
   const menuRef = React.useRef(null);
   const buttonRef = React.useRef(null);
   const navigate = useNavigate();
@@ -47,7 +47,8 @@ const UserTrack = () => {
   const toggleMenu = () => setIsMenuOpen((open) => !open);
 
   const handleLogout = () => {
-    // Implement logout functionality
+    logout();
+    navigate('/about');
   };
 
   // Get current user's admission data
@@ -137,14 +138,24 @@ const UserTrack = () => {
           >
             Check Status
           </button>
-          <button className="app-nav-link">Contact</button>
+          <button 
+            className={`app-nav-link${location.pathname === '/contact' ? ' active' : ''}`}
+            onClick={() => navigate('/contact')}
+          >
+            Contact
+          </button>
           <button 
             className={`app-nav-link${location.pathname === '/profile' ? ' active' : ''}`}
             onClick={() => navigate('/profile')}
           >
             Profile
           </button>
-          <button className="app-nav-link logout" onClick={handleLogout}>Logout</button>
+          <button 
+            className="app-nav-link logout" 
+            onClick={handleLogout}
+          >
+            Log out
+          </button>
         </nav>
       </header>
       <main className="userad-main">

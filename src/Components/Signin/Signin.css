@@ -1,12 +1,13 @@
 /* Layout Wrappers */
-.signin-page-wrapper {
+.signin-container {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   background: #fff;
 }
 
-.signin-header {
+/* Header and Navigation */
+.app-header {
   width: 100%;
   background: #f5f6f8;
   display: flex;
@@ -16,29 +17,49 @@
   height: 56px;
   font-family: 'Roboto', Arial, sans-serif;
 }
-.signin-logo {
+
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.app-logo {
+  height: 40px;
+  width: auto;
+}
+
+.app-brand {
   color: #f7a600;
   font-weight: 500;
   font-size: 22px;
   letter-spacing: 1px;
 }
-.signin-nav {
+
+.app-nav {
   display: flex;
   gap: 32px;
   align-items: center;
 }
-.signin-nav a {
-  color: #222;
+
+.app-nav-link {
+  color: #fff;
   text-decoration: none;
   font-size: 15px;
   font-weight: 400;
   transition: color 0.2s;
-}
-.signin-nav .signin-nav-active {
-  font-weight: 600;
-  color: #222;
-  border-bottom: 2px solid #f7a600;
   padding-bottom: 2px;
+  border-bottom: 2px solid transparent;
+}
+
+.app-nav-link:hover {
+  color: #fff;
+}
+
+.app-nav-link.active {
+  font-weight: 600;
+  color: #ffff;
+  border-bottom: 2px solid #f7a600;
 }
 
 .signin-main-content {

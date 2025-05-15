@@ -13,7 +13,6 @@ import Payment from './Components/Payment/Payment';
 import UserTrack from './Components/UserTrack/UserTrack';
 import Profile from './Components/Profile/Profile';
 import IDCards from './Components/Admin/IDCards';
-
 import AdminPay from './Components/Admin/AdminPay';
 import UserContact from './Components/Contact/UserContact';
 import AdminContact from './Components/Contact/AdminContact';
@@ -21,29 +20,36 @@ import './Components/common.css';
 
 function App() {
   return (
-    <AdmissionProvider>
-      <Router>
+    <Router>
+      <AdmissionProvider>
         <Routes>
+          {/* Public Routes */}
           <Route path="/about" element={<About />} />
           <Route path="/signin" element={<Signin />} />
           <Route path="/signup" element={<Signup />} />
+          
+          {/* Protected User Routes */}
+          <Route path="/userAdmission" element={<UserAdmission />} />
+          <Route path="/payment" element={<Payment />} />
+          <Route path="/usertrack" element={<UserTrack />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/contact" element={<UserContact />} />
+
+          {/* Protected Admin Routes */}
           <Route path="/admin" element={<Admin />} />
           <Route path="/adminpay" element={<AdminPay />} />
           <Route path="/departments" element={<Department />} />
           <Route path="/classes" element={<CreateClass />} />
-          <Route path="/userAdmission" element={<UserAdmission />} />
           <Route path="/adminAdmission" element={<AdminAdmission />} />
-          <Route path="/payment" element={<Payment />} />
-          <Route path="/usertrack" element={<UserTrack />} />
-          <Route path="/profile" element={<Profile />} />
           <Route path="/idcards" element={<IDCards />} />
-          <Route path="/contact" element={<UserContact />} />
           <Route path="/admincontact" element={<AdminContact />} />
-          <Route path="/" element={<About />} />
+
+          {/* Default Routes */}
+          <Route path="/" element={<Navigate to="/about" replace />} />
           <Route path="*" element={<Navigate to="/about" replace />} />
         </Routes>
-      </Router>
-    </AdmissionProvider>
+      </AdmissionProvider>
+    </Router>
   );
 }
 

@@ -111,6 +111,15 @@ const UserAdmission = () => {
     return () => unsubscribe();
   }, []);
 
+  useEffect(() => {
+    // Check authentication
+    if (!currentUser) {
+      sessionStorage.setItem('redirectAfterLogin', '/userAdmission');
+      navigate('/signin');
+      return;
+    }
+  }, [currentUser, navigate]);
+
   const toggleMenu = () => setIsMenuOpen((open) => !open);
 
   useEffect(() => {
@@ -231,10 +240,6 @@ const UserAdmission = () => {
     navigate('/about');
   };
 
-  const handleCheckStatus = () => {
-    navigate('/usertrack');
-  };
-
   return (
     <div className="userad-wrapper">
       {!hideContent && (
@@ -252,12 +257,42 @@ const UserAdmission = () => {
             {isMenuOpen ? <RiCloseFill size={24} /> : <RiMenu3Line size={24} />}
           </button>
           <nav ref={menuRef} className={`app-nav ${isMenuOpen ? 'nav-open' : ''}`}>
-            <button className={`app-nav-link${location.pathname === '/about' ? ' active' : ''}`} onClick={() => navigate('/about')}>About</button>
-            <button className={`app-nav-link active`}>Admission</button>
-            <button className={`app-nav-link${location.pathname === '/usertrack' ? ' active' : ''}`} onClick={() => navigate('/usertrack')}>Check Status</button>
-            <button className={`app-nav-link${location.pathname === '/contact' ? ' active' : ''}`} onClick={() => navigate('/contact')}>Contact</button>
-            <button className={`app-nav-link${location.pathname === '/profile' ? ' active' : ''}`} onClick={() => navigate('/profile')}>Profile</button>
-            <button className="app-nav-link logout" onClick={handleLogout}>Logout</button>
+            <button 
+              className={`app-nav-link${location.pathname === '/about' ? ' active' : ''}`}
+              onClick={() => navigate('/about')}
+            >
+              About
+            </button>
+            <button 
+              className={`app-nav-link${location.pathname === '/userAdmission' ? ' active' : ''}`}
+              onClick={() => navigate('/userAdmission')}
+            >
+              Admission
+            </button>
+            <button 
+              className={`app-nav-link${location.pathname === '/usertrack' ? ' active' : ''}`}
+              onClick={() => navigate('/usertrack')}
+            >
+              Check Status
+            </button>
+            <button 
+              className={`app-nav-link${location.pathname === '/contact' ? ' active' : ''}`}
+              onClick={() => navigate('/contact')}
+            >
+              Contact
+            </button>
+            <button 
+              className={`app-nav-link${location.pathname === '/profile' ? ' active' : ''}`}
+              onClick={() => navigate('/profile')}
+            >
+              Profile
+            </button>
+            <button 
+              className="app-nav-link logout" 
+              onClick={handleLogout}
+            >
+              Log out
+            </button>
           </nav>
         </header>
       )}

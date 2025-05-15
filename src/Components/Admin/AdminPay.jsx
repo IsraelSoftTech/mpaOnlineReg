@@ -107,7 +107,7 @@ const AdminPay = () => {
           >
             Contact
           </button>
-          <button className="app-nav-link logout" onClick={() => navigate('/signin')}>Log out</button>
+          <button className="app-nav-link logout" onClick={() => navigate('/about')}>Log out</button>
         </nav>
       </header>
       <main className="admin-main">

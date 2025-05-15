@@ -25,10 +25,6 @@ const CreateClass = () => {
 
   const toggleMenu = () => setIsMenuOpen((open) => !open);
 
-  const handleLogout = () => {
-    navigate('/signin');
-  };
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -145,7 +141,7 @@ const CreateClass = () => {
           >
             Contact
           </button>
-          <button className="app-nav-link logout" onClick={handleLogout}>Log out</button>
+          <button className="app-nav-link logout" onClick={() => navigate('/about')}>Log out</button>
         </nav>
       </header>
       <main className="admin-main">
