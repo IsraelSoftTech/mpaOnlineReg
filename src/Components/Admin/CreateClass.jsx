@@ -1,29 +1,44 @@
-import React, { useState, useContext, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { RiMenu3Line, RiCloseFill } from 'react-icons/ri';
-import { AdmissionContext } from '../AdmissionContext';
 import './CreateClass.css';
+import { AdmissionContext } from '../AdmissionContext';
 import logo from '../../assets/logo.png';
 
 const CreateClass = () => {
-  const { addSchoolClass, schoolClasses } = useContext(AdmissionContext);
-  const [showModal, setShowModal] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
-  const [error, setError] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const menuRef = useRef(null);
-  const buttonRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
+  const { addSchoolClass } = React.useContext(AdmissionContext);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [formData, setFormData] = useState({
     className: '',
-    admissionFee: '',
-    tuitionFee: '',
-    installments: ''
+    description: '',
+    capacity: '',
+    teacher: '',
+    schedule: '',
+    requirements: ''
   });
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const menuRef = useRef(null);
+  const buttonRef = useRef(null);
 
-  const toggleMenu = () => setIsMenuOpen((open) => !open);
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        isMenuOpen &&
+        menuRef.current &&
+        !menuRef.current.contains(event.target) &&
+        buttonRef.current &&
+        !buttonRef.current.contains(event.target)
+      ) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isMenuOpen]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -31,63 +46,50 @@ const CreateClass = () => {
       ...prev,
       [name]: value
     }));
+    setError('');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    setIsSubmitting(true);
+    setSuccess('');
+
+    // Validate form
+    if (!formData.className.trim()) {
+      setError('Class name is required');
+      return;
+    }
 
     try {
-      // Validate inputs
-      if (!formData.className.trim()) {
-        throw new Error('Class name is required');
-      }
-      if (isNaN(formData.admissionFee) || formData.admissionFee <= 0) {
-        throw new Error('Please enter a valid admission fee');
-      }
-      if (isNaN(formData.tuitionFee) || formData.tuitionFee <= 0) {
-        throw new Error('Please enter a valid tuition fee');
-      }
-      if (isNaN(formData.installments) || formData.installments < 1) {
-        throw new Error('Please enter a valid number of installments');
-      }
-
       const classData = {
         ...formData,
-        admissionFee: Number(formData.admissionFee),
-        tuitionFee: Number(formData.tuitionFee),
-        installments: Number(formData.installments),
-        id: Date.now().toString(),
         createdAt: new Date().toISOString()
       };
 
-      await addSchoolClass(classData);
-      setSuccessMessage('Class created successfully!');
-      setFormData({
-        className: '',
-        admissionFee: '',
-        tuitionFee: '',
-        installments: ''
-      });
-      setShowModal(false);
-      
-      // Clear success message after 3 seconds
-      setTimeout(() => {
-        setSuccessMessage('');
-      }, 3000);
+      const success = await addSchoolClass(classData);
+      if (success) {
+        setSuccess('Class created successfully!');
+        setFormData({
+          className: '',
+          description: '',
+          capacity: '',
+          teacher: '',
+          schedule: '',
+          requirements: ''
+        });
+      }
     } catch (err) {
-      setError(err.message || 'Failed to create class. Please try again.');
-    } finally {
-      setIsSubmitting(false);
+      setError('Failed to create class. Please try again.');
     }
   };
 
+  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+
   return (
-    <div className="admin-wrapper">
+    <div className="create-class-wrapper">
       <header className="app-header">
         <div className="logo-section">
-          <img src={logo} alt="" className="app-logo" />
+          <img src={logo} alt="logo" className="app-logo" />
           <span className="app-brand">MPASAT</span>
         </div>
         <button
@@ -141,127 +143,100 @@ const CreateClass = () => {
           >
             Contact
           </button>
-          <button className="app-nav-link logout" onClick={() => navigate('/about')}>Log out</button>
+          <button className="app-nav-link logout" onClick={() => navigate('/signin')}>Log out</button>
         </nav>
       </header>
-      <main className="admin-main">
+
+      <main className="create-class-main">
         <div className="create-class-container">
-          <div className="create-class-header">
-            <h2>School Classes</h2>
-            <button 
-              className="create-class-btn"
-              onClick={() => setShowModal(true)}
-            >
-              Create Class
-            </button>
-          </div>
+          <h2 className="create-class-title">Create New Class</h2>
+          {error && <div className="error-message">{error}</div>}
+          {success && <div className="success-message">{success}</div>}
+          
+          <form className="create-class-form" onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label htmlFor="className">Class Name</label>
+              <input
+                type="text"
+                id="className"
+                name="className"
+                value={formData.className}
+                onChange={handleInputChange}
+                placeholder="Enter class name"
+                required
+              />
+            </div>
 
-          {successMessage && (
-            <div className="success-message">{successMessage}</div>
-          )}
+            <div className="form-group">
+              <label htmlFor="description">Description</label>
+              <textarea
+                id="description"
+                name="description"
+                value={formData.description}
+                onChange={handleInputChange}
+                placeholder="Enter class description"
+                rows="4"
+              />
+            </div>
 
-          {/* Classes Table */}
-          <div className="classes-table-wrapper">
-            <table className="classes-table">
-              <thead>
-                <tr>
-                  <th>Class Name</th>
-                  <th>Admission Fee</th>
-                  <th>Tuition Fee</th>
-                  <th>Installments</th>
-                  <th>Created Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                {schoolClasses?.map(classItem => (
-                  <tr key={classItem.id}>
-                    <td>{classItem.className}</td>
-                    <td>{classItem.admissionFee.toLocaleString()} FCFA</td>
-                    <td>{classItem.tuitionFee.toLocaleString()} FCFA</td>
-                    <td>{classItem.installments}</td>
-                    <td>{new Date(classItem.createdAt).toLocaleDateString()}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="capacity">Capacity</label>
+                <input
+                  type="number"
+                  id="capacity"
+                  name="capacity"
+                  value={formData.capacity}
+                  onChange={handleInputChange}
+                  placeholder="Maximum students"
+                  min="1"
+                />
+              </div>
 
-          {/* Create Class Modal */}
-          {showModal && (
-            <div className="modal-overlay">
-              <div className="modal-content">
-                <h3>Create New Class</h3>
-                {error && <div className="error-message">{error}</div>}
-                <form onSubmit={handleSubmit}>
-                  <div className="form-group">
-                    <label>Class Name:</label>
-                    <input
-                      type="text"
-                      name="className"
-                      value={formData.className}
-                      onChange={handleInputChange}
-                      placeholder="e.g., Form 1A"
-                      required
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label>Admission Fee (FCFA):</label>
-                    <input
-                      type="number"
-                      name="admissionFee"
-                      value={formData.admissionFee}
-                      onChange={handleInputChange}
-                      placeholder="e.g., 25000"
-                      required
-                      min="0"
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label>Tuition Fee (FCFA):</label>
-                    <input
-                      type="number"
-                      name="tuitionFee"
-                      value={formData.tuitionFee}
-                      onChange={handleInputChange}
-                      placeholder="e.g., 150000"
-                      required
-                      min="0"
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label>Number of Installments:</label>
-                    <input
-                      type="number"
-                      name="installments"
-                      value={formData.installments}
-                      onChange={handleInputChange}
-                      placeholder="e.g., 3"
-                      required
-                      min="1"
-                    />
-                  </div>
-                  <div className="modal-actions">
-                    <button 
-                      type="button" 
-                      onClick={() => setShowModal(false)}
-                      className="cancel-btn"
-                    >
-                      Cancel
-                    </button>
-                    <button 
-                      type="submit" 
-                      className="create-btn"
-                      disabled={isSubmitting}
-                    >
-                      {isSubmitting ? 'Creating...' : 'Create Class'}
-                    </button>
-                  </div>
-                </form>
+              <div className="form-group">
+                <label htmlFor="teacher">Teacher</label>
+                <input
+                  type="text"
+                  id="teacher"
+                  name="teacher"
+                  value={formData.teacher}
+                  onChange={handleInputChange}
+                  placeholder="Assigned teacher"
+                />
               </div>
             </div>
-          )}
+
+            <div className="form-group">
+              <label htmlFor="schedule">Schedule</label>
+              <input
+                type="text"
+                id="schedule"
+                name="schedule"
+                value={formData.schedule}
+                onChange={handleInputChange}
+                placeholder="Class schedule"
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="requirements">Requirements</label>
+              <textarea
+                id="requirements"
+                name="requirements"
+                value={formData.requirements}
+                onChange={handleInputChange}
+                placeholder="Class requirements"
+                rows="4"
+              />
+            </div>
+
+            <button type="submit" className="create-class-btn">
+              Create Class
+            </button>
+          </form>
         </div>
       </main>
+
       <footer className="app-footer">
         <div className="footer-logo">MPASAT ADMISSION PORTAL</div>
         <div className="footer-center">MPASAT, All Rights Reserved - 2025</div>

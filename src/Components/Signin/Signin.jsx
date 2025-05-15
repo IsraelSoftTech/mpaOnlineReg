@@ -1,5 +1,6 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useRef, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { RiMenu3Line, RiCloseFill } from 'react-icons/ri';
 import './Signin.css';
 import { AdmissionContext } from '../AdmissionContext';
 import logo from '../../assets/logo.png';
@@ -11,6 +12,26 @@ const Signin = () => {
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+  const buttonRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        isMenuOpen &&
+        menuRef.current &&
+        !menuRef.current.contains(event.target) &&
+        buttonRef.current &&
+        !buttonRef.current.contains(event.target)
+      ) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isMenuOpen]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -69,7 +90,15 @@ const Signin = () => {
           <img src={logo} alt="" className="app-logo" />
           <span className="app-brand">MPASAT</span>
         </div>
-        <nav className="app-nav">
+        <button
+          ref={buttonRef}
+          className="menu-toggle"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          aria-label="Toggle menu"
+        >
+          {isMenuOpen ? <RiCloseFill size={24} /> : <RiMenu3Line size={24} />}
+        </button>
+        <nav ref={menuRef} className={`app-nav ${isMenuOpen ? 'nav-open' : ''}`}>
           <Link to="/about" className={`app-nav-link${location.pathname === '/about' ? ' active' : ''}`}>About Us</Link>
           <Link to="/signup" className={`app-nav-link${location.pathname === '/signup' ? ' active' : ''}`}>Sign Up</Link>
           <Link to="/signin" className={`app-nav-link${location.pathname === '/signin' ? ' active' : ''}`}>Sign In</Link>

@@ -9,13 +9,14 @@
 /* Header and Navigation */
 .app-header {
   width: 100%;
-  background: #f5f6f8;
+  background: #18316d;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 40px;
   height: 56px;
   font-family: 'Roboto', Arial, sans-serif;
+  position: relative;
 }
 
 .logo-section {
@@ -36,6 +37,16 @@
   letter-spacing: 1px;
 }
 
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  padding: 8px;
+  z-index: 1000;
+}
+
 .app-nav {
   display: flex;
   gap: 32px;
@@ -53,13 +64,52 @@
 }
 
 .app-nav-link:hover {
-  color: #fff;
+  color: #f7a600;
 }
 
 .app-nav-link.active {
   font-weight: 600;
-  color: #ffff;
+  color: #fff;
   border-bottom: 2px solid #f7a600;
+}
+
+@media screen and (max-width: 768px) {
+  .app-header {
+    padding: 0 20px;
+  }
+
+  .menu-toggle {
+    display: block;
+  }
+
+  .app-nav {
+    position: fixed;
+    top: 56px;
+    right: -100%;
+    width: 250px;
+    height: calc(100vh - 56px);
+    background: #18316d;
+    flex-direction: column;
+    padding: 20px;
+    gap: 20px;
+    transition: right 0.3s ease;
+    z-index: 999;
+  }
+
+  .app-nav.nav-open {
+    right: 0;
+  }
+
+  .app-nav-link {
+    width: 100%;
+    padding: 10px 0;
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .app-nav-link:last-child {
+    border-bottom: none;
+  }
 }
 
 .signin-main-content {

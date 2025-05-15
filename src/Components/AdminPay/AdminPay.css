@@ -1,0 +1,216 @@
+.admin-pay-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f5f5f5;
+}
+
+.admin-pay-main {
+  flex: 1;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.admin-pay-container {
+  background: white;
+  border-radius: 10px;
+  padding: 2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.admin-pay-title {
+  color: #18316d;
+  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+  text-align: center;
+}
+
+.admin-controls {
+  margin-bottom: 2rem;
+}
+
+.search-filter-group {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.search-input,
+.status-filter {
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 200px;
+}
+
+.status-filter {
+  width: auto;
+  min-width: 150px;
+}
+
+.payments-table-wrapper {
+  overflow-x: auto;
+  margin: 0 -1rem;
+  padding: 0 1rem;
+}
+
+.payments-table {
+  width: 100%;
+  border-collapse: collapse;
+  white-space: nowrap;
+}
+
+.payments-table th,
+.payments-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.payments-table th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: #18316d;
+}
+
+.payments-table tr:hover {
+  background-color: #f8f9fa;
+}
+
+.status-badge {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.status-pending {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.status-verified {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.status-rejected {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.verify-btn,
+.reject-btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: opacity 0.3s;
+}
+
+.verify-btn:disabled,
+.reject-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.verify-btn {
+  background-color: #28a745;
+  color: white;
+}
+
+.reject-btn {
+  background-color: #dc3545;
+  color: white;
+}
+
+/* Responsive Styles */
+@media screen and (max-width: 1024px) {
+  .admin-pay-main {
+    padding: 1.5rem;
+  }
+
+  .admin-pay-container {
+    padding: 1.5rem;
+  }
+
+  .search-filter-group {
+    flex-direction: column;
+  }
+
+  .search-input,
+  .status-filter {
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .admin-pay-main {
+    padding: 1rem;
+  }
+
+  .admin-pay-container {
+    padding: 1rem;
+  }
+
+  .admin-pay-title {
+    font-size: 1.5rem;
+  }
+
+  .payments-table th,
+  .payments-table td {
+    padding: 0.75rem;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .verify-btn,
+  .reject-btn {
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .payments-table {
+    font-size: 0.875rem;
+  }
+
+  .status-badge {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+  }
+}
+
+/* Horizontal Scroll Indicator */
+.payments-table-wrapper::-webkit-scrollbar {
+  height: 6px;
+}
+
+.payments-table-wrapper::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.payments-table-wrapper::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+}
+
+.payments-table-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #555;
+} 
