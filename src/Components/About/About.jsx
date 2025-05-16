@@ -1,37 +1,44 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { RiMenu3Line, RiCloseFill } from 'react-icons/ri';
-import { ref, onValue } from 'firebase/database';
+import { ref, onValue, off } from 'firebase/database';
 import { database } from '../../firebase';
 import './About.css';
 import logo from '../../assets/logo.png'
+
 const About = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [departments, setDepartments] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
   const menuRef = useRef(null);
   const buttonRef = useRef(null);
 
-  // Fetch departments from Firebase
+  // Optimized real-time departments fetch
   useEffect(() => {
     const departmentsRef = ref(database, 'departments');
-    const unsubscribe = onValue(departmentsRef, (snapshot) => {
+    
+    const fetchDepartments = (snapshot) => {
       const data = snapshot.val();
       if (data) {
-        const departmentsList = Object.entries(data).map(([id, dept]) => ({
-          id,
-          ...dept
-        }));
+        const departmentsList = Object.entries(data)
+          .map(([id, dept]) => ({
+            id,
+            ...dept
+          }))
+          .sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0));
         setDepartments(departmentsList);
       } else {
         setDepartments([]);
       }
-      setIsLoading(false);
+    };
+
+    // Set up real-time listener with immediate callback
+    onValue(departmentsRef, fetchDepartments, {
+      onlyOnce: false
     });
 
-    return () => unsubscribe();
+    return () => off(departmentsRef);
   }, []);
 
   const toggleMenu = () => {
@@ -88,26 +95,19 @@ const About = () => {
           <h1 className="about-welcome">Welcome to our unique institution.</h1>
           <div className="about-sub">Know more about us.</div>
         </div>
-        {isLoading ? (
-          <div className="loading-container">
-            <div className="loading-spinner"></div>
-            <p>Loading departments...</p>
-          </div>
-        ) : (
-          <div className="vocational-section">
-            {departments.map((dept) => (
-              <div className="vocational-card" key={dept.id}>
-                <div className="voc-title">{dept.title}</div>
-                <div className="voc-desc">{dept.desc}</div>
-                <div className="voc-images-grid-2x2">
-                  {dept.images.map((img, i) => (
-                    <img src={img} alt={dept.title + ' ' + (i+1)} key={i} className="voc-img-2x2" />
-                  ))}
-                </div>
+        <div className="vocational-section">
+          {departments.map((dept) => (
+            <div className="vocational-card" key={dept.id}>
+              <div className="voc-title">{dept.title}</div>
+              <div className="voc-desc">{dept.desc}</div>
+              <div className="voc-images-grid-2x2">
+                {dept.images.map((img, i) => (
+                  <img src={img} alt={dept.title + ' ' + (i+1)} key={i} className="voc-img-2x2" />
+                ))}
               </div>
-            ))}
-          </div>
-        )}
+            </div>
+          ))}
+        </div>
       </main>
       {/* Footer */}
       <footer className="footer-about">

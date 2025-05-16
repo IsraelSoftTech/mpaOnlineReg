@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react';
 import { AdmissionContext } from '../AdmissionContext';
 import './PrintClassList.css';
 
-const PrintClassList = ({ isOpen, onClose, onPrint, admissions }) => {
+const PrintClassList = ({ onClose, admissions }) => {
   const { schoolClasses } = useContext(AdmissionContext);
   const [selectedClass, setSelectedClass] = useState('');
   const [academicYear, setAcademicYear] = useState('2023/2024');
@@ -21,32 +21,139 @@ const PrintClassList = ({ isOpen, onClose, onPrint, admissions }) => {
       return;
     }
 
-    // Filter and sort students
+    // Filter admitted students for the selected class
     const students = admissions
-      .filter(student => {
-        // Check if the student's form matches the selected class and is approved
-        return student.form && 
-               student.form === selectedClass && 
-               student.status && 
-               student.status.toLowerCase() === 'confirmed';
-      })
-      .sort((a, b) => {
-        // Sort by name, handling null/undefined cases
-        const nameA = (a.name || a.fullName || '').toLowerCase();
-        const nameB = (b.name || b.fullName || '').toLowerCase();
-        return nameA.localeCompare(nameB);
-      });
+      .filter(student => 
+        student.form === selectedClass && 
+        student.status === 'Admitted'
+      )
+      .sort((a, b) => 
+        (a.fullName || '').localeCompare(b.fullName || '')
+      );
 
-    // Show message if no students found
     if (students.length === 0) {
-      alert('No confirmed students found for the selected class');
+      alert('No admitted students found for the selected class');
       return;
     }
 
-    onPrint(students, selectedClass, academicYear);
-  };
+    // Create printable content
+    const printContent = document.createElement('div');
+    printContent.innerHTML = `
+      <div class="print-content">
+        <div class="print-header">
+          <h1>MPASAT</h1>
+          <h2>MODERN PRIVATE SCHOOL OF ARTS AND TECHNOLOGY</h2>
+          <h3>P.O Box 123, Bamenda - Cameroon</h3>
+          <h3>Tel: +237-123-456-789</h3>
+          <h2 class="list-title">Class List For ${selectedClass}</h2>
+          <h3>Academic Year: ${academicYear}</h3>
+        </div>
+        <table class="print-table">
+          <thead>
+            <tr>
+              <th>S/N</th>
+              <th>Full Name</th>
+              <th>Sex</th>
+              <th>Date of Birth</th>
+              <th>Place of Birth</th>
+              <th>Guardian's Contact</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${students.map((student, index) => `
+              <tr>
+                <td>${index + 1}</td>
+                <td>${student.name || student.fullName || 'N/A'}</td>
+                <td>${student.sex || 'N/A'}</td>
+                <td>${student.dob || 'N/A'}</td>
+                <td>${student.pob || 'N/A'}</td>
+                <td>${student.guardian || 'N/A'}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+        <div class="print-footer">
+          <p>Total Students: ${students.length}</p>
+          <p>Printed on: ${new Date().toLocaleDateString()}</p>
+          <div class="signatures">
+            <div class="signature-line">
+              <p>_______________________</p>
+              <p>Principal's Signature</p>
+            </div>
+            <div class="signature-line">
+              <p>_______________________</p>
+              <p>Class Teacher's Signature</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
 
-  if (!isOpen) return null;
+    // Create a new window for printing
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>Class List - ${selectedClass}</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 20px; }
+            .print-content { max-width: 1000px; margin: 0 auto; }
+            .print-header { text-align: center; margin-bottom: 30px; }
+            .print-header h1 { color: #18316d; margin: 0; font-size: 24px; }
+            .print-header h2 { margin: 10px 0; font-size: 20px; }
+            .print-header h3 { color: #666; margin: 5px 0; font-size: 16px; }
+            .list-title { color: #18316d; text-transform: uppercase; margin: 20px 0; }
+            .print-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+            .print-table th, .print-table td { 
+              border: 1px solid #000; 
+              padding: 8px; 
+              text-align: left; 
+            }
+            .print-table th { 
+              background-color: #f8fafc; 
+              color: #18316d;
+              font-weight: bold;
+            }
+            .print-table tr:nth-child(even) { background-color: #f9fafb; }
+            .print-footer { 
+              margin-top: 30px;
+              padding-top: 20px;
+              border-top: 1px solid #ddd;
+              font-size: 14px;
+              color: #666;
+            }
+            .signatures {
+              display: flex;
+              justify-content: space-between;
+              margin-top: 50px;
+              padding: 0 50px;
+            }
+            .signature-line {
+              text-align: center;
+            }
+            .signature-line p {
+              margin: 5px 0;
+            }
+            @media print {
+              body { margin: 0; }
+              .print-table th { background-color: #f8fafc !important; }
+              .print-table, .print-table th, .print-table td {
+                border-color: #000 !important;
+              }
+            }
+          </style>
+        </head>
+        <body>
+          ${printContent.innerHTML}
+        </body>
+      </html>
+    `);
+    
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+    printWindow.close();
+  };
 
   return (
     <div className="print-dialog-overlay">

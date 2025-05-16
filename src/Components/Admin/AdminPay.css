@@ -1,1 +1,131 @@
- 
+.adminpay-wrapper {
+  min-height: 100vh;
+  background: #f3f8f7;
+  display: flex;
+  flex-direction: column;
+}
+
+.adminpay-main {
+  flex: 1;
+  padding: 76px 20px 20px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.admin-pay-container {
+  padding: 24px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.admin-pay-container h2 {
+  color: #18316d;
+  margin-bottom: 24px;
+}
+
+.admin-pay-table-container {
+  overflow-x: auto;
+}
+
+.admin-pay-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-pay-table th,
+.admin-pay-table td {
+  padding: 16px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.admin-pay-table th {
+  background: #f8fafc;
+  color: #18316d;
+  font-weight: 600;
+}
+
+.admin-pay-table tr:hover {
+  background-color: #f8fafc;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.status-badge.status-pending {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.status-badge.status-confirmed {
+  background-color: #d1e7dd;
+  color: #0f5132;
+}
+
+.status-badge.status-fake {
+  background-color: #f8d7da;
+  color: #842029;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.validate-btn,
+.fake-btn {
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.validate-btn {
+  background-color: #18316d;
+  border: none;
+  color: white;
+}
+
+.validate-btn:hover {
+  background-color: #122654;
+}
+
+.fake-btn {
+  background-color: #dc2626;
+  border: none;
+  color: white;
+}
+
+.fake-btn:hover {
+  background-color: #b91c1c;
+}
+
+.validate-btn:disabled,
+.fake-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .adminpay-main {
+    padding: 76px 12px 12px;
+  }
+
+  .admin-pay-container {
+    padding: 16px;
+  }
+
+  .admin-pay-table th,
+  .admin-pay-table td {
+    padding: 12px;
+    font-size: 14px;
+  }
+} 

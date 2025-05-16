@@ -1,7 +1,10 @@
-import React, { useState, useContext, useRef } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { RiMenu3Line, RiCloseFill } from 'react-icons/ri';
+import { database } from '../../firebase';
+import { ref, onValue, off } from 'firebase/database';
 import { AdmissionContext } from '../AdmissionContext';
+import AdminNav from './AdminNav';
 import './AdminPay.css';
 import logo from '../../assets/logo.png';
 
@@ -50,67 +53,9 @@ const AdminPay = () => {
   };
 
   return (
-    <div className="admin-wrapper">
-      <header className="app-header">
-        <div className="logo-section">
-          <img src={logo} alt="" className="app-logo" />
-          <span className="app-brand">MPASAT</span>
-        </div>
-        <button
-          ref={buttonRef}
-          className="menu-toggle"
-          onClick={toggleMenu}
-          aria-label="Toggle menu"
-        >
-          {isMenuOpen ? <RiCloseFill size={24} /> : <RiMenu3Line size={24} />}
-        </button>
-        <nav ref={menuRef} className={`app-nav ${isMenuOpen ? 'nav-open' : ''}`}>
-          <button 
-            className={`app-nav-link${location.pathname === '/admin' ? ' active' : ''}`}
-            onClick={() => navigate('/admin')}
-          >
-            Overview
-          </button>
-          <button 
-            className={`app-nav-link${location.pathname === '/adminpay' ? ' active' : ''}`}
-            onClick={() => navigate('/adminpay')}
-          >
-            Payments
-          </button>
-          <button 
-            className={`app-nav-link${location.pathname === '/departments' ? ' active' : ''}`}
-            onClick={() => navigate('/departments')}
-          >
-            Create Departments
-          </button>
-          <button 
-            className={`app-nav-link${location.pathname === '/classes' ? ' active' : ''}`}
-            onClick={() => navigate('/classes')}
-          >
-            Classes
-          </button>
-          <button 
-            className={`app-nav-link${location.pathname === '/idcards' ? ' active' : ''}`}
-            onClick={() => navigate('/idcards')}
-          >
-            ID Cards
-          </button>
-          <button 
-            className={`app-nav-link${location.pathname === '/adminAdmission' ? ' active' : ''}`}
-            onClick={() => navigate('/adminAdmission')}
-          >
-            Admission
-          </button>
-          <button 
-            className={`app-nav-link${location.pathname === '/admincontact' ? ' active' : ''}`}
-            onClick={() => navigate('/admincontact')}
-          >
-            Contact
-          </button>
-          <button className="app-nav-link logout" onClick={() => navigate('/about')}>Log out</button>
-        </nav>
-      </header>
-      <main className="admin-main">
+    <div className="adminpay-wrapper">
+      <AdminNav />
+      <main className="adminpay-main">
         <div className="admin-pay-container">
           <h2>Payment Transactions</h2>
           <div className="admin-pay-table-container">

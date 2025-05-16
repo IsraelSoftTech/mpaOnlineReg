@@ -41,77 +41,38 @@ const UserContact = () => {
     const loadMessages = async () => {
       try {
         setIsLoading(true);
-
-        // Check cache first
-        const cacheKey = `messages_${currentUser}_${page}`;
-        const cachedData = sessionStorage.getItem(cacheKey);
-        const cachedTimestamp = sessionStorage.getItem(cacheKey + '_timestamp');
-
-        if (cachedData && cachedTimestamp) {
-          const timestamp = parseInt(cachedTimestamp);
-          if (Date.now() - timestamp < CACHE_DURATION) {
-            const { messages, hasMore: cachedHasMore } = JSON.parse(cachedData);
-            setReplies(prev => page === 1 ? messages : [...prev, ...messages]);
-            setHasMore(cachedHasMore);
-            setIsLoading(false);
-            return;
-          }
-        }
-
-        // If no cache or expired, fetch from database
         const messagesRef = ref(database, 'messages');
-        const messagesQuery = query(
-          messagesRef,
-          orderByChild('timestamp'),
-          limitToFirst(MESSAGES_PER_PAGE + 1)
-        );
+        
+        // Set up real-time listener for messages
+        const unsubscribe = onValue(messagesRef, (snapshot) => {
+          const data = snapshot.val() || {};
+          const userMessages = Object.entries(data)
+            .filter(([_, msg]) => msg.userId === currentUser)
+            .map(([id, msg]) => ({
+              id,
+              ...msg,
+              timestamp: new Date(msg.timestamp).toLocaleString(),
+              replies: msg.replies ? Object.entries(msg.replies).map(([replyId, reply]) => ({
+                id: replyId,
+                ...reply,
+                timestamp: new Date(reply.timestamp).toLocaleString()
+              })) : []
+            }))
+            .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
-        const snapshot = await get(messagesQuery);
-        const data = snapshot.val() || {};
-
-        let messages = Object.entries(data)
-          .filter(([_, msg]) => msg.userId === currentUser)
-          .map(([id, msg]) => ({
-            id,
-            ...msg,
-            timestamp: new Date(msg.timestamp).toLocaleString()
-          }))
-          .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-
-        // Check if there are more messages
-        const hasMoreMessages = messages.length > MESSAGES_PER_PAGE;
-        if (hasMoreMessages) {
-          messages = messages.slice(0, MESSAGES_PER_PAGE);
-        }
-
-        // Cache the results
-        const cacheData = {
-          messages,
-          hasMore: hasMoreMessages
-        };
-        sessionStorage.setItem(cacheKey, JSON.stringify(cacheData));
-        sessionStorage.setItem(cacheKey + '_timestamp', Date.now().toString());
-
-        setReplies(prev => page === 1 ? messages : [...prev, ...messages]);
-        setHasMore(hasMoreMessages);
-
-        // Update read status for new messages
-        messages.forEach(message => {
-          if (message.hasNewReply) {
-            const messageRef = ref(database, `messages/${message.id}`);
-            update(messageRef, { hasNewReply: false });
-          }
+          setReplies(userMessages);
+          setIsLoading(false);
         });
+
+        return () => unsubscribe();
       } catch (error) {
         console.error('Error loading messages:', error);
-        setError('Failed to load messages. Please try again.');
-      } finally {
         setIsLoading(false);
       }
     };
 
     loadMessages();
-  }, [currentUser, page, navigate]);
+  }, [currentUser, navigate]);
 
   const handleLoadMore = () => {
     if (!isLoading && hasMore) {
@@ -294,66 +255,50 @@ const UserContact = () => {
         ) : (
           <div className="replies-container">
             <h3 className="replies-title">Your Messages & Replies</h3>
-            {replies.length === 0 && !isLoading ? (
+            {isLoading ? (
+              <div className="loading-indicator">Loading messages...</div>
+            ) : replies.length === 0 ? (
               <div className="no-replies">
                 No messages or replies yet.
               </div>
             ) : (
-              <>
-                <div className="replies-list">
-                  {replies.map(message => (
-                    <div key={message.id} className="reply-card">
-                      <div className="reply-header">
-                        <span className="reply-timestamp">{message.timestamp}</span>
-                        {message.hasNewReply && (
-                          <span className="new-reply-badge">New Reply</span>
-                        )}
-                      </div>
-                      <div className="reply-content">
-                        <p className="reply-message">{message.message}</p>
-                      </div>
-                      <div className="replies-thread">
-                        {message.replies && Object.entries(message.replies).map(([replyId, reply]) => (
-                          <div key={replyId} className={`reply-bubble ${reply.from}`}>
-                            <p>{reply.text}</p>
-                            <span className="reply-time">
-                              {new Date(reply.timestamp).toLocaleString()}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                      <div className="reply-input">
-                        {successMessage && (
-                          <div className="success-message">{successMessage}</div>
-                        )}
-                        <textarea
-                          value={replyText}
-                          onChange={(e) => setReplyText(e.target.value)}
-                          placeholder="Type your reply..."
-                        />
-                        <button
-                          className="send-reply-btn"
-                          onClick={() => handleUserReply(message.id)}
-                          disabled={!replyText.trim()}
-                        >
-                          <RiSendPlaneLine />
-                        </button>
-                      </div>
+              <div className="replies-list">
+                {replies.map(message => (
+                  <div key={message.id} className="reply-card">
+                    <div className="reply-header">
+                      <span className="reply-timestamp">{message.timestamp}</span>
+                      {message.hasNewReply && (
+                        <span className="new-reply-badge">New Reply</span>
+                      )}
                     </div>
-                  ))}
-                </div>
-                {isLoading && (
-                  <div className="loading-indicator">Loading messages...</div>
-                )}
-                {hasMore && !isLoading && (
-                  <button 
-                    className="load-more-btn"
-                    onClick={handleLoadMore}
-                  >
-                    Load More Messages
-                  </button>
-                )}
-              </>
+                    <div className="reply-content">
+                      <p className="reply-message">{message.message}</p>
+                    </div>
+                    <div className="replies-thread">
+                      {message.replies && message.replies.map(reply => (
+                        <div key={reply.id} className={`reply-bubble ${reply.from}`}>
+                          <p>{reply.text}</p>
+                          <span className="reply-time">{reply.timestamp}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="reply-input">
+                      <textarea
+                        value={replyText}
+                        onChange={(e) => setReplyText(e.target.value)}
+                        placeholder="Type your reply..."
+                      />
+                      <button
+                        className="send-reply-btn"
+                        onClick={() => handleUserReply(message.id)}
+                        disabled={!replyText.trim()}
+                      >
+                        <RiSendPlaneLine />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
             )}
           </div>
         )}

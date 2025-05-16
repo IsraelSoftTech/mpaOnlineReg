@@ -8,15 +8,14 @@ import logo from '../../assets/logo.png';
 const CreateClass = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { addSchoolClass } = React.useContext(AdmissionContext);
+  const { addSchoolClass, schoolClasses } = React.useContext(AdmissionContext);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
     className: '',
-    description: '',
-    capacity: '',
-    teacher: '',
-    schedule: '',
-    requirements: ''
+    admissionFee: '',
+    tuitionFee: '',
+    installments: ''
   });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -49,20 +48,39 @@ const CreateClass = () => {
     setError('');
   };
 
+  const validateForm = () => {
+    if (!formData.className.trim()) {
+      setError('Class name is required');
+      return false;
+    }
+    if (!formData.admissionFee || isNaN(formData.admissionFee) || Number(formData.admissionFee) <= 0) {
+      setError('Valid admission fee is required');
+      return false;
+    }
+    if (!formData.tuitionFee || isNaN(formData.tuitionFee) || Number(formData.tuitionFee) <= 0) {
+      setError('Valid tuition fee is required');
+      return false;
+    }
+    if (!formData.installments || isNaN(formData.installments) || Number(formData.installments) <= 0) {
+      setError('Valid number of installments is required');
+      return false;
+    }
+    return true;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setSuccess('');
 
-    // Validate form
-    if (!formData.className.trim()) {
-      setError('Class name is required');
-      return;
-    }
+    if (!validateForm()) return;
 
     try {
       const classData = {
         ...formData,
+        admissionFee: Number(formData.admissionFee),
+        tuitionFee: Number(formData.tuitionFee),
+        installments: Number(formData.installments),
         createdAt: new Date().toISOString()
       };
 
@@ -71,12 +89,11 @@ const CreateClass = () => {
         setSuccess('Class created successfully!');
         setFormData({
           className: '',
-          description: '',
-          capacity: '',
-          teacher: '',
-          schedule: '',
-          requirements: ''
+          admissionFee: '',
+          tuitionFee: '',
+          installments: ''
         });
+        setShowForm(false);
       }
     } catch (err) {
       setError('Failed to create class. Please try again.');
@@ -149,91 +166,113 @@ const CreateClass = () => {
 
       <main className="create-class-main">
         <div className="create-class-container">
-          <h2 className="create-class-title">Create New Class</h2>
+          <div className="create-class-header">
+            <h2 className="create-class-title">School Classes</h2>
+            {!showForm && (
+              <button 
+                className="create-class-btn"
+                onClick={() => setShowForm(true)}
+              >
+                Create Class
+              </button>
+            )}
+          </div>
+
           {error && <div className="error-message">{error}</div>}
           {success && <div className="success-message">{success}</div>}
           
-          <form className="create-class-form" onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label htmlFor="className">Class Name</label>
-              <input
-                type="text"
-                id="className"
-                name="className"
-                value={formData.className}
-                onChange={handleInputChange}
-                placeholder="Enter class name"
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="description">Description</label>
-              <textarea
-                id="description"
-                name="description"
-                value={formData.description}
-                onChange={handleInputChange}
-                placeholder="Enter class description"
-                rows="4"
-              />
-            </div>
-
-            <div className="form-row">
+          {showForm && (
+            <form className="create-class-form" onSubmit={handleSubmit}>
               <div className="form-group">
-                <label htmlFor="capacity">Capacity</label>
-                <input
-                  type="number"
-                  id="capacity"
-                  name="capacity"
-                  value={formData.capacity}
-                  onChange={handleInputChange}
-                  placeholder="Maximum students"
-                  min="1"
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="teacher">Teacher</label>
+                <label htmlFor="className">Class Name</label>
                 <input
                   type="text"
-                  id="teacher"
-                  name="teacher"
-                  value={formData.teacher}
+                  id="className"
+                  name="className"
+                  value={formData.className}
                   onChange={handleInputChange}
-                  placeholder="Assigned teacher"
+                  placeholder="Enter class name"
+                  required
                 />
               </div>
-            </div>
 
-            <div className="form-group">
-              <label htmlFor="schedule">Schedule</label>
-              <input
-                type="text"
-                id="schedule"
-                name="schedule"
-                value={formData.schedule}
-                onChange={handleInputChange}
-                placeholder="Class schedule"
-              />
-            </div>
+              <div className="form-group">
+                <label htmlFor="admissionFee">Admission Fee</label>
+                <input
+                  type="number"
+                  id="admissionFee"
+                  name="admissionFee"
+                  value={formData.admissionFee}
+                  onChange={handleInputChange}
+                  placeholder="Enter admission fee"
+                  min="0"
+                  required
+                />
+              </div>
 
-            <div className="form-group">
-              <label htmlFor="requirements">Requirements</label>
-              <textarea
-                id="requirements"
-                name="requirements"
-                value={formData.requirements}
-                onChange={handleInputChange}
-                placeholder="Class requirements"
-                rows="4"
-              />
-            </div>
+              <div className="form-group">
+                <label htmlFor="tuitionFee">Tuition Fee</label>
+                <input
+                  type="number"
+                  id="tuitionFee"
+                  name="tuitionFee"
+                  value={formData.tuitionFee}
+                  onChange={handleInputChange}
+                  placeholder="Enter tuition fee"
+                  min="0"
+                  required
+                />
+              </div>
 
-            <button type="submit" className="create-class-btn">
-              Create Class
-            </button>
-          </form>
+              <div className="form-group">
+                <label htmlFor="installments">Number of Installments</label>
+                <input
+                  type="number"
+                  id="installments"
+                  name="installments"
+                  value={formData.installments}
+                  onChange={handleInputChange}
+                  placeholder="Enter number of installments"
+                  min="1"
+                  required
+                />
+              </div>
+
+              <div className="form-buttons">
+                <button type="button" className="cancel-btn" onClick={() => setShowForm(false)}>
+                  Cancel
+                </button>
+                <button type="submit" className="create-class-btn">
+                  Create Class
+                </button>
+              </div>
+            </form>
+          )}
+
+          {schoolClasses.length > 0 && (
+            <div className="classes-table-container">
+              <table className="classes-table">
+                <thead>
+                  <tr>
+                    <th>Class Name</th>
+                    <th>Admission Fee</th>
+                    <th>Tuition Fee</th>
+                    <th>Installments</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {schoolClasses.map((classItem) => (
+                    <tr key={classItem.id}>
+                      <td>{classItem.className}</td>
+                      <td>{classItem.admissionFee}</td>
+                      <td>{classItem.tuitionFee}</td>
+                      <td>{classItem.installments}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </main>
 

@@ -1,15 +1,16 @@
 .admin-contact-wrapper {
   min-height: 100vh;
+  background: #f3f8f7;
   display: flex;
   flex-direction: column;
-  background: #f3f8f7;
 }
 
 .admin-contact-main {
   flex: 1;
-  padding: 32px;
-  display: flex;
-  flex-direction: column;
+  padding: 76px 20px 20px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .messages-container {

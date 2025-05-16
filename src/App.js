@@ -16,6 +16,7 @@ import IDCards from './Components/Admin/IDCards';
 import AdminPay from './Components/Admin/AdminPay';
 import UserContact from './Components/Contact/UserContact';
 import AdminContact from './Components/Contact/AdminContact';
+import Interviews from './Components/Interviews/Interviews';
 import './Components/common.css';
 
 function App() {
@@ -43,6 +44,7 @@ function App() {
           <Route path="/adminAdmission" element={<AdminAdmission />} />
           <Route path="/idcards" element={<IDCards />} />
           <Route path="/admincontact" element={<AdminContact />} />
+          <Route path="/interviews" element={<Interviews />} />
 
           {/* Default Routes */}
           <Route path="/" element={<Navigate to="/about" replace />} />

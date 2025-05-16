@@ -3,13 +3,28 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { RiMenu3Line, RiCloseFill } from 'react-icons/ri';
 import { PieChart } from 'react-minimal-pie-chart';
 import { FaUserGraduate, FaMoneyBillWave, FaUserTimes, FaBuilding, FaUser, FaEdit } from 'react-icons/fa';
+import { IoNotificationsOutline } from 'react-icons/io5';
+import { database } from '../../firebase';
+import { ref, onValue, off, update, get } from 'firebase/database';
 import { AdmissionContext } from '../AdmissionContext';
 import './Admin.css';
 import logo from '../../assets/logo.png';
 
 const Admin = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { accounts, admissions } = useContext(AdmissionContext);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const { accounts, admissions, currentUserData } = useContext(AdmissionContext);
+  const [lastChecked, setLastChecked] = useState(() => {
+    // Initialize with current time
+    return {
+      admissions: new Date().toISOString(),
+      interviews: new Date().toISOString(),
+      messages: new Date().toISOString(),
+      payments: new Date().toISOString()
+    };
+  });
   const [stats, setStats] = useState({
     totalAccounts: 0,
     totalStudents: 0,
@@ -18,48 +33,220 @@ const Admin = () => {
     totalAmount: 0,
     thisWeekTotal: 0,
     lastWeekTotal: 0,
-    weeklyGrowth: 0
+    weeklyGrowth: 0,
+    totalDepartments: 0
   });
   const [isLoading, setIsLoading] = useState(true);
   const menuRef = useRef(null);
   const buttonRef = useRef(null);
+  const notificationRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Function to check if a timestamp is newer than lastChecked
+  const isNewItem = (timestamp, type) => {
+    if (!timestamp) return false;
+    const itemDate = new Date(timestamp);
+    const lastCheckedDate = new Date(lastChecked[type]);
+    return itemDate > lastCheckedDate;
+  };
+
+  useEffect(() => {
+    // Check if user is admin
+    if (!currentUserData?.role === 'admin') {
+      navigate('/signin');
+      return;
+    }
+
+    // Listen for new data in multiple nodes
+    const admissionsRef = ref(database, 'admissions');
+    const interviewsRef = ref(database, 'interviews');
+    const messagesRef = ref(database, 'messages');
+    const paymentsRef = ref(database, 'payments');
+    const departmentsRef = ref(database, 'departments');
+    
+    const handleNewData = (snapshot, type) => {
+      const data = snapshot.val() || {};
+      
+      const items = Object.entries(data)
+        .map(([id, item]) => ({
+          id,
+          ...item,
+          type
+        }))
+        .filter(item => {
+          // For messages, check status and timestamp
+          if (type === 'messages') {
+            return item.status === 'unread' && isNewItem(item.timestamp, type);
+          }
+          return isNewItem(item.timestamp, type);
+        })
+        .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+      if (items.length > 0) {
+        // Create notifications for new items
+        const newNotifications = items.map(item => {
+          let message = '';
+          let route = '';
+          
+          switch(type) {
+            case 'admissions':
+              message = `New admission application from ${item.name || item.fullName}`;
+              route = '/adminAdmission';
+              break;
+            case 'interviews':
+              message = `New interview request from ${item.name}`;
+              route = '/interviews';
+              break;
+            case 'messages':
+              const preview = item.message ? 
+                (item.message.length > 30 ? `${item.message.substring(0, 30)}...` : item.message) 
+                : '';
+              message = `New message from ${item.fullName}: ${preview}`;
+              route = '/admincontact';
+              break;
+            case 'payments':
+              message = `New payment received from ${item.studentName}`;
+              route = '/adminpay';
+              break;
+            default:
+              break;
+          }
+
+          return {
+            id: item.id,
+            message,
+            timestamp: item.timestamp,
+            type,
+            route,
+            read: false
+          };
+        });
+
+        // Update notifications state with deduplication
+        setNotifications(prev => {
+          const existingIds = new Set(prev.map(n => n.id));
+          const uniqueNewNotifications = newNotifications.filter(n => !existingIds.has(n.id));
+          return [...uniqueNewNotifications, ...prev].slice(0, 50);
+        });
+
+        // Update unread count only for unique notifications
+        setUnreadCount(prev => {
+          const existingIds = new Set(notifications.map(n => n.id));
+          const uniqueCount = newNotifications.filter(n => !existingIds.has(n.id)).length;
+          return prev + uniqueCount;
+        });
+
+        // Update lastChecked timestamp
+        setLastChecked(prev => ({
+          ...prev,
+          [type]: new Date().toISOString()
+        }));
+      }
+    };
+
+    // Set up listeners for each node with error handling
+    const setupListener = (ref, type) => {
+      onValue(ref, 
+        snapshot => handleNewData(snapshot, type),
+        error => console.error(`Error in ${type} listener:`, error)
+      );
+    };
+
+    setupListener(messagesRef, 'messages');
+    setupListener(admissionsRef, 'admissions');
+    setupListener(interviewsRef, 'interviews');
+    setupListener(paymentsRef, 'payments');
+    
+    // Listen for departments count
+    onValue(departmentsRef, snapshot => {
+      const data = snapshot.val() || {};
+      const departmentsCount = Object.keys(data).length;
+      setStats(prev => ({
+        ...prev,
+        totalDepartments: departmentsCount
+      }));
+    });
+
+    return () => {
+      // Clean up listeners
+      off(admissionsRef);
+      off(interviewsRef);
+      off(messagesRef);
+      off(paymentsRef);
+      off(departmentsRef);
+    };
+  }, [currentUserData, navigate, notifications]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        showNotifications &&
+        notificationRef.current &&
+        !notificationRef.current.contains(event.target)
+      ) {
+        setShowNotifications(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showNotifications]);
+
+  const handleNotificationClick = async (notification) => {
+    // Mark notification as read
+    const updatedNotifications = notifications.map(n => 
+      n.id === notification.id ? { ...n, read: true } : n
+    );
+    setNotifications(updatedNotifications);
+    setUnreadCount(prev => Math.max(0, prev - 1));
+
+    // Navigate to appropriate route
+    navigate(notification.route);
+    setShowNotifications(false);
+  };
 
   useEffect(() => {
     // Calculate statistics when data changes
     if (Array.isArray(accounts) && Array.isArray(admissions)) {
       const totalAccounts = accounts.length;
+      
+      // Total students is simply the count of all admissions
       const totalStudents = admissions.length;
+      
+      // Calculate rejected students - count all entries with 'Rejected' status
       const rejectedStudents = admissions.filter(student => student.status === 'Rejected');
       const totalRejected = rejectedStudents.length;
       
-      // Calculate total amount
+      // Calculate total amount from payments
       const totalAmount = admissions.reduce((sum, admission) => {
-        const paymentAmount = admission.payment?.amount || 0;
-        return sum + paymentAmount;
+        const paymentAmount = admission.paymentDetails?.amount || 0;
+        return sum + Number(paymentAmount);
       }, 0);
 
-      // Get current date and start of weeks
+      // Get current date and start/end of weeks for comparison
       const now = new Date();
+      
+      // Current week (Sunday to current day)
       const startOfThisWeek = new Date(now);
       startOfThisWeek.setHours(0, 0, 0, 0);
-      startOfThisWeek.setDate(now.getDate() - now.getDay()); // Start from Sunday
+      startOfThisWeek.setDate(now.getDate() - now.getDay());
 
+      // Last week (previous Sunday to Saturday)
       const startOfLastWeek = new Date(startOfThisWeek);
-      startOfLastWeek.setDate(startOfThisWeek.getDate() - 7);
+      startOfLastWeek.setDate(startOfLastWeek.getDate() - 7);
       const endOfLastWeek = new Date(startOfThisWeek);
       endOfLastWeek.setMilliseconds(-1);
 
-      // Filter admissions for current week and last week
+      // Count admissions submitted in current week and last week
       const thisWeekAdmissions = admissions.filter(admission => {
-        const admissionDate = new Date(admission.timestamp);
-        return admissionDate >= startOfThisWeek && admissionDate <= now;
+        const submissionDate = new Date(admission.submittedAt || admission.timestamp);
+        return submissionDate >= startOfThisWeek && submissionDate <= now;
       });
 
       const lastWeekAdmissions = admissions.filter(admission => {
-        const admissionDate = new Date(admission.timestamp);
-        return admissionDate >= startOfLastWeek && admissionDate <= endOfLastWeek;
+        const submissionDate = new Date(admission.submittedAt || admission.timestamp);
+        return submissionDate >= startOfLastWeek && submissionDate < startOfThisWeek;
       });
 
       const thisWeekTotal = thisWeekAdmissions.length;
@@ -70,7 +257,8 @@ const Admin = () => {
         ? Math.round(((thisWeekTotal - lastWeekTotal) / lastWeekTotal) * 100)
         : thisWeekTotal > 0 ? 100 : 0;
 
-      setStats({
+      setStats(prevStats => ({
+        ...prevStats,
         totalAccounts,
         totalStudents,
         rejectedStudents,
@@ -79,7 +267,7 @@ const Admin = () => {
         thisWeekTotal,
         lastWeekTotal,
         weeklyGrowth
-      });
+      }));
 
       setIsLoading(false);
     }
@@ -167,11 +355,53 @@ const Admin = () => {
             Admission
           </button>
           <button 
+            className={`app-nav-link${location.pathname === '/interviews' ? ' active' : ''}`}
+            onClick={() => navigate('/interviews')}
+          >
+            Interviews
+          </button>
+          <button 
             className={`app-nav-link${location.pathname === '/admincontact' ? ' active' : ''}`}
             onClick={() => navigate('/admincontact')}
           >
             Contact
           </button>
+          <div className="notification-container" ref={notificationRef}>
+            <button
+              className="notification-bell"
+              onClick={() => setShowNotifications(!showNotifications)}
+            >
+              <IoNotificationsOutline size={24} />
+              {unreadCount > 0 && (
+                <span className="notification-badge">{unreadCount}</span>
+              )}
+            </button>
+            {showNotifications && (
+              <div className="notifications-dropdown">
+                <h3>Notifications</h3>
+                {notifications.length === 0 ? (
+                  <p className="no-notifications">No new notifications</p>
+                ) : (
+                  <div className="notifications-list">
+                    {notifications.map((notification) => (
+                      <div
+                        key={notification.id}
+                        className={`notification-item ${notification.read ? 'read' : 'unread'}`}
+                        onClick={() => handleNotificationClick(notification)}
+                      >
+                        <div className="notification-content">
+                          <p className="notification-text">{notification.message}</p>
+                          <span className="notification-time">
+                            {new Date(notification.timestamp).toLocaleString()}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
           <button className="app-nav-link logout" onClick={() => navigate('/signin')}>Log out</button>
         </nav>
       </header>
@@ -243,7 +473,7 @@ const Admin = () => {
           <div className="admin-stat-card green">
             <div className="admin-stat-icon"><FaBuilding /></div>
             <div className="admin-stat-label">Total Departments</div>
-            <div className="admin-stat-value"><span className="admin-edit-icon"><FaEdit /></span>10</div>
+            <div className="admin-stat-value">{stats.totalDepartments}</div>
           </div>
           <div className="admin-stat-card yellow">
             <div className="admin-stat-icon"><FaUser /></div>
