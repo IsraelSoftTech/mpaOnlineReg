@@ -215,17 +215,11 @@ const UserAdmission = () => {
       });
       if (success) {
         setForm(initialState);
-        setHideContent(true);
         setSuccess(true);
+        // Navigate to UserTrack after 2 seconds
         setTimeout(() => {
-          setSuccess(false);
-          if (form.studentType === 'New Student') {
-            setShowProceed(true);
-          } else {
-            setShowAdmissionStatus(true);
-          }
-          setHideContent(false);
-        }, 3000);
+          navigate('/usertrack');
+        }, 2000);
       }
     } catch (error) {
       console.error('Error submitting application:', error);

@@ -434,7 +434,11 @@ const UserTrack = () => {
                 <div className="document-item">
                   <label>Report Card</label>
                   {currentUserData.report ? (
-                    <button className="pay-admission-btn" disabled>
+                    <button 
+                      className="pay-admission-btn" 
+                      onClick={() => navigate('/payment')}
+                      style={{ cursor: 'pointer', opacity: 1 }}
+                    >
                       Pay Admission
                     </button>
                   ) : (

@@ -283,46 +283,39 @@ export const AdmissionProvider = ({ children }) => {
 
   // Update payment status
   const updatePaymentStatus = async (status, paymentDetails = null) => {
-    if (currentUser) {
-      try {
-        // Find the user's admission
-        const admission = allAdmissions.find(adm => adm.userId === currentUser.id);
-        if (admission) {
-          // Update the admission with payment status and details
-          const admissionRef = ref(database, `admissions/${admission.id}`);
-          const updateData = {
-            paymentStatus: status,
-            status: 'Pending', // Keep status as pending until admin approval
-            lastUpdated: new Date().toISOString()
-          };
+    if (!currentUser) return;
 
-          // If payment details are provided, add them to the update
-          if (paymentDetails) {
-            updateData.paymentDetails = {
-              ...paymentDetails,
-              submittedAt: new Date().toISOString()
-            };
-          }
+    try {
+      // Find the user's admission record
+      const userAdmission = admissions.find(admission => admission.username === currentUser);
+      if (!userAdmission) return;
 
-          await update(admissionRef, updateData);
-          
-          // Update local state
-          const updatedAdmissions = allAdmissions.map(adm => {
-            if (adm.id === admission.id) {
-              return {
-                ...adm,
-                ...updateData
-              };
-            }
-            return adm;
-          });
-          
-          setAllAdmissions(updatedAdmissions);
-        }
-      } catch (error) {
-        console.error('Error updating payment status:', error);
-        setError('Error updating payment status');
-      }
+      // Update the payment status in the database
+      const admissionRef = ref(database, `admissions/${userAdmission.id}`);
+      await update(admissionRef, {
+        paymentStatus: status,
+        paymentDetails: paymentDetails,
+        paymentTimestamp: new Date().toISOString()
+      });
+
+      // Update local state
+      setAllAdmissions(prevAdmissions => 
+        prevAdmissions.map(admission => 
+          admission.id === userAdmission.id 
+            ? { 
+                ...admission, 
+                paymentStatus: status,
+                paymentDetails: paymentDetails,
+                paymentTimestamp: new Date().toISOString()
+              } 
+            : admission
+        )
+      );
+
+      return true;
+    } catch (error) {
+      console.error('Error updating payment status:', error);
+      return false;
     }
   };
 

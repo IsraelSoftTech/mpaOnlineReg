@@ -14,10 +14,7 @@
 }
 
 .admin-pay-container {
-  padding: 24px;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
 }
 
 .admin-pay-container h2 {
@@ -52,26 +49,52 @@
 }
 
 .status-badge {
-  display: inline-block;
-  padding: 6px 12px;
-  border-radius: 999px;
-  font-size: 14px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.85em;
   font-weight: 500;
 }
 
-.status-badge.status-pending {
+.status-badge.pending {
   background-color: #fff3cd;
   color: #856404;
 }
 
-.status-badge.status-confirmed {
-  background-color: #d1e7dd;
-  color: #0f5132;
+.status-badge.paid {
+  background-color: #d4edda;
+  color: #155724;
 }
 
-.status-badge.status-fake {
+.status-badge.rejected {
   background-color: #f8d7da;
-  color: #842029;
+  color: #721c24;
+}
+
+.loading {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+}
+
+.no-records {
+  text-align: center;
+  color: #666;
+  padding: 20px;
+}
+
+/* New styles for receipt and actions */
+.view-receipt-btn {
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85em;
+}
+
+.view-receipt-btn:hover {
+  background-color: #5a6268;
 }
 
 .action-buttons {
@@ -79,39 +102,71 @@
   gap: 8px;
 }
 
-.validate-btn,
-.fake-btn {
+.confirm-btn,
+.reject-btn {
   padding: 6px 12px;
+  border: none;
   border-radius: 4px;
-  font-size: 14px;
   cursor: pointer;
-  transition: all 0.3s;
+  font-size: 0.85em;
+  font-weight: 500;
 }
 
-.validate-btn {
-  background-color: #18316d;
-  border: none;
+.confirm-btn {
+  background-color: #28a745;
   color: white;
 }
 
-.validate-btn:hover {
-  background-color: #122654;
+.confirm-btn:hover {
+  background-color: #218838;
 }
 
-.fake-btn {
-  background-color: #dc2626;
-  border: none;
+.reject-btn {
+  background-color: #dc3545;
   color: white;
 }
 
-.fake-btn:hover {
-  background-color: #b91c1c;
+.reject-btn:hover {
+  background-color: #c82333;
 }
 
-.validate-btn:disabled,
-.fake-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+/* Receipt Modal */
+.receipt-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.receipt-modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  position: relative;
+  max-width: 90%;
+  max-height: 90vh;
+  overflow: auto;
+}
+
+.close-modal {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+}
+
+.close-modal:hover {
+  color: #333;
 }
 
 @media (max-width: 768px) {
