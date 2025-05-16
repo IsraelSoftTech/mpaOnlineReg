@@ -4,6 +4,7 @@ import { RiMenu3Line, RiCloseFill } from 'react-icons/ri';
 import { AdmissionContext } from '../AdmissionContext';
 import '../UserAdmission/UserAdmission.css';
 import './Profile.css';
+import logo from '../../assets/logo.png';
 
 const Profile = () => {
   const { currentUser, currentUserData, updateProfile, logout } = useContext(AdmissionContext);
@@ -102,7 +103,7 @@ const Profile = () => {
     <div className="profile-wrapper">
       <header className="app-header">
         <div className="logo-section">
-          <img src="/logo192.png" alt="logo" className="app-logo" />
+          <img src={logo} alt="logo" className="app-logo" />
           <span className="app-brand">MPASAT</span>
         </div>
         <button

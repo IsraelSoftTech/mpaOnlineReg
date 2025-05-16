@@ -4,6 +4,7 @@ import { RiMenu3Line, RiCloseFill } from 'react-icons/ri';
 import '../UserAdmission/UserAdmission.css';
 import './Payment.css';
 import { AdmissionContext } from '../AdmissionContext';
+import logo from '../../assets/logo.png';
 
 const Payment = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -48,7 +49,7 @@ const Payment = () => {
     <div className="userad-wrapper">
       <header className="app-header">
         <div className="logo-section">
-          <img src="/logo192.png" alt="logo" className="app-logo" />
+          <img src={logo} alt="logo" className="app-logo" />
           <span className="app-brand">MPASAT</span>
         </div>
         <button
