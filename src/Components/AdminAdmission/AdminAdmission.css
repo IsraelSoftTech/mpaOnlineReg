@@ -99,26 +99,31 @@
 }
 
 .status-badge {
-  padding: 0.25rem 0.75rem;
-  border-radius: 999px;
-  font-size: 0.875rem;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.9em;
   font-weight: 500;
-  display: inline-block;
+  text-transform: capitalize;
 }
 
-.status-admitted {
-  background-color: #dcfce7;
-  color: #16a34a;
+.status-badge.status-admitted {
+  background-color: #4CAF50;
+  color: white;
 }
 
-.status-rejected {
-  background-color: #fee2e2;
-  color: #dc2626;
+.status-badge.status-rejected {
+  background-color: #f44336;
+  color: white;
 }
 
-.status-pending {
-  background-color: #fef9c3;
-  color: #ca8a04;
+.status-badge.status-pending {
+  background-color: #2196F3;
+  color: white;
+}
+
+.status-badge.status-processing {
+  background-color: #2196F3;
+  color: white;
 }
 
 .action-buttons {

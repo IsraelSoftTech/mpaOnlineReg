@@ -325,7 +325,6 @@ export const AdmissionProvider = ({ children }) => {
       const admissionRef = ref(database, `admissions/${admissionId}`);
       const updateData = {
         status,
-        paymentStatus: status,
         lastUpdated: new Date().toISOString()
       };
 

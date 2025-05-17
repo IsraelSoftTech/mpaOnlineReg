@@ -64,10 +64,17 @@ const AdminAdmission = () => {
   const handleStatusUpdate = async (admissionId, newStatus) => {
     try {
       const admissionRef = ref(database, `admissions/${admissionId}`);
-      await update(admissionRef, {
+      const updateData = {
         status: newStatus,
         lastUpdated: new Date().toISOString()
-      });
+      };
+
+      // If status is Admitted, ensure payment status is set to Done
+      if (newStatus === 'Admitted') {
+        updateData.paymentStatus = 'Done';
+      }
+
+      await update(admissionRef, updateData);
       toast.success(`Status updated to ${newStatus}`);
     } catch (error) {
       console.error('Error updating status:', error);

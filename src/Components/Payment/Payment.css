@@ -21,6 +21,8 @@
 .payment-step h3 {
   color: #18316d;
   margin-bottom: 20px;
+  font-size: 1.5rem;
+  text-align: center;
 }
 .payment-item-info {
   display: flex;
@@ -52,6 +54,7 @@
   border: 1px solid #ddd;
   border-radius: 4px;
   cursor: pointer;
+  width: 100%;
 }
 .pay-icon {
   width: 32px;
@@ -174,17 +177,18 @@
 }
 .payment-btn {
   width: 100%;
-  padding: 12px;
+  padding: 14px;
   background-color: #18316d;
   color: white;
   border: none;
   border-radius: 4px;
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
   transition: background-color 0.3s;
+  margin-top: 10px;
 }
-.payment-btn:hover {
+.payment-btn:hover:not(:disabled) {
   background-color: #122654;
 }
 .payment-btn:disabled {
@@ -192,18 +196,36 @@
   cursor: not-allowed;
 }
 .payment-form {
-  max-width: 400px;
-  margin: 24px auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
 }
 .form-group {
-  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 .form-group label {
-  display: block;
-  text-align: left;
-  margin-bottom: 8px;
-  color: #333;
   font-weight: 500;
+  color: #18316d;
+  font-size: 0.95rem;
+}
+.form-group input {
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+.form-group input:focus {
+  outline: none;
+  border-color: #18316d;
+}
+.form-group input::placeholder {
+  color: #999;
 }
 .momo-input-group {
   display: flex;
@@ -236,7 +258,7 @@
     padding: 16px;
   }
   .payment-step {
-    padding: 16px;
+    padding: 20px;
   }
   .payment-item-info {
     flex-direction: column;
@@ -246,9 +268,39 @@
   .payment-price {
     text-align: center;
   }
+  .payment-options label {
+    padding: 10px;
+    font-size: 0.9rem;
+  }
+  .form-group label {
+    font-size: 0.9rem;
+  }
+  .form-group input {
+    padding: 10px;
+    font-size: 0.95rem;
+  }
+  .payment-btn {
+    padding: 12px;
+    font-size: 0.95rem;
+  }
+}
+@media (max-width: 480px) {
+  .payment-main {
+    padding: 12px;
+  }
+  .payment-step {
+    padding: 16px;
+  }
+  .payment-step h3 {
+    font-size: 1.3rem;
+  }
+  .form-group input {
+    padding: 8px;
+    font-size: 0.9rem;
+  }
   .payment-btn {
     padding: 10px;
-    font-size: 14px;
+    font-size: 0.9rem;
   }
 }
 
