@@ -246,7 +246,7 @@ const Department = () => {
           <button className="app-nav-link logout" onClick={() => navigate('/signin')}>Log out</button>
         </nav>
       </header>
-      <main className="admin-main">
+      <main className="department-main">
         <div className="admin-content">
           <h2 className="admin-title">Departments Management</h2>
           
@@ -387,17 +387,6 @@ const Department = () => {
           )}
         </div>
       </main>
-      <footer className="footer">
-        <div className="footer-logo">ONLINE ADMISSION</div>
-        <div className="footer-center">MPASAT, All Rights Reserved - 2025</div>
-        <div className="footer-socials">
-          <span>Follow us on:</span>
-          <span className="icon social-icon instagram"></span>
-          <span className="icon social-icon facebook"></span>
-          <span className="icon social-icon tiktok"></span>
-          <span className="icon social-icon twitter"></span>
-        </div>
-      </footer>
     </div>
   );
 };

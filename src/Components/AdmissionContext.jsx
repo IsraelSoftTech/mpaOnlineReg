@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect } from 'react';
 import { database } from '../firebase';
-import { ref, push, onValue, update, get } from 'firebase/database';
+import { ref, push, onValue, update, get, remove } from 'firebase/database';
 
 export const AdmissionContext = createContext();
 
@@ -281,6 +281,49 @@ export const AdmissionProvider = ({ children }) => {
     }
   };
 
+  const editSchoolClass = async (classId, classData) => {
+    try {
+      // Check if class name already exists (excluding current class)
+      const classesRef = ref(database, 'schoolClasses');
+      const snapshot = await get(classesRef);
+      const classes = snapshot.val();
+      
+      if (classes) {
+        const exists = Object.entries(classes).some(
+          ([id, cls]) => id !== classId && 
+          cls.className.toLowerCase() === classData.className.toLowerCase()
+        );
+        if (exists) {
+          setError('A class with this name already exists');
+          return false;
+        }
+      }
+
+      // Update class
+      const classRef = ref(database, `schoolClasses/${classId}`);
+      await update(classRef, classData);
+      setError(null);
+      return true;
+    } catch (err) {
+      console.error('Error updating school class:', err);
+      setError('Error updating class');
+      return false;
+    }
+  };
+
+  const deleteSchoolClass = async (classId) => {
+    try {
+      const classRef = ref(database, `schoolClasses/${classId}`);
+      await remove(classRef);
+      setError(null);
+      return true;
+    } catch (err) {
+      console.error('Error deleting school class:', err);
+      setError('Error deleting class');
+      return false;
+    }
+  };
+
   // Update payment status
   const updatePaymentStatus = async (status, paymentDetails = null) => {
     if (!currentUser) return;
@@ -364,6 +407,8 @@ export const AdmissionProvider = ({ children }) => {
       login,
       logout,
       addSchoolClass,
+      editSchoolClass,
+      deleteSchoolClass,
       updatePaymentStatus,
       updateAdmissionStatus,
       setCurrentUser,

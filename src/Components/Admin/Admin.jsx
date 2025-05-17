@@ -2,10 +2,10 @@ import React, { useState, useEffect, useRef, useContext } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { RiMenu3Line, RiCloseFill } from 'react-icons/ri';
 import { PieChart } from 'react-minimal-pie-chart';
-import { FaUserGraduate, FaMoneyBillWave, FaUserTimes, FaBuilding, FaUser, FaEdit } from 'react-icons/fa';
+import { FaUserGraduate, FaMoneyBillWave, FaUserTimes, FaBuilding, FaUser, FaEdit, FaTrash, FaBan, FaCheck } from 'react-icons/fa';
 import { IoNotificationsOutline } from 'react-icons/io5';
 import { database } from '../../firebase';
-import { ref, onValue, off, update, get } from 'firebase/database';
+import { ref, onValue, off, update, get, remove } from 'firebase/database';
 import { AdmissionContext } from '../AdmissionContext';
 import './Admin.css';
 import logo from '../../assets/logo.png';
@@ -15,7 +15,8 @@ const Admin = () => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
-  const { accounts, admissions, currentUserData } = useContext(AdmissionContext);
+  const { accounts = [], admissions = [], currentUserData, allAdmissions = [] } = useContext(AdmissionContext) || {};
+  const [rejectedStudents, setRejectedStudents] = useState([]);
   const [lastChecked, setLastChecked] = useState(() => {
     // Initialize with current time
     return {
@@ -291,6 +292,67 @@ const Admin = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isMenuOpen]);
 
+  const handleSuspendAccount = async (accountId, isSuspended) => {
+    try {
+      const accountRef = ref(database, `accounts/${accountId}`);
+      await update(accountRef, { suspended: !isSuspended });
+    } catch (err) {
+      console.error('Error updating account status:', err);
+    }
+  };
+
+  const handleDeleteAccount = async (accountId) => {
+    if (window.confirm('Are you sure you want to delete this account?')) {
+      try {
+        const accountRef = ref(database, `accounts/${accountId}`);
+        await remove(accountRef);
+      } catch (err) {
+        console.error('Error deleting account:', err);
+      }
+    }
+  };
+
+  const handleEditAccount = async (accountId) => {
+    // Implement edit functionality
+    console.log('Edit account:', accountId);
+  };
+
+  // Add useEffect to fetch rejected students from admissions
+  useEffect(() => {
+    const admissionsRef = ref(database, 'admissions');
+    
+    const unsubscribe = onValue(admissionsRef, (snapshot) => {
+      try {
+        const data = snapshot.val();
+        if (data) {
+          const rejectedList = Object.entries(data)
+            .map(([id, admission]) => ({
+              id,
+              ...admission
+            }))
+            .filter(student => student.status === 'rejected')
+            .sort((a, b) => new Date(b.timestamp || b.submittedAt || b.date) - new Date(a.timestamp || a.submittedAt || a.date));
+          
+          setRejectedStudents(rejectedList);
+          
+          // Update stats
+          setStats(prev => ({
+            ...prev,
+            totalRejected: rejectedList.length,
+            rejectedStudents: rejectedList
+          }));
+        } else {
+          setRejectedStudents([]);
+        }
+      } catch (error) {
+        console.error('Error fetching rejected students:', error);
+        setRejectedStudents([]);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   if (isLoading) {
     return (
       <div className="admin-wrapper">
@@ -483,42 +545,93 @@ const Admin = () => {
         </div>
         <section className="admin-rejected-section">
           <h3 className="admin-rejected-title">Rejected Students</h3>
-          <table className="admin-rejected-table">
-            <thead>
-              <tr>
-                <th>Names</th>
-                <th>Reason(s) for Rejection</th>
-              </tr>
-            </thead>
-            <tbody>
-              {stats.rejectedStudents.map((student, idx) => (
-                <tr key={idx}>
-                  <td>{student.name || student.fullName}</td>
-                  <td>{student.rejectionReason || 'No reason provided'}</td>
-                </tr>
-              ))}
-              {stats.rejectedStudents.length === 0 && (
+          <div className="table-container">
+            <table className="admin-table">
+              <thead>
                 <tr>
-                  <td colSpan="2" style={{ textAlign: 'center', padding: '20px' }}>
-                    No rejected applications
-                  </td>
+                  <th>Name</th>
+                  <th>Class</th>
+                  <th>Reason for Rejection</th>
+                  <th>Date</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {rejectedStudents.map((student) => (
+                  <tr key={student.id}>
+                    <td>{student.fullName || student.name}</td>
+                    <td>{student.class || student.form}</td>
+                    <td>{student.rejectionReason || student.reason || 'No reason provided'}</td>
+                    <td>{new Date(student.timestamp || student.submittedAt || student.date).toLocaleDateString()}</td>
+                  </tr>
+                ))}
+                {rejectedStudents.length === 0 && (
+                  <tr>
+                    <td colSpan="4" className="no-data">No rejected students</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </section>
+        <section className="admin-section">
+          <h2>User Accounts</h2>
+          <div className="table-container">
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>Username</th>
+                  <th>Email</th>
+                  <th>Password</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {accounts.map((account) => (
+                  <tr key={account.id}>
+                    <td>{account.username}</td>
+                    <td>{account.email}</td>
+                    <td>{account.password}</td>
+                    <td>
+                      <span className={`status-badge ${account.suspended ? 'suspended' : 'active'}`}>
+                        {account.suspended ? 'Suspended' : 'Active'}
+                      </span>
+                    </td>
+                    <td className="action-buttons">
+                      <button 
+                        className="edit-btn"
+                        onClick={() => handleEditAccount(account.id)}
+                        title="Edit account"
+                      >
+                        <FaEdit />
+                      </button>
+                      <button 
+                        className={`suspend-btn ${account.suspended ? 'uplift' : ''}`}
+                        onClick={() => handleSuspendAccount(account.id, account.suspended)}
+                        title={account.suspended ? 'Uplift suspension' : 'Suspend account'}
+                      >
+                        {account.suspended ? <FaCheck /> : <FaBan />}
+                      </button>
+                      <button 
+                        className="delete-btn"
+                        onClick={() => handleDeleteAccount(account.id)}
+                        title="Delete account"
+                      >
+                        <FaTrash />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+                {accounts.length === 0 && (
+                  <tr>
+                    <td colSpan="5" className="no-data">No accounts found</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </section>
       </main>
-      <footer className="app-footer">
-        <div className="footer-logo">MPASAT ADMISSION PORTAL</div>
-        <div className="footer-center">MPASAT, All Rights Reserved - 2025</div>
-        <div className="footer-socials">
-          <span>Follow us on:</span>
-          <span className="social-icon instagram"></span>
-          <span className="social-icon facebook"></span>
-          <span className="social-icon tiktok"></span>
-          <span className="social-icon twitter"></span>
-        </div>
-      </footer>
     </div>
   );
 };

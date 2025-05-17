@@ -89,7 +89,7 @@ const Signup = () => {
           <Link to="/signin" className={`app-nav-link${location.pathname === '/signin' ? ' active' : ''}`}>Sign In</Link>
         </nav>
       </header>
-      <main className="main-content">
+      <main className="signup-main">
         <div className="signup-box">
           <h2 className="signup-title">Sign up <span className="underline"></span></h2>
           {error && <div className="error-message">{error}</div>}
@@ -193,17 +193,6 @@ const Signup = () => {
           </p>
         </div>
       </main>
-      <footer className="app-footer">
-        <div className="footer-logo">MPASAT ADMISSION PORTAL</div>
-        <div className="footer-center">MPASAT, All Rights Reserved - 2025</div>
-        <div className="footer-socials">
-          <span>Follow us on:</span>
-          <span className="social-icon instagram"></span>
-          <span className="social-icon facebook"></span>
-          <span className="social-icon tiktok"></span>
-          <span className="social-icon twitter"></span>
-        </div>
-      </footer>
     </div>
   );
 };

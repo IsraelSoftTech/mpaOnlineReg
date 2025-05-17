@@ -80,17 +80,6 @@ const IDCards = () => {
           <p>This is the ID Cards management page. Content coming soon.</p>
         </div>
       </main>
-      <footer className="app-footer">
-        <div className="footer-logo">MPASAT ADMISSION PORTAL</div>
-        <div className="footer-center">MPASAT, All Rights Reserved - 2025</div>
-        <div className="footer-socials">
-          <span>Follow us on:</span>
-          <span className="social-icon instagram"></span>
-          <span className="social-icon facebook"></span>
-          <span className="social-icon tiktok"></span>
-          <span className="social-icon twitter"></span>
-        </div>
-      </footer>
     </div>
   );
 };

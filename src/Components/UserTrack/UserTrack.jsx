@@ -351,7 +351,7 @@ const UserTrack = () => {
           </button>
         </nav>
       </header>
-      <main className="userad-main">
+      <main className="usertrack-main">
         <h2 className="userad-title-main">Track Your Admission</h2>
         {notifications.length > 0 && (
           <div className="notification-banner">
@@ -511,17 +511,6 @@ const UserTrack = () => {
           onClose={() => setShowScheduleModal(false)}
         />
       )}
-      <footer className="app-footer">
-        <div className="footer-logo">MPASAT ADMISSION PORTAL</div>
-        <div className="footer-center">MPASAT, All Rights Reserved - 2025</div>
-        <div className="footer-socials">
-          <span>Follow us on:</span>
-          <span className="social-icon instagram"></span>
-          <span className="social-icon facebook"></span>
-          <span className="social-icon tiktok"></span>
-          <span className="social-icon twitter"></span>
-        </div>
-      </footer>
     </div>
   );
 };

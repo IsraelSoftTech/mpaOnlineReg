@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { RiMenu3Line, RiCloseFill } from 'react-icons/ri';
+import { FaEdit, FaTrash } from 'react-icons/fa';
 import './CreateClass.css';
 import { AdmissionContext } from '../AdmissionContext';
 import logo from '../../assets/logo.png';
@@ -8,9 +9,10 @@ import logo from '../../assets/logo.png';
 const CreateClass = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { addSchoolClass, schoolClasses } = React.useContext(AdmissionContext);
+  const { addSchoolClass, editSchoolClass, deleteSchoolClass, schoolClasses } = React.useContext(AdmissionContext);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showForm, setShowForm] = useState(false);
+  const [editingClass, setEditingClass] = useState(null);
   const [formData, setFormData] = useState({
     className: '',
     admissionFee: '',
@@ -84,9 +86,16 @@ const CreateClass = () => {
         createdAt: new Date().toISOString()
       };
 
-      const success = await addSchoolClass(classData);
+      let success;
+      if (editingClass) {
+        success = await editSchoolClass(editingClass.id, classData);
+        if (success) setSuccess('Class updated successfully!');
+      } else {
+        success = await addSchoolClass(classData);
+        if (success) setSuccess('Class created successfully!');
+      }
+
       if (success) {
-        setSuccess('Class created successfully!');
         setFormData({
           className: '',
           admissionFee: '',
@@ -94,9 +103,36 @@ const CreateClass = () => {
           installments: ''
         });
         setShowForm(false);
+        setEditingClass(null);
       }
     } catch (err) {
-      setError('Failed to create class. Please try again.');
+      setError(editingClass ? 'Failed to update class' : 'Failed to create class');
+    }
+  };
+
+  const handleEdit = (classItem) => {
+    setEditingClass(classItem);
+    setFormData({
+      className: classItem.className,
+      admissionFee: classItem.admissionFee,
+      tuitionFee: classItem.tuitionFee,
+      installments: classItem.installments
+    });
+    setShowForm(true);
+    setError('');
+    setSuccess('');
+  };
+
+  const handleDelete = async (classId) => {
+    if (window.confirm('Are you sure you want to delete this class?')) {
+      try {
+        const success = await deleteSchoolClass(classId);
+        if (success) {
+          setSuccess('Class deleted successfully!');
+        }
+      } catch (err) {
+        setError('Failed to delete class');
+      }
     }
   };
 
@@ -171,7 +207,16 @@ const CreateClass = () => {
             {!showForm && (
               <button 
                 className="create-class-btn"
-                onClick={() => setShowForm(true)}
+                onClick={() => {
+                  setShowForm(true);
+                  setEditingClass(null);
+                  setFormData({
+                    className: '',
+                    admissionFee: '',
+                    tuitionFee: '',
+                    installments: ''
+                  });
+                }}
               >
                 Create Class
               </button>
@@ -239,11 +284,20 @@ const CreateClass = () => {
               </div>
 
               <div className="form-buttons">
-                <button type="button" className="cancel-btn" onClick={() => setShowForm(false)}>
+                <button type="button" className="cancel-btn" onClick={() => {
+                  setShowForm(false);
+                  setEditingClass(null);
+                  setFormData({
+                    className: '',
+                    admissionFee: '',
+                    tuitionFee: '',
+                    installments: ''
+                  });
+                }}>
                   Cancel
                 </button>
                 <button type="submit" className="create-class-btn">
-                  Create Class
+                  {editingClass ? 'Update Class' : 'Create Class'}
                 </button>
               </div>
             </form>
@@ -258,6 +312,7 @@ const CreateClass = () => {
                     <th>Admission Fee</th>
                     <th>Tuition Fee</th>
                     <th>Installments</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -267,6 +322,22 @@ const CreateClass = () => {
                       <td>{classItem.admissionFee}</td>
                       <td>{classItem.tuitionFee}</td>
                       <td>{classItem.installments}</td>
+                      <td className="action-buttons">
+                        <button 
+                          className="edit-btn"
+                          onClick={() => handleEdit(classItem)}
+                          title="Edit class"
+                        >
+                          <FaEdit />
+                        </button>
+                        <button 
+                          className="delete-btn"
+                          onClick={() => handleDelete(classItem.id)}
+                          title="Delete class"
+                        >
+                          <FaTrash />
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>

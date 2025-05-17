@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Signin from './Components/Signin/Signin';
 import Signup from './Components/Signup/Signup';
 import About from './Components/About/About';
@@ -17,12 +17,42 @@ import AdminPay from './Components/Admin/AdminPay';
 import UserContact from './Components/Contact/UserContact';
 import AdminContact from './Components/Contact/AdminContact';
 import Interviews from './Components/Interviews/Interviews';
+import Loader from './Components/Common/Loader';
+import Footer from './Components/Common/Footer';
 import './Components/common.css';
 
-function App() {
+// Add this style to ensure footer stays at bottom
+const appStyle = {
+  minHeight: '100vh',
+  display: 'flex',
+  flexDirection: 'column'
+};
+
+// Wrapper component to handle route change detection
+const AppContent = () => {
+  const location = useLocation();
+  const [loading, setLoading] = React.useState(false);
+  const [currentPage, setCurrentPage] = React.useState(null);
+
+  React.useEffect(() => {
+    const handleRouteChange = async () => {
+      setLoading(true);
+      // Wait for 1 second
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      setCurrentPage(location.pathname);
+      setLoading(false);
+    };
+
+    handleRouteChange();
+  }, [location]);
+
+  if (loading) {
+    return <Loader />;
+  }
+
   return (
-    <Router>
-      <AdmissionProvider>
+    <div style={appStyle}>
+      <div style={{ flex: 1 }}>
         <Routes>
           {/* Public Routes */}
           <Route path="/about" element={<About />} />
@@ -50,6 +80,17 @@ function App() {
           <Route path="/" element={<Navigate to="/about" replace />} />
           <Route path="*" element={<Navigate to="/about" replace />} />
         </Routes>
+      </div>
+      <Footer />
+    </div>
+  );
+};
+
+function App() {
+  return (
+    <Router>
+      <AdmissionProvider>
+        <AppContent />
       </AdmissionProvider>
     </Router>
   );

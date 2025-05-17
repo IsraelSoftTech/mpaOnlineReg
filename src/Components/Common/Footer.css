@@ -1,0 +1,133 @@
+.mpasat-footer {
+  background-color: #18316d;
+  color: white;
+  width: 100%;
+  margin-top: auto;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 10;
+}
+
+.mpasat-footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
+  display: grid;
+  grid-template-rows: auto auto auto;
+  gap: 2rem;
+  justify-items: center;
+}
+
+.mpasat-footer-title {
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: center;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 0.5rem;
+}
+
+.mpasat-social-links {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.mpasat-social-link {
+  color: white;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+  min-width: 140px;
+  justify-content: center;
+}
+
+.mpasat-social-link:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.mpasat-social-link span {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.mpasat-social-icon {
+  font-size: 1.5rem;
+}
+
+.mpasat-copyright {
+  text-align: center;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  width: 100%;
+  max-width: 600px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .mpasat-footer-content {
+    padding: 2rem 1.5rem;
+    gap: 1.5rem;
+  }
+
+  .mpasat-footer-title {
+    font-size: 1.5rem;
+  }
+
+  .mpasat-social-links {
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .mpasat-social-link {
+    padding: 0.6rem 1.2rem;
+    min-width: 130px;
+  }
+
+  .mpasat-social-icon {
+    font-size: 1.25rem;
+  }
+
+  .mpasat-social-link span {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .mpasat-footer-content {
+    padding: 1.5rem 1rem;
+    gap: 1.25rem;
+  }
+
+  .mpasat-footer-title {
+    font-size: 1.25rem;
+  }
+
+  .mpasat-social-links {
+    flex-direction: column;
+    width: 100%;
+    gap: 0.75rem;
+  }
+
+  .mpasat-social-link {
+    width: 100%;
+    padding: 0.75rem;
+  }
+
+  .mpasat-copyright {
+    font-size: 0.875rem;
+    padding-top: 0.75rem;
+  }
+} 
