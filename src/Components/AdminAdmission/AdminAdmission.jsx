@@ -83,9 +83,9 @@ const AdminAdmission = () => {
   };
 
   return (
-    <div className="adminad-wrapper">
+    <div className="admin-admission-wrapper">
       <AdminNav />
-      <main className="adminad-main">
+      <main className="admin-admission-main">
         <div className="admin-content">
           <div className="admin-header-head">
             <h2>Admissions Management</h2>

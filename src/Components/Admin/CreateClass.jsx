@@ -2,11 +2,14 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { RiMenu3Line, RiCloseFill } from 'react-icons/ri';
 import { FaEdit, FaTrash } from 'react-icons/fa';
-import { ref, onValue } from 'firebase/database';
+import { ref, onValue, push, update, remove } from 'firebase/database';
 import { database } from '../../firebase';
 import './CreateClass.css';
 import { AdmissionContext } from '../AdmissionContext';
 import logo from '../../assets/logo.png';
+import AdminNav from './AdminNav';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const CreateClass = () => {
   const navigate = useNavigate();
@@ -211,66 +214,8 @@ const CreateClass = () => {
 
   return (
     <div className="create-class-wrapper">
-      <header className="app-header">
-        <div className="logo-section">
-          <img src={logo} alt="logo" className="app-logo" />
-          <span className="app-brand">MPASAT</span>
-        </div>
-        <button
-          ref={buttonRef}
-          className="menu-toggle"
-          onClick={toggleMenu}
-          aria-label="Toggle menu"
-        >
-          {isMenuOpen ? <RiCloseFill size={24} /> : <RiMenu3Line size={24} />}
-        </button>
-        <nav ref={menuRef} className={`app-nav ${isMenuOpen ? 'nav-open' : ''}`}>
-          <button 
-            className={`app-nav-link${location.pathname === '/admin' ? ' active' : ''}`}
-            onClick={() => navigate('/admin')}
-          >
-            Overview
-          </button>
-          <button 
-            className={`app-nav-link${location.pathname === '/adminpay' ? ' active' : ''}`}
-            onClick={() => navigate('/adminpay')}
-          >
-            Payments
-          </button>
-          <button 
-            className={`app-nav-link${location.pathname === '/departments' ? ' active' : ''}`}
-            onClick={() => navigate('/departments')}
-          >
-            Create Departments
-          </button>
-          <button 
-            className={`app-nav-link${location.pathname === '/classes' ? ' active' : ''}`}
-            onClick={() => navigate('/classes')}
-          >
-            Classes
-          </button>
-          <button 
-            className={`app-nav-link${location.pathname === '/idcards' ? ' active' : ''}`}
-            onClick={() => navigate('/idcards')}
-          >
-            ID Cards
-          </button>
-          <button 
-            className={`app-nav-link${location.pathname === '/adminAdmission' ? ' active' : ''}`}
-            onClick={() => navigate('/adminAdmission')}
-          >
-            Admission
-          </button>
-          <button 
-            className={`app-nav-link${location.pathname === '/admincontact' ? ' active' : ''}`}
-            onClick={() => navigate('/admincontact')}
-          >
-            Contact
-          </button>
-          <button className="app-nav-link logout" onClick={() => navigate('/signin')}>Log out</button>
-        </nav>
-      </header>
-
+      <AdminNav />
+      <ToastContainer position="top-right" autoClose={3000} />
       <main className="create-class-main">
         <div className="create-class-container">
           <div className="create-class-header">
@@ -511,18 +456,6 @@ const CreateClass = () => {
           )}
         </div>
       </main>
-
-      <footer className="app-footer">
-        <div className="footer-logo">MPASAT ADMISSION PORTAL</div>
-        <div className="footer-center">MPASAT, All Rights Reserved - 2025</div>
-        <div className="footer-socials">
-          <span>Follow us on:</span>
-          <span className="social-icon instagram"></span>
-          <span className="social-icon facebook"></span>
-          <span className="social-icon tiktok"></span>
-          <span className="social-icon twitter"></span>
-        </div>
-      </footer>
     </div>
   );
 };

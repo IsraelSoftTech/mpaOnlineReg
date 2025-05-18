@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { RiMenu3Line, RiCloseFill } from 'react-icons/ri';
+import { useNavigate } from 'react-router-dom';
 import { PieChart } from 'react-minimal-pie-chart';
 import { FaUserGraduate, FaMoneyBillWave, FaUserTimes, FaBuilding, FaUser, FaEdit, FaTrash, FaBan, FaCheck } from 'react-icons/fa';
 import { database } from '../../firebase';
 import { ref, onValue, off, update, remove } from 'firebase/database';
 import { AdmissionContext } from '../AdmissionContext';
+import AdminNav from './AdminNav';
 import './Admin.css';
-import logo from '../../assets/logo.png';
 
 const Admin = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -25,7 +24,6 @@ const Admin = () => {
   const menuRef = useRef(null);
   const buttonRef = useRef(null);
   const navigate = useNavigate();
-  const location = useLocation();
   const [weeklyStats, setWeeklyStats] = useState({
     today: 0,
     yesterday: 0,
@@ -143,8 +141,6 @@ const Admin = () => {
     };
   }, [currentUserData, navigate]);
 
-  const toggleMenu = () => setIsMenuOpen((open) => !open);
-
   const handleSuspendAccount = async (accountId, isSuspended) => {
     try {
       const accountRef = ref(database, `accounts/${accountId}`);
@@ -199,71 +195,7 @@ const Admin = () => {
 
   return (
     <div className="admin-wrapper">
-      <header className="app-header">
-        <div className="logo-section">
-          <img src={logo} alt="" className="app-logo" />
-          <span className="app-brand">MPASAT</span>
-        </div>
-        <button
-          ref={buttonRef}
-          className="menu-toggle"
-          onClick={toggleMenu}
-          aria-label="Toggle menu"
-        >
-          {isMenuOpen ? <RiCloseFill size={24} /> : <RiMenu3Line size={24} />}
-        </button>
-        <nav ref={menuRef} className={`app-nav ${isMenuOpen ? 'nav-open' : ''}`}>
-          <button 
-            className={`app-nav-link${location.pathname === '/admin' ? ' active' : ''}`}
-            onClick={() => navigate('/admin')}
-          >
-            Overview
-          </button>
-          <button 
-            className={`app-nav-link${location.pathname === '/adminpay' ? ' active' : ''}`}
-            onClick={() => navigate('/adminpay')}
-          >
-            Payments
-          </button>
-          <button 
-            className={`app-nav-link${location.pathname === '/departments' ? ' active' : ''}`}
-            onClick={() => navigate('/departments')}
-          >
-            Create Departments
-          </button>
-          <button 
-            className={`app-nav-link${location.pathname === '/classes' ? ' active' : ''}`}
-            onClick={() => navigate('/classes')}
-          >
-            Classes
-          </button>
-          <button 
-            className={`app-nav-link${location.pathname === '/idcards' ? ' active' : ''}`}
-            onClick={() => navigate('/idcards')}
-          >
-            ID Cards
-          </button>
-          <button 
-            className={`app-nav-link${location.pathname === '/adminAdmission' ? ' active' : ''}`}
-            onClick={() => navigate('/adminAdmission')}
-          >
-            Admission
-          </button>
-          <button 
-            className={`app-nav-link${location.pathname === '/interviews' ? ' active' : ''}`}
-            onClick={() => navigate('/interviews')}
-          >
-            Interviews
-          </button>
-          <button 
-            className={`app-nav-link${location.pathname === '/admincontact' ? ' active' : ''}`}
-            onClick={() => navigate('/admincontact')}
-          >
-            Contact
-          </button>
-          <button className="app-nav-link logout" onClick={() => navigate('/signin')}>Log out</button>
-        </nav>
-      </header>
+      <AdminNav />
       <main className="admin-main">
         <h2 className="admin-overview-title">Overview</h2>
         <div className="admin-stats-grid">

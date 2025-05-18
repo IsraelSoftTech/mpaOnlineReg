@@ -4,6 +4,7 @@ import { ref, onValue, off } from 'firebase/database';
 import './IDCards.css';
 import logo from '../../assets/logo.png';
 import { AdmissionContext } from '../AdmissionContext';
+import AdminNav from './AdminNav';
 
 const IDCards = () => {
   const [admittedStudents, setAdmittedStudents] = useState([]);
@@ -139,12 +140,8 @@ const IDCards = () => {
 
   return (
     <div className="id-cards-page">
-      <header className="app-header">
-        <div className="logo-section">
-          <img src={logo} alt="logo" className="app-logo" />
-          <span className="app-brand">MPASAT</span>
-        </div>
-      </header>
+      <AdminNav />
+     
 
       <div className="id-cards-header no-print">
         <h1>Student ID Cards</h1>

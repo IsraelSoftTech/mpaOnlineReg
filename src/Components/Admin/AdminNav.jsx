@@ -25,12 +25,12 @@ const AdminNav = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Function to check if a timestamp is newer than lastChecked
-  const isNewItem = (timestamp, type) => {
-    return new Date(timestamp) > new Date(lastChecked[type]);
-  };
-
   useEffect(() => {
+    // Function to check if a timestamp is newer than lastChecked
+    const isNewItem = (timestamp, type) => {
+      return new Date(timestamp) > new Date(lastChecked[type]);
+    };
+
     // Listen for new data in multiple nodes
     const admissionsRef = ref(database, 'admissions');
     const interviewsRef = ref(database, 'interviews');
@@ -109,7 +109,7 @@ const AdminNav = () => {
       off(messagesRef);
       off(paymentsRef);
     };
-  }, []);
+  }, [lastChecked]); // Only depend on lastChecked
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -157,6 +157,10 @@ const AdminNav = () => {
 
   const toggleMenu = () => setIsMenuOpen((open) => !open);
 
+  const handleLogout = () => {
+    navigate('/signin');
+  };
+
   return (
     <header className="app-header">
       <div className="logo-section">
@@ -172,6 +176,9 @@ const AdminNav = () => {
         {isMenuOpen ? <RiCloseFill size={24} /> : <RiMenu3Line size={24} />}
       </button>
       <nav ref={menuRef} className={`app-nav ${isMenuOpen ? 'nav-open' : ''}`}>
+        <button className="app-nav-link logout mobile-only" onClick={handleLogout}>
+          Log out
+        </button>
         <button 
           className={`app-nav-link${location.pathname === '/admin' ? ' active' : ''}`}
           onClick={() => navigate('/admin')}
@@ -218,36 +225,41 @@ const AdminNav = () => {
           className={`app-nav-link${location.pathname === '/admincontact' ? ' active' : ''}`}
           onClick={() => navigate('/admincontact')}
         >
-          Messages
+          Contact
         </button>
       </nav>
-      <div className="notification-container">
-        <button
-          className="notification-button"
-          onClick={() => setShowNotifications(!showNotifications)}
-          aria-label="Toggle notifications"
-        >
-          <IoNotificationsOutline size={24} />
-          {unreadCount > 0 && <span className="notification-badge">{unreadCount}</span>}
+      <div className="nav-end-section">
+        <div className="notification-container">
+          <button
+            className="notification-button"
+            onClick={() => setShowNotifications(!showNotifications)}
+            aria-label="Toggle notifications"
+          >
+            <IoNotificationsOutline size={24} />
+            {unreadCount > 0 && <span className="notification-badge">{unreadCount}</span>}
+          </button>
+          {showNotifications && (
+            <div ref={notificationRef} className="notification-dropdown">
+              {notifications.length > 0 ? (
+                notifications.map((notification) => (
+                  <div
+                    key={notification.id}
+                    className={`notification-item ${!notification.read ? 'unread' : ''}`}
+                    onClick={() => handleNotificationClick(notification)}
+                  >
+                    <p>{notification.message}</p>
+                    <small>{new Date(notification.timestamp).toLocaleString()}</small>
+                  </div>
+                ))
+              ) : (
+                <div className="no-notifications">No new notifications</div>
+              )}
+            </div>
+          )}
+        </div>
+        <button className="app-nav-link logout desktop-only" onClick={handleLogout}>
+          Log out
         </button>
-        {showNotifications && (
-          <div ref={notificationRef} className="notification-dropdown">
-            {notifications.length > 0 ? (
-              notifications.map((notification) => (
-                <div
-                  key={notification.id}
-                  className={`notification-item ${!notification.read ? 'unread' : ''}`}
-                  onClick={() => handleNotificationClick(notification)}
-                >
-                  <p>{notification.message}</p>
-                  <small>{new Date(notification.timestamp).toLocaleString()}</small>
-                </div>
-              ))
-            ) : (
-              <div className="no-notifications">No new notifications</div>
-            )}
-          </div>
-        )}
       </div>
     </header>
   );
