@@ -84,7 +84,7 @@ const Signin = () => {
   };
 
   return (
-    <div className="signin-container">
+    <div className="signin-page-wrapper">
       <header className="app-header">
         <div className="logo-section">
           <img src={logo} alt="" className="app-logo" />
@@ -104,70 +104,72 @@ const Signin = () => {
           <Link to="/signin" className={`app-nav-link${location.pathname === '/signin' ? ' active' : ''}`}>Sign In</Link>
         </nav>
       </header>
-      <main className="signin-main">
-        <div className="signin-box">
-          <h2 className="signin-title">Sign In <span className="underline"></span></h2>
-          {error && <div className="error-message">{error}</div>}
-          <form className="signin-form" onSubmit={handleSubmit}>
-            <div className="signin-form-group">
-              <span className="signin-icon signin-user-icon" aria-hidden="true"></span>
-              <input 
-                type="text" 
-                name="username" 
-                placeholder="Username" 
-                required 
-                minLength="3"
-                maxLength="20"
-                pattern="[a-zA-Z0-9_]+"
-                title="Username can only contain letters, numbers, and underscores"
-                onChange={() => error && setError('')}
-                className="signin-input"
+      <main className="signin-main-wrapper">
+        <div className="signin-content-container">
+          <div className="signin-box">
+            <h2 className="signin-title">Sign In <span className="underline"></span></h2>
+            {error && <div className="error-message">{error}</div>}
+            <form className="signin-form" onSubmit={handleSubmit}>
+              <div className="signin-form-group">
+                <span className="signin-icon signin-user-icon" aria-hidden="true"></span>
+                <input 
+                  type="text" 
+                  name="username" 
+                  placeholder="Username" 
+                  required 
+                  minLength="3"
+                  maxLength="20"
+                  pattern="[a-zA-Z0-9_]+"
+                  title="Username can only contain letters, numbers, and underscores"
+                  onChange={() => error && setError('')}
+                  className="signin-input"
+                  disabled={isLoading}
+                  autoComplete="username"
+                />
+                <span className="signin-icon signin-action-icon" onClick={() => clearField('username')} title="Clear field">×</span>
+              </div>
+              <div className="signin-form-group">
+                <span className="signin-icon signin-lock-icon" aria-hidden="true"></span>
+                <input 
+                  type={showPassword ? 'text' : 'password'} 
+                  name="password" 
+                  placeholder="Password" 
+                  required 
+                  minLength="6"
+                  onChange={() => error && setError('')}
+                  className="signin-input"
+                  disabled={isLoading}
+                  autoComplete="current-password"
+                />
+                <span 
+                  className="signin-icon signin-action-icon" 
+                  onClick={() => !isLoading && setShowPassword(!showPassword)} 
+                  title={showPassword ? 'Hide password' : 'Show password'}
+                  style={{ cursor: isLoading ? 'default' : 'pointer' }}
+                >
+                  {showPassword ? '👁️' : '👁️‍🗨️'}
+                </span>
+                <span className="signin-icon signin-action-icon" onClick={() => clearField('password')} title="Clear field">×</span>
+              </div>
+              <div className="signin-links-row">
+                <span className="signin-forgot-link">Forgot password?<b>Reset</b></span>
+              </div>
+              <div className="signin-remember-row">
+                <input type="checkbox" id="remember" className="signin-checkbox" />
+                <label htmlFor="remember" className="signin-checkbox-label">Remember me next time</label>
+              </div>
+              <button 
+                type="submit" 
+                className={`signin-button${isLoading ? ' loading' : ''}`}
                 disabled={isLoading}
-                autoComplete="username"
-              />
-              <span className="signin-icon signin-action-icon" onClick={() => clearField('username')} title="Clear field">×</span>
-            </div>
-            <div className="signin-form-group">
-              <span className="signin-icon signin-lock-icon" aria-hidden="true"></span>
-              <input 
-                type={showPassword ? 'text' : 'password'} 
-                name="password" 
-                placeholder="Password" 
-                required 
-                minLength="6"
-                onChange={() => error && setError('')}
-                className="signin-input"
-                disabled={isLoading}
-                autoComplete="current-password"
-              />
-              <span 
-                className="signin-icon signin-action-icon" 
-                onClick={() => !isLoading && setShowPassword(!showPassword)} 
-                title={showPassword ? 'Hide password' : 'Show password'}
-                style={{ cursor: isLoading ? 'default' : 'pointer' }}
               >
-                {showPassword ? '👁️' : '👁️‍🗨️'}
-              </span>
-              <span className="signin-icon signin-action-icon" onClick={() => clearField('password')} title="Clear field">×</span>
-            </div>
-            <div className="signin-links-row">
-              <span className="signin-forgot-link">Forgot password?<b>Reset</b></span>
-            </div>
-            <div className="signin-remember-row">
-              <input type="checkbox" id="remember" className="signin-checkbox" />
-              <label htmlFor="remember" className="signin-checkbox-label">Remember me next time</label>
-            </div>
-            <button 
-              type="submit" 
-              className={`signin-button${isLoading ? ' loading' : ''}`}
-              disabled={isLoading}
-            >
-              {isLoading ? 'Signing in...' : 'Sign In'}
-            </button>
-          </form>
-          <p className="signin-register-link">
-            Don't have an account? <Link to="/signup"><b>Sign up</b></Link>
-          </p>
+                {isLoading ? 'Signing in...' : 'Sign In'}
+              </button>
+            </form>
+            <p className="signin-register-link">
+              Don't have an account? <Link to="/signup"><b>Sign up</b></Link>
+            </p>
+          </div>
         </div>
       </main>
     </div>

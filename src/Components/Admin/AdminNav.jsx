@@ -114,6 +114,22 @@ const AdminNav = () => {
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
+        isMenuOpen &&
+        menuRef.current &&
+        !menuRef.current.contains(event.target) &&
+        buttonRef.current &&
+        !buttonRef.current.contains(event.target)
+      ) {
+        setIsMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isMenuOpen]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
         showNotifications &&
         notificationRef.current &&
         !notificationRef.current.contains(event.target)
@@ -144,7 +160,7 @@ const AdminNav = () => {
   return (
     <header className="app-header">
       <div className="logo-section">
-        <img src={logo} alt="" className="app-logo" />
+        <img src={logo} alt="logo" className="app-logo" />
         <span className="app-brand">MPASAT</span>
       </div>
       <button
@@ -202,46 +218,37 @@ const AdminNav = () => {
           className={`app-nav-link${location.pathname === '/admincontact' ? ' active' : ''}`}
           onClick={() => navigate('/admincontact')}
         >
-          Contact
+          Messages
         </button>
-        <div className="notification-container" ref={notificationRef}>
-          <button
-            className="notification-bell"
-            onClick={() => setShowNotifications(!showNotifications)}
-          >
-            <IoNotificationsOutline size={24} />
-            {unreadCount > 0 && (
-              <span className="notification-badge">{unreadCount}</span>
-            )}
-          </button>
-          {showNotifications && (
-            <div className="notifications-dropdown">
-              <h3>Notifications</h3>
-              {notifications.length === 0 ? (
-                <p className="no-notifications">No new notifications</p>
-              ) : (
-                <div className="notifications-list">
-                  {notifications.map((notification) => (
-                    <div
-                      key={notification.id}
-                      className={`notification-item ${notification.read ? 'read' : 'unread'}`}
-                      onClick={() => handleNotificationClick(notification)}
-                    >
-                      <div className="notification-content">
-                        <p className="notification-text">{notification.message}</p>
-                        <span className="notification-time">
-                          {new Date(notification.timestamp).toLocaleString()}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-        <button className="app-nav-link logout" onClick={() => navigate('/signin')}>Log out</button>
       </nav>
+      <div className="notification-container">
+        <button
+          className="notification-button"
+          onClick={() => setShowNotifications(!showNotifications)}
+          aria-label="Toggle notifications"
+        >
+          <IoNotificationsOutline size={24} />
+          {unreadCount > 0 && <span className="notification-badge">{unreadCount}</span>}
+        </button>
+        {showNotifications && (
+          <div ref={notificationRef} className="notification-dropdown">
+            {notifications.length > 0 ? (
+              notifications.map((notification) => (
+                <div
+                  key={notification.id}
+                  className={`notification-item ${!notification.read ? 'unread' : ''}`}
+                  onClick={() => handleNotificationClick(notification)}
+                >
+                  <p>{notification.message}</p>
+                  <small>{new Date(notification.timestamp).toLocaleString()}</small>
+                </div>
+              ))
+            ) : (
+              <div className="no-notifications">No new notifications</div>
+            )}
+          </div>
+        )}
+      </div>
     </header>
   );
 };

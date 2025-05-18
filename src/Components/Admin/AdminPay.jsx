@@ -144,15 +144,15 @@ const AdminPay = () => {
                     </td>
                     <td>
                       {!payment.adminConfirmed && (
-                        <div className="action-buttons">
+                        <div className="action-buttons-pay">
                           <button
-                            className="confirm-btn"
+                            className="pay-confirm-btn"
                             onClick={() => handleConfirm(payment.id)}
                           >
                             Confirm
                           </button>
                           <button
-                            className="reject-btn"
+                            className="pay-reject-btn"
                             onClick={() => handleReject(payment.id)}
                           >
                             Reject

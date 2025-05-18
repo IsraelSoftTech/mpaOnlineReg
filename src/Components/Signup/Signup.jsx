@@ -77,7 +77,7 @@ const Signup = () => {
   };
 
   return (
-    <div className="page-wrapper">
+    <div className="signup-page-wrapper">
       <header className="app-header">
         <div className="logo-section">
           <img src={logo} alt="" className="app-logo" />
@@ -89,108 +89,110 @@ const Signup = () => {
           <Link to="/signin" className={`app-nav-link${location.pathname === '/signin' ? ' active' : ''}`}>Sign In</Link>
         </nav>
       </header>
-      <main className="signup-main">
-        <div className="signup-box">
-          <h2 className="signup-title">Sign up <span className="underline"></span></h2>
-          {error && <div className="error-message">{error}</div>}
-          {successMessage && <div className="success-message">{successMessage}</div>}
-          <form className="signup-form" onSubmit={handleSubmit}>
-            <div className="signup-form-group">
-              <span className="signup-icon signup-user-icon" aria-hidden="true"></span>
-              <input 
-                type="text" 
-                name="fullName" 
-                placeholder="Full names" 
-                required 
-                minLength="2"
-                maxLength="50"
-                className="signup-input"
-              />
-              <span className="signup-icon signup-action-icon" onClick={() => clearField('fullName')} title="Clear field">×</span>
-            </div>
-            <div className="signup-form-group">
-              <span className="signup-icon signup-user-icon" aria-hidden="true"></span>
-              <input 
-                type="text" 
-                name="username" 
-                placeholder="Username" 
-                required 
-                minLength="3"
-                maxLength="20"
-                pattern="[a-zA-Z0-9_]+"
-                title="Username can only contain letters, numbers, and underscores"
-                className="signup-input"
-              />
-              <span className="signup-icon signup-action-icon" onClick={() => clearField('username')} title="Clear field">×</span>
-            </div>
-            <div className="signup-form-group">
-              <span className="signup-icon signup-email-icon" aria-hidden="true"></span>
-              <input 
-                type="email" 
-                name="email" 
-                placeholder="Email" 
-                required 
-                pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
-                className="signup-input"
-              />
-              <span className="signup-icon signup-action-icon" onClick={() => clearField('email')} title="Clear field">×</span>
-            </div>
-            <div className="signup-form-group signup-phone-group">
-              <select className="signup-country-code" defaultValue="+237">
-                <option value="+237">+237</option>
-              </select>
-              <input 
-                type="text" 
-                name="phone" 
-                placeholder="123 456 789" 
-                required 
-                pattern="[0-9]{9}"
-                title="Please enter a valid 9-digit phone number"
-                className="signup-input"
-              />
-              <span className="signup-icon signup-action-icon" onClick={() => clearField('phone')} title="Clear field">×</span>
-            </div>
-            <div className="signup-form-group">
-              <span className="signup-icon signup-lock-icon" aria-hidden="true"></span>
-              <input 
-                type={showPassword ? 'text' : 'password'} 
-                name="password" 
-                placeholder="Password" 
-                required 
-                minLength="6"
-                className="signup-input"
-              />
-              <span className="signup-icon signup-action-icon" onClick={() => setShowPassword(!showPassword)} title={showPassword ? 'Hide password' : 'Show password'}>
-                {showPassword ? '👁️' : '👁️‍🗨️'}
-              </span>
-              <span className="signup-icon signup-action-icon" onClick={() => clearField('password')} title="Clear field">×</span>
-            </div>
-            <div className="signup-form-group">
-              <span className="signup-icon signup-lock-icon" aria-hidden="true"></span>
-              <input 
-                type={showConfirmPassword ? 'text' : 'password'} 
-                name="confirmPassword" 
-                placeholder="Confirm Password" 
-                required 
-                minLength="6"
-                className="signup-input"
-              />
-              <span className="signup-icon signup-action-icon" onClick={() => setShowConfirmPassword(!showConfirmPassword)} title={showConfirmPassword ? 'Hide password' : 'Show password'}>
-                {showConfirmPassword ? '👁️' : '👁️‍🗨️'}
-              </span>
-              <span className="signup-icon signup-action-icon" onClick={() => clearField('confirmPassword')} title="Clear field">×</span>
-            </div>
-            <button 
-              type="submit" 
-              className="signup-button" 
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? 'Creating Account...' : 'Sign Up'}
-            </button>
-          </form>
-          <p className="signin-link">
-            Already have an account? <Link to="/signin"><b>Sign In</b></Link>
-          </p>
+      <main className="signup-main-wrapper">
+        <div className="signup-content-container">
+          <div className="signup-box">
+            <h2 className="signup-title">Sign up <span className="underline"></span></h2>
+            {error && <div className="error-message">{error}</div>}
+            {successMessage && <div className="success-message">{successMessage}</div>}
+            <form className="signup-form" onSubmit={handleSubmit}>
+              <div className="signup-form-group">
+                <span className="signup-icon signup-user-icon" aria-hidden="true"></span>
+                <input 
+                  type="text" 
+                  name="fullName" 
+                  placeholder="Full names" 
+                  required 
+                  minLength="2"
+                  maxLength="50"
+                  className="signup-input"
+                />
+                <span className="signup-icon signup-action-icon" onClick={() => clearField('fullName')} title="Clear field">×</span>
+              </div>
+              <div className="signup-form-group">
+                <span className="signup-icon signup-user-icon" aria-hidden="true"></span>
+                <input 
+                  type="text" 
+                  name="username" 
+                  placeholder="Username" 
+                  required 
+                  minLength="3"
+                  maxLength="20"
+                  pattern="[a-zA-Z0-9_]+"
+                  title="Username can only contain letters, numbers, and underscores"
+                  className="signup-input"
+                />
+                <span className="signup-icon signup-action-icon" onClick={() => clearField('username')} title="Clear field">×</span>
+              </div>
+              <div className="signup-form-group">
+                <span className="signup-icon signup-email-icon" aria-hidden="true"></span>
+                <input 
+                  type="email" 
+                  name="email" 
+                  placeholder="Email" 
+                  required 
+                  pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                  className="signup-input"
+                />
+                <span className="signup-icon signup-action-icon" onClick={() => clearField('email')} title="Clear field">×</span>
+              </div>
+              <div className="signup-form-group signup-phone-group">
+                <select className="signup-country-code" defaultValue="+237">
+                  <option value="+237">+237</option>
+                </select>
+                <input 
+                  type="text" 
+                  name="phone" 
+                  placeholder="123 456 789" 
+                  required 
+                  pattern="[0-9]{9}"
+                  title="Please enter a valid 9-digit phone number"
+                  className="signup-input"
+                />
+                <span className="signup-icon signup-action-icon" onClick={() => clearField('phone')} title="Clear field">×</span>
+              </div>
+              <div className="signup-form-group">
+                <span className="signup-icon signup-lock-icon" aria-hidden="true"></span>
+                <input 
+                  type={showPassword ? 'text' : 'password'} 
+                  name="password" 
+                  placeholder="Password" 
+                  required 
+                  minLength="6"
+                  className="signup-input"
+                />
+                <span className="signup-icon signup-action-icon" onClick={() => setShowPassword(!showPassword)} title={showPassword ? 'Hide password' : 'Show password'}>
+                  {showPassword ? '👁️' : '👁️‍🗨️'}
+                </span>
+                <span className="signup-icon signup-action-icon" onClick={() => clearField('password')} title="Clear field">×</span>
+              </div>
+              <div className="signup-form-group">
+                <span className="signup-icon signup-lock-icon" aria-hidden="true"></span>
+                <input 
+                  type={showConfirmPassword ? 'text' : 'password'} 
+                  name="confirmPassword" 
+                  placeholder="Confirm Password" 
+                  required 
+                  minLength="6"
+                  className="signup-input"
+                />
+                <span className="signup-icon signup-action-icon" onClick={() => setShowConfirmPassword(!showConfirmPassword)} title={showConfirmPassword ? 'Hide password' : 'Show password'}>
+                  {showConfirmPassword ? '👁️' : '👁️‍🗨️'}
+                </span>
+                <span className="signup-icon signup-action-icon" onClick={() => clearField('confirmPassword')} title="Clear field">×</span>
+              </div>
+              <button 
+                type="submit" 
+                className="signup-button" 
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? 'Creating Account...' : 'Sign Up'}
+              </button>
+            </form>
+            <p className="signin-link">
+              Already have an account? <Link to="/signin"><b>Sign In</b></Link>
+            </p>
+          </div>
         </div>
       </main>
     </div>

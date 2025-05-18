@@ -178,10 +178,10 @@ const AdminAdmission = () => {
                         </span>
                       </td>
                       <td>
-                        <div className="action-buttons">
+                        <div className="action-buttons-admission">
                           {admission.status !== 'Admitted' && (
                             <button
-                              className="admit-btn"
+                              className="admission-admit-btn"
                               onClick={() => handleStatusUpdate(admission.id, 'Admitted')}
                             >
                               Admit
@@ -189,7 +189,7 @@ const AdminAdmission = () => {
                           )}
                           {admission.status !== 'Rejected' && (
                             <button
-                              className="reject-btn"
+                              className="admission-reject-btn"
                               onClick={() => handleStatusUpdate(admission.id, 'Rejected')}
                             >
                               Reject

@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { RiMenu3Line, RiCloseFill } from 'react-icons/ri';
 import { FaEdit, FaTrash } from 'react-icons/fa';
+import { ref, onValue } from 'firebase/database';
+import { database } from '../../firebase';
 import './CreateClass.css';
 import { AdmissionContext } from '../AdmissionContext';
 import logo from '../../assets/logo.png';
@@ -13,16 +15,39 @@ const CreateClass = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [editingClass, setEditingClass] = useState(null);
+  const [departments, setDepartments] = useState([]);
   const [formData, setFormData] = useState({
     className: '',
-    admissionFee: '',
-    tuitionFee: '',
-    installments: ''
+    admissionFee: '0',
+    tuitionFee: '0',
+    vocationalFee: '0',
+    sanitationHealthFee: '0',
+    sportWearFee: '0',
+    installments: '1',
+    selectedDepartments: []
   });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const menuRef = useRef(null);
   const buttonRef = useRef(null);
+
+  // Fetch departments
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      const departmentsRef = ref(database, 'departments');
+      onValue(departmentsRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          const deptList = Object.entries(data).map(([id, dept]) => ({
+            id,
+            ...dept
+          }));
+          setDepartments(deptList);
+        }
+      });
+    };
+    fetchDepartments();
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -43,10 +68,24 @@ const CreateClass = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    if (name === 'selectedDepartments') {
+      const options = e.target.options;
+      const selectedValues = [];
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].selected) {
+          selectedValues.push(options[i].value);
+        }
+      }
+      setFormData(prev => ({
+        ...prev,
+        selectedDepartments: selectedValues
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
     setError('');
   };
 
@@ -55,16 +94,32 @@ const CreateClass = () => {
       setError('Class name is required');
       return false;
     }
-    if (!formData.admissionFee || isNaN(formData.admissionFee) || Number(formData.admissionFee) <= 0) {
-      setError('Valid admission fee is required');
+    if (isNaN(formData.admissionFee) || Number(formData.admissionFee) < 0) {
+      setError('Admission fee must be 0 or greater');
       return false;
     }
-    if (!formData.tuitionFee || isNaN(formData.tuitionFee) || Number(formData.tuitionFee) <= 0) {
-      setError('Valid tuition fee is required');
+    if (isNaN(formData.tuitionFee) || Number(formData.tuitionFee) < 0) {
+      setError('Tuition fee must be 0 or greater');
       return false;
     }
-    if (!formData.installments || isNaN(formData.installments) || Number(formData.installments) <= 0) {
-      setError('Valid number of installments is required');
+    if (isNaN(formData.vocationalFee) || Number(formData.vocationalFee) < 0) {
+      setError('Vocational fee must be 0 or greater');
+      return false;
+    }
+    if (isNaN(formData.sanitationHealthFee) || Number(formData.sanitationHealthFee) < 0) {
+      setError('Sanitation and health fee must be 0 or greater');
+      return false;
+    }
+    if (isNaN(formData.sportWearFee) || Number(formData.sportWearFee) < 0) {
+      setError('Sport wear fee must be 0 or greater');
+      return false;
+    }
+    if (!formData.installments || isNaN(formData.installments) || Number(formData.installments) < 1) {
+      setError('Number of installments must be at least 1');
+      return false;
+    }
+    if (formData.selectedDepartments.length === 0) {
+      setError('Please select at least one vocational department');
       return false;
     }
     return true;
@@ -82,7 +137,15 @@ const CreateClass = () => {
         ...formData,
         admissionFee: Number(formData.admissionFee),
         tuitionFee: Number(formData.tuitionFee),
+        vocationalFee: Number(formData.vocationalFee),
+        sanitationHealthFee: Number(formData.sanitationHealthFee),
+        sportWearFee: Number(formData.sportWearFee),
         installments: Number(formData.installments),
+        totalFee: Number(formData.admissionFee) + 
+                 Number(formData.tuitionFee) + 
+                 Number(formData.vocationalFee) + 
+                 Number(formData.sanitationHealthFee) + 
+                 Number(formData.sportWearFee),
         createdAt: new Date().toISOString()
       };
 
@@ -98,9 +161,13 @@ const CreateClass = () => {
       if (success) {
         setFormData({
           className: '',
-          admissionFee: '',
-          tuitionFee: '',
-          installments: ''
+          admissionFee: '0',
+          tuitionFee: '0',
+          vocationalFee: '0',
+          sanitationHealthFee: '0',
+          sportWearFee: '0',
+          installments: '1',
+          selectedDepartments: []
         });
         setShowForm(false);
         setEditingClass(null);
@@ -114,9 +181,13 @@ const CreateClass = () => {
     setEditingClass(classItem);
     setFormData({
       className: classItem.className,
-      admissionFee: classItem.admissionFee,
-      tuitionFee: classItem.tuitionFee,
-      installments: classItem.installments
+      admissionFee: classItem.admissionFee.toString(),
+      tuitionFee: classItem.tuitionFee.toString(),
+      vocationalFee: classItem.vocationalFee.toString(),
+      sanitationHealthFee: classItem.sanitationHealthFee.toString(),
+      sportWearFee: classItem.sportWearFee.toString(),
+      installments: classItem.installments.toString(),
+      selectedDepartments: classItem.selectedDepartments
     });
     setShowForm(true);
     setError('');
@@ -212,9 +283,13 @@ const CreateClass = () => {
                   setEditingClass(null);
                   setFormData({
                     className: '',
-                    admissionFee: '',
-                    tuitionFee: '',
-                    installments: ''
+                    admissionFee: '0',
+                    tuitionFee: '0',
+                    vocationalFee: '0',
+                    sanitationHealthFee: '0',
+                    sportWearFee: '0',
+                    installments: '1',
+                    selectedDepartments: []
                   });
                 }}
               >
@@ -242,7 +317,7 @@ const CreateClass = () => {
               </div>
 
               <div className="form-group">
-                <label htmlFor="admissionFee">Admission Fee</label>
+                <label htmlFor="admissionFee">Admission Fee (FCFA)</label>
                 <input
                   type="number"
                   id="admissionFee"
@@ -256,7 +331,7 @@ const CreateClass = () => {
               </div>
 
               <div className="form-group">
-                <label htmlFor="tuitionFee">Tuition Fee</label>
+                <label htmlFor="tuitionFee">Tuition Fee (FCFA)</label>
                 <input
                   type="number"
                   id="tuitionFee"
@@ -264,6 +339,48 @@ const CreateClass = () => {
                   value={formData.tuitionFee}
                   onChange={handleInputChange}
                   placeholder="Enter tuition fee"
+                  min="0"
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="vocationalFee">Vocational Fee (FCFA)</label>
+                <input
+                  type="number"
+                  id="vocationalFee"
+                  name="vocationalFee"
+                  value={formData.vocationalFee}
+                  onChange={handleInputChange}
+                  placeholder="Enter vocational fee"
+                  min="0"
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="sanitationHealthFee">Sanitation + Health Fee (FCFA)</label>
+                <input
+                  type="number"
+                  id="sanitationHealthFee"
+                  name="sanitationHealthFee"
+                  value={formData.sanitationHealthFee}
+                  onChange={handleInputChange}
+                  placeholder="Enter sanitation and health fee"
+                  min="0"
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="sportWearFee">Sport Wear Fee (FCFA)</label>
+                <input
+                  type="number"
+                  id="sportWearFee"
+                  name="sportWearFee"
+                  value={formData.sportWearFee}
+                  onChange={handleInputChange}
+                  placeholder="Enter sport wear fee"
                   min="0"
                   required
                 />
@@ -283,15 +400,45 @@ const CreateClass = () => {
                 />
               </div>
 
+              <div className="form-group">
+                <label>Vocational Departments</label>
+                <div className="departments-checkbox-container">
+                  {departments.map((dept) => (
+                    <label key={dept.id} className="department-checkbox">
+                      <input
+                        type="checkbox"
+                        name="selectedDepartments"
+                        value={dept.title}
+                        checked={formData.selectedDepartments.includes(dept.title)}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          setFormData(prev => ({
+                            ...prev,
+                            selectedDepartments: e.target.checked
+                              ? [...prev.selectedDepartments, value]
+                              : prev.selectedDepartments.filter(d => d !== value)
+                          }));
+                        }}
+                      />
+                      <span>{dept.title}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
               <div className="form-buttons">
                 <button type="button" className="cancel-btn" onClick={() => {
                   setShowForm(false);
                   setEditingClass(null);
                   setFormData({
                     className: '',
-                    admissionFee: '',
-                    tuitionFee: '',
-                    installments: ''
+                    admissionFee: '0',
+                    tuitionFee: '0',
+                    vocationalFee: '0',
+                    sanitationHealthFee: '0',
+                    sportWearFee: '0',
+                    installments: '1',
+                    selectedDepartments: []
                   });
                 }}>
                   Cancel
@@ -311,7 +458,12 @@ const CreateClass = () => {
                     <th>Class Name</th>
                     <th>Admission Fee</th>
                     <th>Tuition Fee</th>
+                    <th>Vocational Fee</th>
+                    <th>Sanitation + Health</th>
+                    <th>Sport Wear</th>
+                    <th>Total Fee</th>
                     <th>Installments</th>
+                    <th>Vocational Departments</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
@@ -319,19 +471,32 @@ const CreateClass = () => {
                   {schoolClasses.map((classItem) => (
                     <tr key={classItem.id}>
                       <td>{classItem.className}</td>
-                      <td>{classItem.admissionFee}</td>
-                      <td>{classItem.tuitionFee}</td>
-                      <td>{classItem.installments}</td>
-                      <td className="action-buttons">
+                      <td>{(classItem.admissionFee || 0).toLocaleString()} FCFA</td>
+                      <td>{(classItem.tuitionFee || 0).toLocaleString()} FCFA</td>
+                      <td>{(classItem.vocationalFee || 0).toLocaleString()} FCFA</td>
+                      <td>{(classItem.sanitationHealthFee || 0).toLocaleString()} FCFA</td>
+                      <td>{(classItem.sportWearFee || 0).toLocaleString()} FCFA</td>
+                      <td>{(classItem.totalFee || 0).toLocaleString()} FCFA</td>
+                      <td>{classItem.installments || 1}</td>
+                      <td>
+                        <div className="createclass-departments-grid">
+                          {classItem.selectedDepartments?.map((dept, index) => (
+                            <div key={index} className="createclass-department-item">
+                              {dept}
+                            </div>
+                          ))}
+                        </div>
+                      </td>
+                      <td className="createclass-action-buttons">
                         <button 
-                          className="edit-btn"
+                          className="createclass-edit-btn"
                           onClick={() => handleEdit(classItem)}
                           title="Edit class"
                         >
                           <FaEdit />
                         </button>
                         <button 
-                          className="delete-btn"
+                          className="createclass-delete-btn"
                           onClick={() => handleDelete(classItem.id)}
                           title="Delete class"
                         >

@@ -432,8 +432,8 @@ const UserTrack = () => {
                   )}
                 </div>
                 <div className="document-item">
-                  <label>Report Card</label>
-                  {currentUserData.report ? (
+                  <label>Pay to complete admission</label>
+                  {currentUserData.report && !currentUserData.isOldStudent ? (
                     <button 
                       className="pay-admission-btn" 
                       onClick={() => navigate('/payment')}
@@ -442,7 +442,9 @@ const UserTrack = () => {
                       Pay Admission
                     </button>
                   ) : (
-                    <span className="no-document">Not uploaded</span>
+                    <span className="no-document">
+                      {currentUserData.isOldStudent ? 'Not required for old students' : 'Not uploaded'}
+                    </span>
                   )}
                 </div>
               </div>

@@ -179,10 +179,10 @@ const Payment = () => {
             <div className="payment-step payment-step1">
               <div className="payment-item-info">
                 <div>
-                  <b>Admission Fee</b><br />Test Payment
+                  <b>Admission Fee</b><br />NB: Enter a valid email when filling payment form
                 </div>
                 <div className="payment-price">
-                  <b>Amount</b><br />XAF 100
+                  <b>Amount</b><br />XAF 2000
                 </div>
               </div>
               <div className="payment-section">
