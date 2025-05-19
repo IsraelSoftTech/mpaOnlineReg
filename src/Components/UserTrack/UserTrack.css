@@ -1,11 +1,24 @@
 .track-container {
   width: 100%;
   max-width: 900px;
-  margin: 0 auto;
+  margin: 20px auto;
   background: #fff;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.07);
   padding: 32px;
+}
+
+.usertrack-main {
+  padding: 76px 20px 20px;
+  min-height: calc(100vh - 70px);
+  background: #f3f8f7;
+}
+
+.userad-title-main {
+  color: #18316d;
+  text-align: center;
+  margin-bottom: 24px;
+  font-size: 1.8rem;
 }
 
 .track-status-header {
@@ -98,6 +111,23 @@
   color: #333;
   font-weight: 500;
   font-size: 1rem;
+}
+
+.detail-item .student-type {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.detail-item .student-type:empty::before {
+  content: 'Not provided';
+  color: #666;
+  font-style: italic;
+  background: none;
 }
 
 .track-documents {
@@ -545,31 +575,243 @@
   background-color: #122654;
 }
 
+/* Improved Responsive Styles */
+@media (max-width: 1024px) {
+  .track-container {
+    margin: 16px;
+    padding: 24px;
+  }
+
+  .usertrack-main {
+    padding: 76px 16px 16px;
+  }
+
+  .userad-title-main {
+    font-size: 1.6rem;
+  }
+}
+
 @media (max-width: 768px) {
   .track-container {
     padding: 20px;
-    margin: 16px;
+    margin: 12px;
+  }
+
+  .usertrack-main {
+    padding: 76px 12px 12px;
   }
 
   .track-status-header {
     flex-direction: column;
     gap: 16px;
+    padding-bottom: 20px;
+    margin-bottom: 24px;
+  }
+
+  .status-box {
+    padding: 16px;
+  }
+
+  .status-box h3 {
+    font-size: 1rem;
+    margin-bottom: 8px;
+  }
+
+  .status-badge {
+    padding: 6px 12px;
+    font-size: 0.85rem;
   }
 
   .details-grid {
     grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .detail-item {
+    padding: 12px;
+  }
+
+  .detail-item label {
+    font-size: 0.85rem;
+    margin-bottom: 6px;
+  }
+
+  .detail-item span {
+    font-size: 0.95rem;
+  }
+
+  .detail-item .student-type {
+    padding: 3px 10px;
+    font-size: 0.85rem;
   }
 
   .documents-grid {
     grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .document-item {
+    padding: 12px;
+  }
+
+  .student-picture {
+    max-width: 120px;
+    max-height: 120px;
   }
 
   .timeline-item {
     padding-left: 35px;
+    margin-bottom: 20px;
   }
 
+  .timeline-content {
+    padding: 12px;
+  }
+
+  .timeline-content h4 {
+    font-size: 0.95rem;
+  }
+
+  .timeline-content p {
+    font-size: 0.85rem;
+  }
+
+  .modal-content {
+    width: 95%;
+    padding: 20px;
+  }
+
+  .modal-content h2 {
+    font-size: 1.3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .track-container {
+    padding: 16px;
+    margin: 8px;
+  }
+
+  .usertrack-main {
+    padding: 76px 8px 8px;
+  }
+
+  .userad-title-main {
+    font-size: 1.4rem;
+    margin-bottom: 16px;
+  }
+
+  .status-box {
+    padding: 12px;
+  }
+
+  .status-badge {
+    padding: 4px 10px;
+    font-size: 0.8rem;
+  }
+
+  .detail-item {
+    padding: 10px;
+  }
+
+  .document-item {
+    padding: 10px;
+  }
+
+  .student-picture {
+    max-width: 100px;
+    max-height: 100px;
+  }
+
+  .timeline-item {
+    padding-left: 30px;
+    margin-bottom: 16px;
+  }
+
+  .timeline::before {
+    left: 12px;
+  }
+
+  .timeline-point {
+    left: 6px;
+    width: 12px;
+    height: 12px;
+  }
+
+  .timeline-content {
+    padding: 10px;
+  }
+
+  .timeline-content h4 {
+    font-size: 0.9rem;
+  }
+
+  .timeline-content p {
+    font-size: 0.8rem;
+  }
+
+  .book-interview-btn,
+  .pay-admission-btn {
+    padding: 6px 10px;
+    font-size: 0.85rem;
+  }
+
+  .modal-content {
+    padding: 16px;
+  }
+
+  .modal-content h2 {
+    font-size: 1.2rem;
+    margin-bottom: 16px;
+  }
+
+  .modal-buttons {
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  .cancel-btn,
+  .submit-btn {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+  }
+
+  .detail-item .student-type {
+    padding: 2px 8px;
+    font-size: 0.8rem;
+  }
+}
+
+/* Fix for notification banner responsiveness */
+.notification-banner {
+  margin: 0 auto 24px;
+  max-width: 900px;
+  width: calc(100% - 32px);
+}
+
+@media (max-width: 768px) {
   .notification-banner {
-    margin: 16px;
+    width: calc(100% - 24px);
+    margin: 0 auto 20px;
+    padding: 12px;
+  }
+
+  .view-schedule-btn {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .notification-banner {
+    width: calc(100% - 16px);
+    margin: 0 auto 16px;
+    padding: 10px;
+  }
+
+  .view-schedule-btn {
+    padding: 4px 10px;
+    font-size: 0.8rem;
   }
 }
 

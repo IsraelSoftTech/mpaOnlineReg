@@ -262,17 +262,19 @@
 .table-container {
   width: 100%;
   overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+  margin: 20px 0;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
 }
 
 .admin-table {
   width: 100%;
+  min-width: 800px; /* Ensures table doesn't get too squeezed */
   border-collapse: collapse;
-  margin-bottom: 8px;
-  min-width: auto;
+  white-space: normal; /* Allows text wrapping */
+  table-layout: fixed; /* Fixed table layout for better control */
 }
 
 .admin-table th,
@@ -280,49 +282,69 @@
   padding: 16px;
   text-align: left;
   border-bottom: 1px solid #eee;
-  white-space: normal;
-  word-wrap: break-word;
+  vertical-align: middle;
+  line-height: 1.4;
+  word-wrap: break-word; /* Ensures long words don't overflow */
+  overflow-wrap: break-word;
 }
 
-/* Make certain columns have a max width */
-.admin-table td:nth-child(3) { /* Reason column */
-  max-width: 200px;
-  overflow-wrap: break-word;
-  word-wrap: break-word;
-  word-break: break-word;
+/* Column widths for better text display */
+.admin-table th:first-child,
+.admin-table td:first-child {
+  width: 20%; /* Name/Username column */
+}
+
+.admin-table th:nth-child(2),
+.admin-table td:nth-child(2) {
+  width: 15%; /* Class/Email column */
+}
+
+.admin-table th:nth-child(3),
+.admin-table td:nth-child(3) {
+  width: 35%; /* Reason/Password column */
+}
+
+.admin-table th:nth-child(4),
+.admin-table td:nth-child(4) {
+  width: 15%; /* Date/Status column */
+}
+
+.admin-table th:last-child,
+.admin-table td:last-child {
+  width: 15%; /* Actions column */
 }
 
 .admin-table th {
-  background: #f8fafc;
-  color: #18316d;
+  background: #f8f9fa;
   font-weight: 600;
-  white-space: nowrap;
-}
-
-.admin-table td {
-  color: #444;
+  color: #18316d;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .admin-table tbody tr:hover {
-  background-color: #f8fafc;
+  background-color: #f8f9fa;
 }
 
 .status-badge {
-  padding: 6px 12px;
-  border-radius: 999px;
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 12px;
   font-size: 0.85rem;
   font-weight: 500;
-  display: inline-block;
+  text-align: center;
+  white-space: nowrap;
 }
 
 .status-badge.active {
-  background-color: #dcfce7;
-  color: #16a34a;
+  background-color: #e8f5e9;
+  color: #2e7d32;
 }
 
 .status-badge.suspended {
-  background-color: #fee2e2;
-  color: #dc2626;
+  background-color: #ffebee;
+  color: #c62828;
 }
 
 .action-buttons {
@@ -444,22 +466,28 @@
   }
 
   .table-container {
-    margin: 0;
-    padding: 0;
+    margin: 16px -16px; /* Negative margin to allow full-width scrolling */
+    width: calc(100% + 32px);
     border-radius: 0;
   }
 
   .admin-table {
-    font-size: 14px;
+    min-width: 650px; /* Slightly smaller minimum width for medium screens */
   }
 
   .admin-table th,
   .admin-table td {
-    padding: 12px 8px;
+    padding: 12px;
+    font-size: 0.9rem;
   }
 
-  .admin-table td:nth-child(3) { /* Reason column */
-    max-width: 150px;
+  .admin-action-btn {
+    padding: 6px;
+  }
+
+  .admin-action-icon {
+    width: 14px;
+    height: 14px;
   }
 
   .status-badge {
@@ -522,37 +550,44 @@
   }
 
   .table-container {
-    margin: 0;
-    padding: 0;
+    margin: 12px -12px;
+    width: calc(100% + 24px);
   }
 
   .admin-table {
-    font-size: 13px;
+    min-width: 500px; /* Even smaller minimum width for mobile */
   }
 
   .admin-table th,
   .admin-table td {
-    padding: 8px 6px;
+    padding: 10px;
+    font-size: 0.85rem;
   }
 
-  .admin-table td:nth-child(3) { /* Reason column */
-    max-width: 120px;
-  }
-
-  /* Adjust column widths for better mobile display */
+  /* Adjust column widths for mobile */
   .admin-table th:first-child,
   .admin-table td:first-child {
-    max-width: 80px;
+    width: 25%;
   }
 
   .admin-table th:nth-child(2),
   .admin-table td:nth-child(2) {
-    max-width: 60px;
+    width: 20%;
+  }
+
+  .admin-table th:nth-child(3),
+  .admin-table td:nth-child(3) {
+    width: 30%;
+  }
+
+  .admin-table th:nth-child(4),
+  .admin-table td:nth-child(4) {
+    width: 15%;
   }
 
   .admin-table th:last-child,
   .admin-table td:last-child {
-    max-width: 80px;
+    width: 10%;
   }
 
   .action-buttons {
@@ -674,19 +709,20 @@
 .admin-account-actions {
   display: flex;
   gap: 8px;
-  justify-content: center;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
 }
 
 .admin-action-btn {
-  background: none;
+  padding: 8px;
   border: none;
-  cursor: pointer;
-  padding: 6px;
   border-radius: 4px;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
+  background: transparent;
 }
 
 .admin-edit-btn {
@@ -722,7 +758,8 @@
 }
 
 .admin-action-icon {
-  font-size: 1.2rem;
+  width: 16px;
+  height: 16px;
 }
 
 .pie-chart-container {
@@ -754,4 +791,12 @@
 .legend-label {
   font-size: 0.9rem;
   color: #333;
+}
+
+/* No data message */
+.no-data {
+  text-align: center;
+  color: #666;
+  font-style: italic;
+  padding: 24px !important;
 } 

@@ -23,9 +23,9 @@
 }
 .department-header {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  margin-bottom: 8px;
+  align-items: center;
+  margin-bottom: 0.5rem;
 }
 .department-title {
   font-size: 1.1rem;
@@ -34,18 +34,33 @@
 }
 .department-actions {
   display: flex;
-  gap: 8px;
+  gap: 0.75rem;
 }
-.department-action-icon {
-  font-size: 20px;
+.department-edit-btn,
+.department-delete-btn {
+  background: none;
+  border: none;
+  padding: 0.5rem;
   cursor: pointer;
-  transition: color 0.2s;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.department-action-icon.edit:hover {
-  color: #2196f3;
+.department-edit-btn {
+  color: #18316d;
 }
-.department-action-icon.delete:hover {
-  color: #e53935;
+.department-edit-btn:hover {
+  background-color: rgba(24, 49, 109, 0.1);
+  transform: scale(1.1);
+}
+.department-delete-btn {
+  color: #dc2626;
+}
+.department-delete-btn:hover {
+  background-color: rgba(220, 38, 38, 0.1);
+  transform: scale(1.1);
 }
 .department-desc {
   font-size: 1rem;

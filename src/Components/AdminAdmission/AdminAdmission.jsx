@@ -18,6 +18,7 @@ const AdminAdmission = () => {
   const { currentUserData } = useContext(AdmissionContext);
 
   const [admissions, setAdmissions] = useState([]);
+  const [academicYears, setAcademicYears] = useState([]);
 
   // Real-time admissions fetch
   useEffect(() => {
@@ -41,6 +42,15 @@ const AdminAdmission = () => {
             ...admission
           }))
           .sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0));
+
+        // Extract unique academic years from admissions
+        const years = [...new Set(admissionsList
+          .filter(a => a.academicYear)
+          .map(a => a.academicYear))]
+          .sort()
+          .reverse();
+
+        setAcademicYears(years);
         setAdmissions(admissionsList);
         setIsLoading(false);
       } catch (error) {
@@ -129,6 +139,7 @@ const AdminAdmission = () => {
                     <th>Form/Class</th>
                     <th>Vocation Department</th>
                     <th>Report Card</th>
+                    <th>Academic Year</th>
                     <th>Status</th>
                     <th>Actions</th>
                   </tr>
@@ -172,6 +183,7 @@ const AdminAdmission = () => {
                           <span className="no-report">No Report</span>
                         )}
                       </td>
+                      <td>{admission.academicYear || 'N/A'}</td>
                       <td>
                         <span className={`status-badge status-${(admission.status || 'pending').toLowerCase()}`}>
                           {admission.status || 'Pending'}
@@ -210,6 +222,7 @@ const AdminAdmission = () => {
         <PrintClassList
           onClose={() => setShowPrintDialog(false)}
           admissions={admissions.filter(a => a.status === 'Admitted')}
+          academicYears={academicYears}
         />
       )}
     </div>

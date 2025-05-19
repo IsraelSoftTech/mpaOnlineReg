@@ -26,6 +26,7 @@ const CreateClass = () => {
     vocationalFee: '0',
     sanitationHealthFee: '0',
     sportWearFee: '0',
+    labFee: '0',
     installments: '1',
     selectedDepartments: []
   });
@@ -33,6 +34,25 @@ const CreateClass = () => {
   const [success, setSuccess] = useState('');
   const menuRef = useRef(null);
   const buttonRef = useRef(null);
+
+  // Add array of special class names
+  const specialClasses = [
+    'Form Five(5) Arts',
+    'Form Five(5) Science',
+    'Lower Sixth Arts',
+    'Lower Sixth Science',
+    'Upper Sixth Arts',
+    'Upper Sixth Science',
+    'Form Five(5) Commercial',
+    'Upper Sixth Commercial',
+    'Form 4 Technical',
+    'Form 5 Technical'
+  ];
+
+  // Check if current class is a special class
+  const isSpecialClass = (className) => {
+    return specialClasses.includes(className);
+  };
 
   // Fetch departments
   useEffect(() => {
@@ -83,6 +103,13 @@ const CreateClass = () => {
         ...prev,
         selectedDepartments: selectedValues
       }));
+    } else if (name === 'className') {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value,
+        // Clear departments if it's a special class
+        selectedDepartments: isSpecialClass(value) ? [] : prev.selectedDepartments
+      }));
     } else {
       setFormData(prev => ({
         ...prev,
@@ -117,11 +144,15 @@ const CreateClass = () => {
       setError('Sport wear fee must be 0 or greater');
       return false;
     }
+    if (isNaN(formData.labFee) || Number(formData.labFee) < 0) {
+      setError('Lab fee must be 0 or greater');
+      return false;
+    }
     if (!formData.installments || isNaN(formData.installments) || Number(formData.installments) < 1) {
       setError('Number of installments must be at least 1');
       return false;
     }
-    if (formData.selectedDepartments.length === 0) {
+    if (!isSpecialClass(formData.className) && formData.selectedDepartments.length === 0) {
       setError('Please select at least one vocational department');
       return false;
     }
@@ -143,12 +174,14 @@ const CreateClass = () => {
         vocationalFee: Number(formData.vocationalFee),
         sanitationHealthFee: Number(formData.sanitationHealthFee),
         sportWearFee: Number(formData.sportWearFee),
+        labFee: Number(formData.labFee),
         installments: Number(formData.installments),
         totalFee: Number(formData.admissionFee) + 
                  Number(formData.tuitionFee) + 
                  Number(formData.vocationalFee) + 
                  Number(formData.sanitationHealthFee) + 
-                 Number(formData.sportWearFee),
+                 Number(formData.sportWearFee) + 
+                 Number(formData.labFee),
         createdAt: new Date().toISOString()
       };
 
@@ -169,6 +202,7 @@ const CreateClass = () => {
           vocationalFee: '0',
           sanitationHealthFee: '0',
           sportWearFee: '0',
+          labFee: '0',
           installments: '1',
           selectedDepartments: []
         });
@@ -189,6 +223,7 @@ const CreateClass = () => {
       vocationalFee: classItem.vocationalFee.toString(),
       sanitationHealthFee: classItem.sanitationHealthFee.toString(),
       sportWearFee: classItem.sportWearFee.toString(),
+      labFee: classItem.labFee.toString(),
       installments: classItem.installments.toString(),
       selectedDepartments: classItem.selectedDepartments
     });
@@ -233,6 +268,7 @@ const CreateClass = () => {
                     vocationalFee: '0',
                     sanitationHealthFee: '0',
                     sportWearFee: '0',
+                    labFee: '0',
                     installments: '1',
                     selectedDepartments: []
                   });
@@ -331,6 +367,22 @@ const CreateClass = () => {
                 />
               </div>
 
+              {isSpecialClass(formData.className) && (
+                <div className="form-group">
+                  <label htmlFor="labFee">Lab Fee (FCFA)</label>
+                  <input
+                    type="number"
+                    id="labFee"
+                    name="labFee"
+                    value={formData.labFee}
+                    onChange={handleInputChange}
+                    placeholder="Enter lab fee"
+                    min="0"
+                    required
+                  />
+                </div>
+              )}
+
               <div className="form-group">
                 <label htmlFor="installments">Number of Installments</label>
                 <input
@@ -345,31 +397,33 @@ const CreateClass = () => {
                 />
               </div>
 
-              <div className="form-group">
-                <label>Vocational Departments</label>
-                <div className="departments-checkbox-container">
-                  {departments.map((dept) => (
-                    <label key={dept.id} className="department-checkbox">
-                      <input
-                        type="checkbox"
-                        name="selectedDepartments"
-                        value={dept.title}
-                        checked={formData.selectedDepartments.includes(dept.title)}
-                        onChange={(e) => {
-                          const value = e.target.value;
-                          setFormData(prev => ({
-                            ...prev,
-                            selectedDepartments: e.target.checked
-                              ? [...prev.selectedDepartments, value]
-                              : prev.selectedDepartments.filter(d => d !== value)
-                          }));
-                        }}
-                      />
-                      <span>{dept.title}</span>
-                    </label>
-                  ))}
+              {!isSpecialClass(formData.className) && (
+                <div className="form-group">
+                  <label>Vocational Departments</label>
+                  <div className="departments-checkbox-container">
+                    {departments.map((dept) => (
+                      <label key={dept.id} className="department-checkbox">
+                        <input
+                          type="checkbox"
+                          name="selectedDepartments"
+                          value={dept.title}
+                          checked={formData.selectedDepartments.includes(dept.title)}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            setFormData(prev => ({
+                              ...prev,
+                              selectedDepartments: e.target.checked
+                                ? [...prev.selectedDepartments, value]
+                                : prev.selectedDepartments.filter(d => d !== value)
+                            }));
+                          }}
+                        />
+                        <span>{dept.title}</span>
+                      </label>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
 
               <div className="form-buttons">
                 <button type="button" className="cancel-btn" onClick={() => {
@@ -382,6 +436,7 @@ const CreateClass = () => {
                     vocationalFee: '0',
                     sanitationHealthFee: '0',
                     sportWearFee: '0',
+                    labFee: '0',
                     installments: '1',
                     selectedDepartments: []
                   });
@@ -406,6 +461,7 @@ const CreateClass = () => {
                     <th>Vocational Fee</th>
                     <th>Sanitation + Health</th>
                     <th>Sport Wear</th>
+                    <th>Lab Fee</th>
                     <th>Total Fee</th>
                     <th>Installments</th>
                     <th>Vocational Departments</th>
@@ -418,14 +474,19 @@ const CreateClass = () => {
                       <td>{classItem.className}</td>
                       <td>{(classItem.admissionFee || 0).toLocaleString()} FCFA</td>
                       <td>{(classItem.tuitionFee || 0).toLocaleString()} FCFA</td>
-                      <td>{(classItem.vocationalFee || 0).toLocaleString()} FCFA</td>
+                      <td>{isSpecialClass(classItem.className) ? 'None' : `${(classItem.vocationalFee || 0).toLocaleString()} FCFA`}</td>
                       <td>{(classItem.sanitationHealthFee || 0).toLocaleString()} FCFA</td>
                       <td>{(classItem.sportWearFee || 0).toLocaleString()} FCFA</td>
+                      <td>{isSpecialClass(classItem.className) ? `${(classItem.labFee || 0).toLocaleString()} FCFA` : 'None'}</td>
                       <td>{(classItem.totalFee || 0).toLocaleString()} FCFA</td>
                       <td>{classItem.installments || 1}</td>
                       <td>
                         <div className="createclass-departments-grid">
-                          {classItem.selectedDepartments?.map((dept, index) => (
+                          {isSpecialClass(classItem.className) ? (
+                            <div className="createclass-department-item no-department">
+                              None
+                            </div>
+                          ) : classItem.selectedDepartments?.map((dept, index) => (
                             <div key={index} className="createclass-department-item">
                               {dept}
                             </div>

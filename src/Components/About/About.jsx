@@ -1,24 +1,32 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { RiMenu3Line, RiCloseFill, RiArrowRightLine } from 'react-icons/ri';
-import { FaMapMarkerAlt, FaPhone, FaEnvelope, FaFacebook, FaYoutube } from 'react-icons/fa';
+import { FaMapMarkerAlt, FaPhone, FaEnvelope, FaFacebook, FaYoutube, FaDownload } from 'react-icons/fa';
 import { ref, onValue } from 'firebase/database';
 import { database } from '../../firebase';
 import './About.css';
 import logo from '../../assets/logo.png';
+import campus1 from '../../assets/campus1.jpg';
+import campus2 from '../../assets/campus2.jpg';
+import campus3 from '../../assets/campus3.jpg';
+import { AdmissionContext } from '../AdmissionContext';
+import html2pdf from 'html2pdf.js';
 
 const About = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { schoolClasses } = useContext(AdmissionContext);
   const [departments, setDepartments] = useState([]);
-  const [schoolClasses, setSchoolClasses] = useState([]);
   const [displayText, setDisplayText] = useState('');
   const [allImages, setAllImages] = useState([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [currentCampusIndex, setCurrentCampusIndex] = useState(0);
   const menuRef = useRef(null);
   const buttonRef = useRef(null);
   const fullText = 'Welcome to MPASAT';
+  const campusImages = [campus1, campus2, campus3];
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     let timeout;
@@ -81,40 +89,70 @@ const About = () => {
     }
   }, [allImages]);
 
-  // Fetch departments and classes
+  useEffect(() => {
+    const campusInterval = setInterval(() => {
+      setCurrentCampusIndex((prevIndex) => 
+        prevIndex === campusImages.length - 1 ? 0 : prevIndex + 1
+      );
+    }, 3000);
+
+    return () => clearInterval(campusInterval);
+  }, []);
+
   useEffect(() => {
     const departmentsRef = ref(database, 'departments');
-    const classesRef = ref(database, 'schoolClasses');
-
-    const unsubscribeDepts = onValue(departmentsRef, (snapshot) => {
+    onValue(departmentsRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
-        const deptList = Object.entries(data).map(([id, dept]) => ({
+        const departmentsList = Object.entries(data).map(([id, dept]) => ({
           id,
           ...dept
         }));
-        setDepartments(deptList);
+        setDepartments(departmentsList);
       }
+      setIsLoading(false);
     });
-
-    const unsubscribeClasses = onValue(classesRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        const classList = Object.entries(data).map(([id, classData]) => ({
-          id,
-          ...classData
-        }));
-        setSchoolClasses(classList);
-      }
-    });
-
-    return () => {
-      unsubscribeDepts();
-      unsubscribeClasses();
-    };
   }, []);
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+
+  const isSpecialClass = (className) => {
+    const specialClasses = [
+      'Form Five(5) Arts',
+      'Form Five(5) Science',
+      'Lower Sixth Arts',
+      'Lower Sixth Science',
+      'Upper Sixth Arts',
+      'Upper Sixth Science',
+      'Form Five(5) Commercial',
+      'Upper Sixth Commercial',
+      'Form 4 Technical',
+      'Form 5 Technical'
+    ];
+    return specialClasses.includes(className);
+  };
+
+  const handleDownloadPDF = () => {
+    const element = document.getElementById('fee-table-container');
+    const opt = {
+      margin: 0.5,
+      filename: 'MPASAT_Fee_Structure.pdf',
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'in', format: 'a3', orientation: 'landscape' }
+    };
+
+    html2pdf().set(opt).from(element).save();
+  };
+
+  if (isLoading) {
+    return (
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+        <p>Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="page-wrapper">
@@ -212,6 +250,31 @@ const About = () => {
           </div>
         </section>
 
+        {/* Campus Section */}
+        <section className="campus-section">
+          <h2>Our Campus</h2>
+          <div className="campus-slider">
+            <div className="slider-container">
+              <div className="slider-image-wrapper">
+                <img 
+                  src={campusImages[currentCampusIndex]} 
+                  alt={`Campus View ${currentCampusIndex + 1}`} 
+                  className="slider-image"
+                />
+              </div>
+              <div className="slider-indicators">
+                {campusImages.map((_, index) => (
+                  <span 
+                    key={index} 
+                    className={`slider-dot ${index === currentCampusIndex ? 'active' : ''}`}
+                    onClick={() => setCurrentCampusIndex(index)}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Contact Section */}
         <section className="contact-section">
           <h2>Contact Information</h2>
@@ -258,37 +321,44 @@ const About = () => {
         {/* Fee Structure Section */}
         <section className="fee-structure-section">
           <h2>Fee Structure</h2>
-          <div className="fee-table-container">
+          <button className="download-btn" onClick={handleDownloadPDF}>
+            <FaDownload /> Download Fee Structure
+          </button>
+          <div id="fee-table-container" className="fee-table-container">
             <table className="fee-table">
               <thead>
                 <tr>
-                  <th>S/N</th>
                   <th>Class Name</th>
                   <th>Admission Fee</th>
                   <th>Tuition Fee</th>
                   <th>Vocational Fee</th>
                   <th>Sanitation + Health</th>
                   <th>Sport Wear</th>
+                  <th>Lab Fee</th>
                   <th>Total Fee</th>
                   <th>Installments</th>
                   <th>Vocational Departments</th>
                 </tr>
               </thead>
               <tbody>
-                {schoolClasses.map((classItem, index) => (
+                {schoolClasses.map((classItem) => (
                   <tr key={classItem.id}>
-                    <td>{index + 1}</td>
                     <td>{classItem.className}</td>
-                    <td className="fee-amount">{(classItem.admissionFee || 0).toLocaleString()} FCFA</td>
-                    <td className="fee-amount">{(classItem.tuitionFee || 0).toLocaleString()} FCFA</td>
-                    <td className="fee-amount">{(classItem.vocationalFee || 0).toLocaleString()} FCFA</td>
-                    <td className="fee-amount">{(classItem.sanitationHealthFee || 0).toLocaleString()} FCFA</td>
+                    <td>{(classItem.admissionFee || 0).toLocaleString()} FCFA</td>
+                    <td>{(classItem.tuitionFee || 0).toLocaleString()} FCFA</td>
+                    <td>{isSpecialClass(classItem.className) ? 'None' : `${(classItem.vocationalFee || 0).toLocaleString()} FCFA`}</td>
+                    <td>{(classItem.sanitationHealthFee || 0).toLocaleString()} FCFA</td>
                     <td>{(classItem.sportWearFee || 0).toLocaleString()} FCFA</td>
-                    <td className="fee-amount total-fee">{(classItem.totalFee || 0).toLocaleString()} FCFA</td>
+                    <td>{isSpecialClass(classItem.className) ? `${(classItem.labFee || 0).toLocaleString()} FCFA` : 'None'}</td>
+                    <td>{(classItem.totalFee || 0).toLocaleString()} FCFA</td>
                     <td>{classItem.installments || 1}</td>
-                    <td className="departments-cell">
+                    <td>
                       <div className="about-departments-grid">
-                        {classItem.selectedDepartments?.map((dept, index) => (
+                        {isSpecialClass(classItem.className) ? (
+                          <div className="about-department-item no-department">
+                            None
+                          </div>
+                        ) : classItem.selectedDepartments?.map((dept, index) => (
                           <div key={index} className="about-department-item">
                             {dept}
                           </div>

@@ -2,37 +2,31 @@ import React, { useState, useContext } from 'react';
 import { AdmissionContext } from '../AdmissionContext';
 import './PrintClassList.css';
 
-const PrintClassList = ({ onClose, admissions }) => {
+const PrintClassList = ({ onClose, admissions, academicYears }) => {
   const { schoolClasses } = useContext(AdmissionContext);
   const [selectedClass, setSelectedClass] = useState('');
-  const [academicYear, setAcademicYear] = useState('2023/2024');
-
-  // Get current academic year options
-  const currentYear = new Date().getFullYear();
-  const academicYears = [
-    `${currentYear-1}/${currentYear}`,
-    `${currentYear}/${currentYear+1}`,
-    `${currentYear+1}/${currentYear+2}`
-  ];
+  const [selectedYear, setSelectedYear] = useState('');
+  const [error, setError] = useState('');
 
   const handlePrint = () => {
-    if (!selectedClass || !academicYear) {
-      alert('Please select both class and academic year');
+    if (!selectedClass || !selectedYear) {
+      setError('Please select both class and academic year');
       return;
     }
 
-    // Filter admitted students for the selected class
+    // Filter admitted students for the selected class and academic year
     const students = admissions
       .filter(student => 
         student.form === selectedClass && 
-        student.status === 'Admitted'
+        student.status === 'Admitted' &&
+        student.academicYear === selectedYear
       )
       .sort((a, b) => 
         (a.fullName || '').localeCompare(b.fullName || '')
       );
 
     if (students.length === 0) {
-      alert('No admitted students found for the selected class');
+      setError(`No admitted students found for ${selectedClass} in academic year ${selectedYear}`);
       return;
     }
 
@@ -46,7 +40,7 @@ const PrintClassList = ({ onClose, admissions }) => {
           <h3>P.O Box 123, Bamenda - Cameroon</h3>
           <h3>Tel: +237-123-456-789</h3>
           <h2 class="list-title">Class List For ${selectedClass}</h2>
-          <h3>Academic Year: ${academicYear}</h3>
+          <h3>Academic Year: ${selectedYear}</h3>
         </div>
         <table class="print-table">
           <thead>
@@ -57,6 +51,7 @@ const PrintClassList = ({ onClose, admissions }) => {
               <th>Date of Birth</th>
               <th>Place of Birth</th>
               <th>Guardian's Contact</th>
+              <th>Vocational Department</th>
             </tr>
           </thead>
           <tbody>
@@ -68,6 +63,7 @@ const PrintClassList = ({ onClose, admissions }) => {
                 <td>${student.dob || 'N/A'}</td>
                 <td>${student.pob || 'N/A'}</td>
                 <td>${student.guardian || 'N/A'}</td>
+                <td>${student.vocation || 'N/A'}</td>
               </tr>
             `).join('')}
           </tbody>
@@ -94,7 +90,7 @@ const PrintClassList = ({ onClose, admissions }) => {
     printWindow.document.write(`
       <html>
         <head>
-          <title>Class List - ${selectedClass}</title>
+          <title>Class List - ${selectedClass} (${selectedYear})</title>
           <style>
             body { font-family: Arial, sans-serif; margin: 20px; }
             .print-content { max-width: 1000px; margin: 0 auto; }
@@ -159,12 +155,16 @@ const PrintClassList = ({ onClose, admissions }) => {
     <div className="print-dialog-overlay">
       <div className="print-dialog">
         <h2>Print Class List</h2>
+        {error && <div className="print-error-message">{error}</div>}
         <form className="print-form" onSubmit={(e) => e.preventDefault()}>
           <div className="form-group">
             <label>Select Class:</label>
             <select 
               value={selectedClass} 
-              onChange={(e) => setSelectedClass(e.target.value)}
+              onChange={(e) => {
+                setSelectedClass(e.target.value);
+                setError('');
+              }}
               required
             >
               <option value="">Select a class</option>
@@ -178,10 +178,14 @@ const PrintClassList = ({ onClose, admissions }) => {
           <div className="form-group">
             <label>Academic Year:</label>
             <select 
-              value={academicYear} 
-              onChange={(e) => setAcademicYear(e.target.value)}
+              value={selectedYear} 
+              onChange={(e) => {
+                setSelectedYear(e.target.value);
+                setError('');
+              }}
               required
             >
+              <option value="">Select academic year</option>
               {academicYears.map((year) => (
                 <option key={year} value={year}>{year}</option>
               ))}
@@ -195,7 +199,7 @@ const PrintClassList = ({ onClose, admissions }) => {
               type="button" 
               className="print-button" 
               onClick={handlePrint}
-              disabled={!selectedClass || !academicYear}
+              disabled={!selectedClass || !selectedYear}
             >
               Print List
             </button>

@@ -256,16 +256,20 @@ const Department = () => {
                 <div className="department-header">
                   <h3 className="voc-title">{dept.title}</h3>
                   <div className="department-actions">
-                    <RiEdit2Line 
-                      className="department-action-icon edit" 
+                    <button 
+                      className="department-edit-btn" 
                       title="Edit"
                       onClick={() => handleEdit(dept)}
-                    />
-                    <RiDeleteBin6Line 
-                      className="department-action-icon delete" 
+                    >
+                      <RiEdit2Line size={20} />
+                    </button>
+                    <button 
+                      className="department-delete-btn" 
                       title="Delete"
                       onClick={() => handleDelete(dept.id)}
-                    />
+                    >
+                      <RiDeleteBin6Line size={20} />
+                    </button>
                   </div>
                 </div>
                 <div className="voc-desc">{dept.desc}</div>

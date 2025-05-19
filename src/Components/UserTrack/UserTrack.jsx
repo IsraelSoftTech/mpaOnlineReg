@@ -369,12 +369,14 @@ const UserTrack = () => {
               <h3>Application Status</h3>
               <span className={`status-badge status-${status.toLowerCase()}`}>{status}</span>
             </div>
-            <div className="status-box">
-              <h3>Payment Status</h3>
-              <span className={`status-badge status-${status === 'Admitted' ? 'done' : paymentStatus.toLowerCase().replace(' ', '-')}`}>
-                {status === 'Admitted' ? 'Done' : paymentStatus}
-              </span>
-            </div>
+            {currentUserData.studentType === 'New Student' && (
+              <div className="status-box">
+                <h3>Payment Status</h3>
+                <span className={`status-badge status-${status === 'Admitted' ? 'done' : paymentStatus.toLowerCase().replace(' ', '-')}`}>
+                  {status === 'Admitted' ? 'Done' : paymentStatus}
+                </span>
+              </div>
+            )}
           </div>
           <div className="track-details">
             <h3>Application Details</h3>
@@ -382,6 +384,10 @@ const UserTrack = () => {
               <div className="detail-item">
                 <label>Full Name</label>
                 <span>{currentUserData.name || currentUserData.fullName || 'Not provided'}</span>
+              </div>
+              <div className="detail-item">
+                <label>Student Type</label>
+                <span className="student-type">{currentUserData.studentType || 'Not provided'}</span>
               </div>
               <div className="detail-item">
                 <label>Sex</label>
@@ -431,22 +437,21 @@ const UserTrack = () => {
                     <span className="no-document">Not uploaded</span>
                   )}
                 </div>
-                <div className="document-item">
-                  <label>Pay to complete admission</label>
-                  {currentUserData.report && !currentUserData.isOldStudent ? (
-                    <button 
-                      className="pay-admission-btn" 
-                      onClick={() => navigate('/payment')}
-                      style={{ cursor: 'pointer', opacity: 1 }}
-                    >
-                      Pay Admission
-                    </button>
-                  ) : (
-                    <span className="no-document">
-                      {currentUserData.isOldStudent ? 'Not required for old students' : 'Not uploaded'}
-                    </span>
-                  )}
-                </div>
+                {currentUserData.studentType === 'New Student' && (
+                  <div className="document-item">
+                    <label>Pay to complete admission</label>
+                    {currentUserData.report ? (
+                      <button 
+                        className="pay-admission-btn" 
+                        onClick={() => navigate('/payment')}
+                      >
+                        Pay Admission
+                      </button>
+                    ) : (
+                      <span className="no-document">Report card not uploaded</span>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
             <div className="track-timeline">
@@ -459,19 +464,21 @@ const UserTrack = () => {
                     <p>{new Date(currentUserData.timestamp).toLocaleDateString()}</p>
                   </div>
                 </div>
-                <div className={`timeline-item ${paymentStatus === 'Processing' || status === 'Admitted' ? 'active' : ''}`}>
-                  <div className="timeline-point"></div>
-                  <div className="timeline-content">
-                    <h4>Payment Status</h4>
-                    <p>{status === 'Admitted' ? 'Done' : paymentStatus}</p>
+                {currentUserData.studentType === 'New Student' && (
+                  <div className={`timeline-item ${paymentStatus === 'Processing' || status === 'Admitted' ? 'active' : ''}`}>
+                    <div className="timeline-point"></div>
+                    <div className="timeline-content">
+                      <h4>Payment Status</h4>
+                      <p>{status === 'Admitted' ? 'Done' : paymentStatus}</p>
+                    </div>
                   </div>
-                </div>
+                )}
                 <div className={`timeline-item ${status === 'Admitted' ? 'active' : ''}`}>
                   <div className="timeline-point"></div>
                   <div className="timeline-content">
                     <h4>Final Decision</h4>
                     <p>{status === 'Admitted' ? 'Admitted' : 'Pending Review'}</p>
-                    {status === 'Admitted' && !currentUserData.isOldStudent && (
+                    {status === 'Admitted' && currentUserData.studentType === 'New Student' && (
                       <>
                         {hasExistingInterview ? (
                           <div className="interview-status">
