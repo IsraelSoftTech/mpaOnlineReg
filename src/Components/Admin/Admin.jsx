@@ -43,7 +43,7 @@ const Admin = () => {
     const paymentsRef = ref(database, 'payments');
     const departmentsRef = ref(database, 'departments');
     const accountsRef = ref(database, 'accounts');
-
+    
     // Listen for admissions data
     onValue(admissionsRef, (snapshot) => {
       const data = snapshot.val() || {};
@@ -111,7 +111,7 @@ const Admin = () => {
     onValue(departmentsRef, (snapshot) => {
       const data = snapshot.val() || {};
       setStats(prev => ({
-        ...prev,
+          ...prev,
         totalDepartments: Object.keys(data).length
       }));
     });
@@ -267,15 +267,15 @@ const Admin = () => {
           <h3 className="admin-rejected-title">Rejected Students</h3>
           <div className="table-container">
             <table className="admin-table">
-              <thead>
-                <tr>
+            <thead>
+              <tr>
                   <th>Name</th>
                   <th>Class</th>
                   <th>Reason for Rejection</th>
                   <th>Date</th>
-                </tr>
-              </thead>
-              <tbody>
+              </tr>
+            </thead>
+            <tbody>
                 {rejectedStudents.length > 0 ? (
                   rejectedStudents.map((student, index) => (
                     <tr key={index}>
@@ -288,7 +288,7 @@ const Admin = () => {
                 ) : (
                   <tr>
                     <td colSpan="4" className="no-data">No rejected students</td>
-                  </tr>
+                </tr>
                 )}
               </tbody>
             </table>
@@ -347,10 +347,10 @@ const Admin = () => {
                 ) : (
                   <tr>
                     <td colSpan="5" className="no-data">No accounts found</td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                </tr>
+              )}
+            </tbody>
+          </table>
           </div>
         </section>
       </main>
@@ -358,4 +358,4 @@ const Admin = () => {
   );
 };
 
-export default Admin;
+export default Admin; 

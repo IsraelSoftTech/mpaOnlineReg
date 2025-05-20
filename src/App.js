@@ -32,14 +32,12 @@ const appStyle = {
 const AppContent = () => {
   const location = useLocation();
   const [loading, setLoading] = React.useState(false);
-  const [currentPage, setCurrentPage] = React.useState(null);
 
   React.useEffect(() => {
     const handleRouteChange = async () => {
       setLoading(true);
       // Wait for 1 second
       await new Promise(resolve => setTimeout(resolve, 1000));
-      setCurrentPage(location.pathname);
       setLoading(false);
     };
 

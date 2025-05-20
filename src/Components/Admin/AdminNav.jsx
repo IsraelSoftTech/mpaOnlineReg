@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { RiMenu3Line, RiCloseFill } from 'react-icons/ri';
 import { IoNotificationsOutline } from 'react-icons/io5';
 import { database } from '../../firebase';
-import { ref, onValue, off } from 'firebase/database';
+import { ref, onValue, off, get } from 'firebase/database';
 import logo from '../../assets/logo.png';
 import './AdminNav.css';
 
@@ -12,11 +12,14 @@ const AdminNav = () => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
-  const [lastChecked, setLastChecked] = useState({
-    admissions: new Date().toISOString(),
-    interviews: new Date().toISOString(),
-    messages: new Date().toISOString(),
-    payments: new Date().toISOString()
+  const [lastChecked, setLastChecked] = useState(() => {
+    const saved = localStorage.getItem('notificationLastChecked');
+    return saved ? JSON.parse(saved) : {
+      admissions: new Date().toISOString(),
+      interviews: new Date().toISOString(),
+      messages: new Date().toISOString(),
+      payments: new Date().toISOString()
+    };
   });
   
   const menuRef = useRef(null);
@@ -25,67 +28,78 @@ const AdminNav = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Save lastChecked to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('notificationLastChecked', JSON.stringify(lastChecked));
+  }, [lastChecked]);
+
   useEffect(() => {
     // Function to check if a timestamp is newer than lastChecked
     const isNewItem = (timestamp, type) => {
       return new Date(timestamp) > new Date(lastChecked[type]);
     };
 
-    // Listen for new data in multiple nodes
-    const admissionsRef = ref(database, 'admissions');
-    const interviewsRef = ref(database, 'interviews');
-    const messagesRef = ref(database, 'messages');
-    const paymentsRef = ref(database, 'payments');
-    
-    const handleNewData = (snapshot, type) => {
+    // Function to create notification message
+    const createNotificationMessage = (item, type) => {
+      switch(type) {
+        case 'admissions':
+          return `New admission application from ${item.name || item.fullName}`;
+        case 'interviews':
+          return `New interview request from ${item.name}`;
+        case 'messages':
+          return `New message from ${item.name}: ${item.subject}`;
+        case 'payments':
+          return `New payment received from ${item.studentName}`;
+        default:
+          return '';
+      }
+    };
+
+    // Function to get route for notification type
+    const getNotificationRoute = (type) => {
+      switch(type) {
+        case 'admissions':
+          return '/adminAdmission';
+        case 'interviews':
+          return '/interviews';
+        case 'messages':
+          return '/admincontact';
+        case 'payments':
+          return '/adminpay';
+        default:
+          return '/';
+      }
+    };
+
+    // Function to handle new data from any node
+    const handleNewData = async (snapshot, type) => {
       const data = snapshot.val() || {};
       const items = Object.entries(data)
         .map(([id, item]) => ({
           id,
           ...item,
-          type // Add type to identify the source
+          type
         }))
         .filter(item => isNewItem(item.timestamp, type))
         .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
       if (items.length > 0) {
         // Create notifications for new items
-        const newNotifications = items.map(item => {
-          let message = '';
-          let route = '';
-          
-          switch(type) {
-            case 'admissions':
-              message = `New admission application from ${item.name || item.fullName}`;
-              route = '/adminAdmission';
-              break;
-            case 'interviews':
-              message = `New interview request from ${item.name}`;
-              route = '/interviews';
-              break;
-            case 'messages':
-              message = `New message from ${item.name}: ${item.subject}`;
-              route = '/admincontact';
-              break;
-            case 'payments':
-              message = `New payment received from ${item.studentName}`;
-              route = '/adminpay';
-              break;
-            default:
-              break;
-          }
+        const newNotifications = items.map(item => ({
+          id: item.id,
+          message: createNotificationMessage(item, type),
+          timestamp: item.timestamp,
+          type,
+          route: getNotificationRoute(type),
+          read: false
+        }));
 
-          return {
-            id: item.id,
-            message,
-            timestamp: item.timestamp,
-            type,
-            route,
-            read: false
-          };
+        setNotifications(prev => {
+          // Filter out any existing notifications with the same ID
+          const filteredPrev = prev.filter(n => !newNotifications.some(nn => nn.id === n.id));
+          return [...newNotifications, ...filteredPrev];
         });
-
-        setNotifications(prev => [...newNotifications, ...prev]);
+        
         setUnreadCount(prev => prev + newNotifications.length);
         
         // Update lastChecked timestamp for this type
@@ -97,19 +111,23 @@ const AdminNav = () => {
     };
 
     // Set up listeners for each node
+    const admissionsRef = ref(database, 'admissions');
+    const interviewsRef = ref(database, 'interviews');
+    const messagesRef = ref(database, 'messages');
+    const paymentsRef = ref(database, 'payments');
+    
     onValue(admissionsRef, snapshot => handleNewData(snapshot, 'admissions'));
     onValue(interviewsRef, snapshot => handleNewData(snapshot, 'interviews'));
     onValue(messagesRef, snapshot => handleNewData(snapshot, 'messages'));
     onValue(paymentsRef, snapshot => handleNewData(snapshot, 'payments'));
 
     return () => {
-      // Clean up listeners
       off(admissionsRef);
       off(interviewsRef);
       off(messagesRef);
       off(paymentsRef);
     };
-  }, [lastChecked]); // Only depend on lastChecked
+  }, [lastChecked]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {

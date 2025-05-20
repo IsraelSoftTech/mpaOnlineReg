@@ -165,12 +165,12 @@ const IDCards = () => {
             </select>
             <div className="modal-buttons">
               <button onClick={() => setShowClassSelect(false)}>Cancel</button>
-              <button 
+          <button 
                 onClick={handlePrintClass} 
                 disabled={!selectedClass}
-              >
+          >
                 Print Selected Class
-              </button>
+          </button>
             </div>
           </div>
         </div>
@@ -222,7 +222,7 @@ const IDCards = () => {
             </div>
           </div>
         ))}
-      </div>
+        </div>
     </div>
   );
 };

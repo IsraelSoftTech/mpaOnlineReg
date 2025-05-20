@@ -199,7 +199,7 @@ const Interviews = () => {
           <button onClick={onClose} className="cancel-btn">Cancel</button>
           <button 
             onClick={() => onConfirm(interview.id)} 
-            className="delete-btn"
+            className="interview-delete-btn"
           >
             Delete
           </button>
@@ -243,7 +243,8 @@ const Interviews = () => {
                       <td className="action-buttons">
                         {interview.status !== 'Scheduled' ? (
                           <button
-                            className="schedule-btn"
+                            type="button"
+                            className="interview-schedule-btn"
                             onClick={() => {
                               setSelectedInterview(interview);
                               setShowScheduleModal(true);
@@ -259,7 +260,8 @@ const Interviews = () => {
                           </div>
                         )}
                         <button
-                          className="delete-btn"
+                          type="button"
+                          className="interview-delete-btn"
                           onClick={() => {
                             setInterviewToDelete(interview);
                             setShowDeleteConfirmModal(true);

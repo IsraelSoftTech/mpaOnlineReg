@@ -26,7 +26,6 @@ const About = () => {
   const buttonRef = useRef(null);
   const fullText = 'Welcome to MPASAT';
   const campusImages = [campus1, campus2, campus3];
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     let timeout;
@@ -105,12 +104,11 @@ const About = () => {
       const data = snapshot.val();
       if (data) {
         const departmentsList = Object.entries(data).map(([id, dept]) => ({
-          id,
-          ...dept
+            id,
+            ...dept
         }));
         setDepartments(departmentsList);
       }
-      setIsLoading(false);
     });
   }, []);
 
@@ -144,15 +142,6 @@ const About = () => {
 
     html2pdf().set(opt).from(element).save();
   };
-
-  if (isLoading) {
-    return (
-      <div className="loading-container">
-        <div className="loading-spinner"></div>
-        <p>Loading...</p>
-      </div>
-    );
-  }
 
   return (
     <div className="page-wrapper">
@@ -297,25 +286,25 @@ const About = () => {
                 Mbakwaphosphate Academy
               </a>
             </div>
-          </div>
+        </div>
         </section>
 
         {/* Departments Section */}
         <section className="departments-section">
           <h2>Our Vocational Departments</h2>
-          <div className="vocational-section">
-            {departments.map((dept) => (
-              <div className="vocational-card" key={dept.id}>
-                <div className="voc-title">{dept.title}</div>
-                <div className="voc-desc">{dept.desc}</div>
-                <div className="voc-images-grid-2x2">
+        <div className="vocational-section">
+          {departments.map((dept) => (
+            <div className="vocational-card" key={dept.id}>
+              <div className="voc-title">{dept.title}</div>
+              <div className="voc-desc">{dept.desc}</div>
+              <div className="voc-images-grid-2x2">
                   {dept.images?.map((img, i) => (
-                    <img src={img} alt={dept.title + ' ' + (i+1)} key={i} className="voc-img-2x2" />
-                  ))}
-                </div>
+                  <img src={img} alt={dept.title + ' ' + (i+1)} key={i} className="voc-img-2x2" />
+                ))}
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
+        </div>
         </section>
 
         {/* Fee Structure Section */}

@@ -123,7 +123,6 @@ const AdminPay = () => {
                   <th>Date</th>
                   <th>Sender Name</th>
                   <th>Transaction ID</th>
-                  <th>Payment Link ID</th>
                   <th>Amount</th>
                   <th>Status</th>
                   <th>Actions</th>
@@ -135,7 +134,6 @@ const AdminPay = () => {
                     <td>{new Date(payment.timestamp).toLocaleDateString()}</td>
                     <td>{payment.senderName}</td>
                     <td>{payment.transactionId}</td>
-                    <td>{payment.paymentLinkId}</td>
                     <td>{payment.amount} {payment.currency}</td>
                     <td>
                       <span className={`status-badge ${payment.status.toLowerCase().replace(' ', '-')}`}>

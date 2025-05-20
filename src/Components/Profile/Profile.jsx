@@ -5,6 +5,10 @@ import { AdmissionContext } from '../AdmissionContext';
 import '../UserAdmission/UserAdmission.css';
 import './Profile.css';
 import logo from '../../assets/logo.png';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { database } from '../../firebase';
+import { ref, update } from 'firebase/database';
 
 const Profile = () => {
   const { currentUser, currentUserData, updateProfile, logout } = useContext(AdmissionContext);
@@ -15,9 +19,11 @@ const Profile = () => {
     username: '',
     email: '',
     phone: '',
-    password: ''
+    password: '',
+    address: ''
   });
   const [successMessage, setSuccessMessage] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
   
   const menuRef = useRef(null);
   const buttonRef = useRef(null);
@@ -31,7 +37,8 @@ const Profile = () => {
 
     if (!currentUser) {
       console.log('No user found, redirecting to signin');
-      navigate('/signin');
+      toast.error('Please log in to continue');
+      navigate('/login');
       return;
     }
 
@@ -42,7 +49,8 @@ const Profile = () => {
         username: currentUserData.username || currentUser || '',
         email: currentUserData.email || '',
         phone: currentUserData.phone || '',
-        password: currentUserData.password || ''
+        password: currentUserData.password || '',
+        address: currentUserData.address || ''
       });
     } else {
       console.log('No user data available');
@@ -75,20 +83,27 @@ const Profile = () => {
         username: currentUserData.username || currentUser || '',
         email: currentUserData.email || '',
         phone: currentUserData.phone || '',
-        password: currentUserData.password || ''
+        password: currentUserData.password || '',
+        address: currentUserData.address || ''
       });
     }
     setIsEditing(false);
   };
 
-  const handleSubmit = async () => {
-    if (currentUserData?.id) {
-      const success = await updateProfile(currentUserData.id, formData);
-      if (success) {
-        setSuccessMessage('Profile updated successfully!');
-        setTimeout(() => setSuccessMessage(''), 3000);
-        setIsEditing(false);
-      }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSaving(true);
+
+    try {
+      const userRef = ref(database, `users/${currentUser}`);
+      await update(userRef, formData);
+      toast.success('Profile updated successfully');
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      toast.error('Failed to update profile');
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -100,7 +115,18 @@ const Profile = () => {
   console.log('Rendering profile with data:', formData);
 
   return (
-    <div className="profile-wrapper">
+    <div className="userad-wrapper">
+      <ToastContainer 
+        position="top-right" 
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={true}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
       <header className="app-header">
         <div className="logo-section">
           <img src={logo} alt="logo" className="app-logo" />
@@ -123,116 +149,100 @@ const Profile = () => {
           <button className="app-nav-link logout" onClick={handleLogout}>Logout</button>
         </nav>
       </header>
-      <main className="profile-main">
-        <div className="profile-container">
-          <h2 className="profile-title">Your Profile</h2>
-          {successMessage && (
-            <div className="profile-success-message" style={{
-              background: 'white',
-              padding: '10px 20px',
-              borderRadius: '4px',
-              color: '#2e7d32',
-              textAlign: 'center',
-              marginBottom: '20px',
-              boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-            }}>
-              {successMessage}
-            </div>
-          )}
-          <div className="profile-form">
-            <div className="profile-form-group">
-              <label className="profile-label">Full Name</label>
-              <div className="profile-input-group">
-                <span className="profile-icon profile-user-icon"></span>
+      <main className="userad-main">
+        <div className="profile-wrapper">
+          <div className="profile-container">
+            <h2 className="profile-title">Your Profile</h2>
+            {successMessage && (
+              <div className="profile-success-message" style={{
+                background: 'white',
+                padding: '10px 20px',
+                borderRadius: '4px',
+                color: '#2e7d32',
+                textAlign: 'center',
+                marginBottom: '20px',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+              }}>
+                {successMessage}
+              </div>
+            )}
+            <form onSubmit={handleSubmit} className="profile-form">
+              <div className="form-group">
+                <label htmlFor="fullName">Full Name</label>
                 <input
                   type="text"
+                  id="fullName"
                   name="fullName"
                   value={formData.fullName}
                   onChange={handleInputChange}
                   disabled={!isEditing}
-                  className="profile-input"
-                  placeholder="Enter your full name"
+                  required
                 />
               </div>
-            </div>
-            <div className="profile-form-group">
-              <label className="profile-label">Username</label>
-              <div className="profile-input-group">
-                <span className="profile-icon profile-user-icon"></span>
-                <input
-                  type="text"
-                  name="username"
-                  value={formData.username}
-                  onChange={handleInputChange}
-                  disabled={!isEditing}
-                  className="profile-input"
-                  placeholder="Enter username"
-                />
-              </div>
-            </div>
-            <div className="profile-form-group">
-              <label className="profile-label">Email</label>
-              <div className="profile-input-group">
-                <span className="profile-icon profile-email-icon"></span>
+              <div className="form-group">
+                <label htmlFor="email">Email</label>
                 <input
                   type="email"
+                  id="email"
                   name="email"
                   value={formData.email}
                   onChange={handleInputChange}
                   disabled={!isEditing}
-                  className="profile-input"
-                  placeholder="Enter your email"
+                  required
                 />
               </div>
-            </div>
-            <div className="profile-form-group">
-              <label className="profile-label">Phone</label>
-              <div className="profile-input-group profile-phone-group">
-                <select className="profile-country-code" disabled={!isEditing}>
-                  <option value="+237">+237</option>
-                </select>
+              <div className="form-group">
+                <label htmlFor="phone">Phone Number</label>
                 <input
-                  type="text"
+                  type="tel"
+                  id="phone"
                   name="phone"
                   value={formData.phone}
                   onChange={handleInputChange}
                   disabled={!isEditing}
-                  className="profile-input"
-                  placeholder="Enter phone number"
+                  required
                 />
               </div>
-            </div>
-            <div className="profile-form-group">
-              <label className="profile-label">Password</label>
-              <div className="profile-input-group">
-                <span className="profile-icon profile-lock-icon"></span>
-                <input
-                  type="password"
-                  name="password"
-                  value={formData.password}
+              <div className="form-group">
+                <label htmlFor="address">Address</label>
+                <textarea
+                  id="address"
+                  name="address"
+                  value={formData.address}
                   onChange={handleInputChange}
                   disabled={!isEditing}
-                  className="profile-input"
-                  placeholder="Enter password"
+                  required
                 />
               </div>
-            </div>
-            <div className="profile-actions">
-              {!isEditing ? (
-                <button className="edit-button" onClick={handleEdit}>
-                  Edit Profile
-                </button>
-              ) : (
-                <>
-                  <button className="save-button" onClick={handleSubmit}>
-                    Save Changes
+              <div className="profile-actions">
+                {!isEditing ? (
+                  <button
+                    type="button"
+                    className="edit-btn"
+                    onClick={handleEdit}
+                  >
+                    Edit Profile
                   </button>
-                  <button className="cancel-button" onClick={handleCancel}>
-                    Cancel
-                  </button>
-                </>
-              )}
-            </div>
+                ) : (
+                  <>
+                    <button
+                      type="submit"
+                      className="save-btn"
+                      disabled={isSaving}
+                    >
+                      {isSaving ? 'Saving...' : 'Save Changes'}
+                    </button>
+                    <button
+                      type="button"
+                      className="cancel-btn"
+                      onClick={handleCancel}
+                    >
+                      Cancel
+                    </button>
+                  </>
+                )}
+              </div>
+            </form>
           </div>
         </div>
       </main>

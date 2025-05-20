@@ -5,8 +5,8 @@ import './UserAdmission.css';
 import { AdmissionContext } from '../AdmissionContext';
 import { ref, onValue } from 'firebase/database';
 import { database } from '../../firebase';
+import logo from '../../assets/logo.png';
 
-// Generate academic years (7 years from current)
 const generateAcademicYears = () => {
   const years = [];
   const currentYear = new Date().getFullYear();
@@ -83,8 +83,8 @@ const UserAdmission = () => {
   const [form, setForm] = useState(initialState);
   const [success, setSuccess] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [showProceed, setShowProceed] = useState(false);
-  const [hideContent, setHideContent] = useState(false);
+  const showProceed = false;
+  const hideContent = false;
   const [departments, setDepartments] = useState([]);
   const menuRef = useRef(null);
   const buttonRef = useRef(null);
@@ -92,7 +92,7 @@ const UserAdmission = () => {
   const location = useLocation();
   const { addAdmission, logout, schoolClasses, currentUser, admissions } = useContext(AdmissionContext);
   const [fileError, setFileError] = useState('');
-  const [showAdmissionStatus, setShowAdmissionStatus] = useState(false);
+  const showAdmissionStatus = false;
 
   // Fetch departments from database
   useEffect(() => {
@@ -239,7 +239,7 @@ const UserAdmission = () => {
       {!hideContent && (
         <header className="app-header">
           <div className="logo-section">
-            <img src="/logo192.png" alt="" className="app-logo" />
+            <img src={logo}alt="" className="app-logo" />
             <span className="app-brand">MPASAT</span>
           </div>
           <button

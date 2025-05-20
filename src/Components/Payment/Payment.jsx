@@ -26,7 +26,7 @@ const Payment = () => {
   const buttonRef = React.useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
-  const { logout, updatePaymentStatus, currentUser, currentUserData } = useContext(AdmissionContext);
+  const { logout, currentUser, currentUserData } = useContext(AdmissionContext);
 
   useEffect(() => {
     if (!currentUser) {
@@ -95,7 +95,7 @@ const Payment = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!paymentDetails.transactionId || !paymentDetails.paymentLinkId || !paymentDetails.senderName) {
+    if (!paymentDetails.transactionId || !paymentDetails.senderName) {
       toast.error('Please fill in all fields');
       return;
     }
@@ -124,7 +124,7 @@ const Payment = () => {
     }
 
     setShowPaymentForm(true);
-    const paymentWindow = window.open(FAPSHI_PAYMENT_LINK, 'FapshiPayment', 'width=600,height=600');
+    window.open(FAPSHI_PAYMENT_LINK, 'FapshiPayment', 'width=600,height=600');
   };
 
   const handleLogout = () => {
@@ -220,18 +220,6 @@ const Payment = () => {
                     value={paymentDetails.transactionId}
                     onChange={handleInputChange}
                     placeholder="Enter transaction ID"
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="paymentLinkId">Payment Link ID From Fapshi</label>
-                  <input
-                    type="text"
-                    id="paymentLinkId"
-                    name="paymentLinkId"
-                    value={paymentDetails.paymentLinkId}
-                    onChange={handleInputChange}
-                    placeholder="Enter payment link ID"
                     required
                   />
                 </div>
