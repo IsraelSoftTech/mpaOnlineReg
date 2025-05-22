@@ -1,10 +1,13 @@
-import React, { useState, useContext, useRef, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { RiMenu3Line, RiCloseFill } from 'react-icons/ri';
+import React, { useState, useContext, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { 
+  IoPersonOutline,
+  IoMailOutline,
+  IoLockClosedOutline
+} from 'react-icons/io5';
 import { AdmissionContext } from '../AdmissionContext';
 import '../UserAdmission/UserAdmission.css';
 import './Profile.css';
-import logo from '../../assets/logo.png';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { database } from '../../firebase';
@@ -12,58 +15,35 @@ import { ref, update } from 'firebase/database';
 import UserNav from '../Shared/UserNav';
 
 const Profile = () => {
-  const { currentUser, currentUserData, updateProfile, logout } = useContext(AdmissionContext);
+  const { currentUser, currentUserData } = useContext(AdmissionContext);
   const [isEditing, setIsEditing] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [formData, setFormData] = useState({
     fullName: '',
     username: '',
     email: '',
-    phone: '',
-    password: '',
-    address: ''
+    password: ''
   });
   const [successMessage, setSuccessMessage] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   
-  const menuRef = useRef(null);
-  const buttonRef = useRef(null);
   const navigate = useNavigate();
-  const location = useLocation();
 
   useEffect(() => {
-    console.log('Profile component mounted');
-    console.log('Current user:', currentUser);
-    console.log('Current user data:', currentUserData);
-
     if (!currentUser) {
-      console.log('No user found, redirecting to signin');
       toast.error('Please log in to continue');
       navigate('/login');
       return;
     }
 
     if (currentUserData) {
-      console.log('Setting form data with:', currentUserData);
       setFormData({
         fullName: currentUserData.fullName || '',
         username: currentUserData.username || currentUser || '',
         email: currentUserData.email || '',
-        phone: currentUserData.phone || '',
-        password: currentUserData.password || '',
-        address: currentUserData.address || ''
+        password: currentUserData.password || ''
       });
-    } else {
-      console.log('No user data available');
     }
   }, [currentUserData, currentUser, navigate]);
-
-  const toggleMenu = () => setIsMenuOpen((open) => !open);
-
-  const handleLogout = () => {
-    logout();
-    navigate('/about');
-  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -83,9 +63,7 @@ const Profile = () => {
         fullName: currentUserData.fullName || '',
         username: currentUserData.username || currentUser || '',
         email: currentUserData.email || '',
-        phone: currentUserData.phone || '',
-        password: currentUserData.password || '',
-        address: currentUserData.address || ''
+        password: currentUserData.password || ''
       });
     }
     setIsEditing(false);
@@ -98,8 +76,13 @@ const Profile = () => {
     try {
       const userRef = ref(database, `users/${currentUser}`);
       await update(userRef, formData);
-      toast.success('Profile updated successfully');
+      setSuccessMessage('Profile updated successfully');
       setIsEditing(false);
+      
+      // Clear success message after 3 seconds
+      setTimeout(() => {
+        setSuccessMessage('');
+      }, 3000);
     } catch (error) {
       console.error('Error updating profile:', error);
       toast.error('Failed to update profile');
@@ -109,11 +92,8 @@ const Profile = () => {
   };
 
   if (!currentUser || !currentUserData) {
-    console.log('Rendering null - currentUser:', currentUser, 'currentUserData:', currentUserData);
     return null;
   }
-
-  console.log('Rendering profile with data:', formData);
 
   return (
     <div className="userad-wrapper">
@@ -134,21 +114,15 @@ const Profile = () => {
           <div className="profile-container">
             <h2 className="profile-title">Your Profile</h2>
             {successMessage && (
-              <div className="profile-success-message" style={{
-                background: 'white',
-                padding: '10px 20px',
-                borderRadius: '4px',
-                color: '#2e7d32',
-                textAlign: 'center',
-                marginBottom: '20px',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-              }}>
+              <div className="profile-success-message">
                 {successMessage}
               </div>
             )}
             <form onSubmit={handleSubmit} className="profile-form">
               <div className="form-group">
-                <label htmlFor="fullName">Full Name</label>
+                <label htmlFor="fullName">
+                  <IoPersonOutline className="form-icon" /> Full Name
+                </label>
                 <input
                   type="text"
                   id="fullName"
@@ -160,7 +134,23 @@ const Profile = () => {
                 />
               </div>
               <div className="form-group">
-                <label htmlFor="email">Email</label>
+                <label htmlFor="username">
+                  <IoPersonOutline className="form-icon" /> Username
+                </label>
+                <input
+                  type="text"
+                  id="username"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleInputChange}
+                  disabled={!isEditing}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="email">
+                  <IoMailOutline className="form-icon" /> Email
+                </label>
                 <input
                   type="email"
                   id="email"
@@ -172,23 +162,14 @@ const Profile = () => {
                 />
               </div>
               <div className="form-group">
-                <label htmlFor="phone">Phone Number</label>
+                <label htmlFor="password">
+                  <IoLockClosedOutline className="form-icon" /> Password
+                </label>
                 <input
-                  type="tel"
-                  id="phone"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                  disabled={!isEditing}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="address">Address</label>
-                <textarea
-                  id="address"
-                  name="address"
-                  value={formData.address}
+                  type="text"
+                  id="password"
+                  name="password"
+                  value={formData.password}
                   onChange={handleInputChange}
                   disabled={!isEditing}
                   required
@@ -210,7 +191,7 @@ const Profile = () => {
                       className="save-btn"
                       disabled={isSaving}
                     >
-                      {isSaving ? 'Saving...' : 'Save Changes'}
+                      {isSaving ? 'Saving...' : 'Update Profile'}
                     </button>
                     <button
                       type="button"
@@ -226,17 +207,6 @@ const Profile = () => {
           </div>
         </div>
       </main>
-      <footer className="app-footer">
-        <div className="footer-logo">MPASAT ADMISSION PORTAL</div>
-        <div className="footer-center">MPASAT, All Rights Reserved - 2025</div>
-        <div className="footer-socials">
-          <span>Follow us on:</span>
-          <span className="social-icon instagram"></span>
-          <span className="social-icon facebook"></span>
-          <span className="social-icon tiktok"></span>
-          <span className="social-icon twitter"></span>
-        </div>
-      </footer>
     </div>
   );
 };

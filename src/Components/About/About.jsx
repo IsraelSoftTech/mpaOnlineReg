@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useContext } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { RiMenu3Line, RiCloseFill, RiArrowRightLine } from 'react-icons/ri';
 import { FaMapMarkerAlt, FaPhone, FaEnvelope, FaFacebook, FaYoutube, FaDownload } from 'react-icons/fa';
+import { IoInformationCircleOutline, IoPersonAddOutline } from 'react-icons/io5';
 import { ref, onValue } from 'firebase/database';
 import { database } from '../../firebase';
 import './About.css';
@@ -161,12 +162,14 @@ const About = () => {
             className={`app-nav-link${location.pathname === '/about' ? ' active' : ''}`} 
             onClick={() => navigate('/about')}
           >
+            <IoInformationCircleOutline className="nav-icon" />
             About
           </button>
           <button 
             className="app-nav-link" 
             onClick={() => navigate('/signin')}
           >
+            <IoPersonAddOutline className="nav-icon" />
             Admission
           </button>
         </nav>

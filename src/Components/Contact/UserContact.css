@@ -1,438 +1,438 @@
 .user-contact-wrapper {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background: #f3f8f7;
-}
-
-.user-contact-main {
-  flex: 1;
-  padding: 32px 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.contact-header-actions {
-  width: 90%;
-  max-width: 800px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
-}
-
-.contact-title {
-  color: #18316d;
-  font-size: 24px;
-  font-weight: 600;
-  margin: 0;
-}
-
-.view-replies-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 8px;
-  background: #18316d;
-  color: white;
-  font-size: 15px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.view-replies-btn:hover {
-  background: #122654;
-  transform: translateY(-1px);
-}
-
-.view-replies-btn.active {
-  background: #f7a600;
-}
-
-.contact-form-container {
-  width: 90%;
-  max-width: 800px;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  padding: 32px;
-}
-
-.contact-form {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.form-group label {
-  font-size: 15px;
-  font-weight: 500;
-  color: #333;
-}
-
-.form-group input,
-.form-group textarea {
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 15px;
-  transition: border-color 0.2s;
-}
-
-.form-group input:focus,
-.form-group textarea:focus {
-  outline: none;
-  border-color: #18316d;
-}
-
-.form-group textarea {
-  resize: vertical;
-  min-height: 120px;
-}
-
-.send-message-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 14px;
-  background: #18316d;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.send-message-btn:hover {
-  background: #122654;
-  transform: translateY(-1px);
-}
-
-/* Replies Section */
-.replies-container {
-  width: 90%;
-  max-width: 800px;
-}
-
-.replies-title {
-  color: #18316d;
-  font-size: 20px;
-  margin-bottom: 24px;
-}
-
-.replies-list {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.reply-card {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  padding: 20px;
-}
-
-.reply-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
-.reply-timestamp {
-  color: #666;
-  font-size: 14px;
-}
-
-.reply-status {
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: 500;
-}
-
-.reply-status.unread {
-  background: #fff3e0;
-  color: #f57c00;
-}
-
-.reply-status.read {
-  background: #e8f5e9;
-  color: #2e7d32;
-}
-
-.reply-content {
-  margin-bottom: 16px;
-}
-
-.reply-message {
-  color: #333;
-  font-size: 15px;
-  line-height: 1.5;
-  margin: 0;
-}
-
-.reply-footer {
-  border-top: 1px solid #eee;
-  padding-top: 12px;
-}
-
-.reply-actions {
-  display: flex;
-  gap: 12px;
-}
-
-.reply-action-btn {
-  padding: 8px 16px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  background: white;
-  color: #666;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.reply-action-btn:hover {
-  background: #f5f5f5;
-  border-color: #18316d;
-  color: #18316d;
-}
-
-.no-replies {
-  text-align: center;
-  color: #666;
-  padding: 32px;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.replies-thread {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin: 16px 0;
-  padding: 0 12px;
-}
-
-.reply-bubble {
-  padding: 12px 16px;
-  border-radius: 12px;
-  max-width: 80%;
-}
-
-.reply-bubble.admin {
-  background: #e3f2fd;
-  align-self: flex-start;
-}
-
-.reply-bubble.user {
-  background: #f5f5f5;
-  align-self: flex-end;
-}
-
-.reply-bubble p {
-  margin: 0 0 4px 0;
-  line-height: 1.4;
-}
-
-.reply-time {
-  font-size: 12px;
-  color: #666;
-}
-
-.reply-input {
-  padding: 16px;
-  border-top: 1px solid #eee;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.reply-input textarea {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  resize: none;
-  height: 80px;
-  font-size: 14px;
-}
-
-.reply-input textarea:focus {
-  outline: none;
-  border-color: #18316d;
-}
-
-.send-reply-btn {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  border: none;
-  background: #18316d;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  align-self: flex-end;
-}
-
-.send-reply-btn:hover {
-  background: #122654;
-  transform: translateY(-2px);
-}
-
-.send-reply-btn:disabled {
-  background: #ccc;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.new-reply-badge {
-  background: #f7a600;
-  color: white;
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 500;
-}
-
-.success-message {
-  background: #e8f5e9;
-  color: #2e7d32;
-  padding: 12px;
-  border-radius: 8px;
-  text-align: center;
-  animation: fadeIn 0.3s ease;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: #f3f8f7;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Mobile Styles */
-@media (max-width: 768px) {
+  
   .user-contact-main {
-    padding: 20px 0;
+    flex: 1;
+    padding: 32px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
-
+  
   .contact-header-actions {
-    width: 95%;
-    margin-bottom: 16px;
+    width: 90%;
+    max-width: 800px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
   }
-
+  
   .contact-title {
-    font-size: 20px;
+    color: #18316d;
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0;
   }
-
+  
   .view-replies-btn {
-    padding: 8px 16px;
-    font-size: 14px;
-  }
-
-  .contact-form-container,
-  .replies-container {
-    width: 95%;
-    padding: 20px;
-  }
-
-  .form-group {
-    gap: 6px;
-  }
-
-  .form-group label {
-    font-size: 14px;
-  }
-
-  .form-group input,
-  .form-group textarea {
-    padding: 10px;
-    font-size: 14px;
-  }
-
-  .send-message-btn {
-    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    background: #18316d;
+    color: white;
     font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
   }
-
-  .reply-card {
-    padding: 16px;
+  
+  .view-replies-btn:hover {
+    background: #122654;
+    transform: translateY(-1px);
   }
-
-  .reply-message {
-    font-size: 14px;
+  
+  .view-replies-btn.active {
+    background: #f7a600;
   }
-
-  .reply-action-btn {
-    padding: 6px 12px;
-    font-size: 13px;
+  
+  .contact-form-container {
+    width: 90%;
+    max-width: 800px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    padding: 32px;
   }
-
-  .reply-input {
-    padding: 12px;
-  }
-
-  .reply-input textarea {
-    height: 60px;
-  }
-
-  .send-reply-btn {
-    width: 40px;
-    height: 40px;
-  }
-
-  .reply-bubble {
-    max-width: 90%;
-  }
-}
-
-@media (max-width: 480px) {
-  .contact-header-actions {
+  
+  .contact-form {
+    display: flex;
     flex-direction: column;
-    gap: 12px;
-    align-items: flex-start;
+    gap: 24px;
   }
-
-  .contact-form-container,
-  .replies-container {
-    padding: 16px;
-  }
-
-  .reply-header {
+  
+  .form-group {
+    display: flex;
     flex-direction: column;
-    align-items: flex-start;
     gap: 8px;
   }
-
+  
+  .form-group label {
+    font-size: 15px;
+    font-weight: 500;
+    color: #333;
+  }
+  
+  .form-group input,
+  .form-group textarea {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 15px;
+    transition: border-color 0.2s;
+  }
+  
+  .form-group input:focus,
+  .form-group textarea:focus {
+    outline: none;
+    border-color: #18316d;
+  }
+  
+  .form-group textarea {
+    resize: vertical;
+    min-height: 120px;
+  }
+  
+  .send-message-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px;
+    background: #18316d;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .send-message-btn:hover {
+    background: #122654;
+    transform: translateY(-1px);
+  }
+  
+  /* Replies Section */
+  .replies-container {
+    width: 90%;
+    max-width: 800px;
+  }
+  
+  .replies-title {
+    color: #18316d;
+    font-size: 20px;
+    margin-bottom: 24px;
+  }
+  
+  .replies-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .reply-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    padding: 20px;
+  }
+  
+  .reply-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  
+  .reply-timestamp {
+    color: #666;
+    font-size: 14px;
+  }
+  
+  .reply-status {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  
+  .reply-status.unread {
+    background: #fff3e0;
+    color: #f57c00;
+  }
+  
+  .reply-status.read {
+    background: #e8f5e9;
+    color: #2e7d32;
+  }
+  
+  .reply-content {
+    margin-bottom: 16px;
+  }
+  
+  .reply-message {
+    color: #333;
+    font-size: 15px;
+    line-height: 1.5;
+    margin: 0;
+  }
+  
+  .reply-footer {
+    border-top: 1px solid #eee;
+    padding-top: 12px;
+  }
+  
   .reply-actions {
-    flex-wrap: wrap;
+    display: flex;
+    gap: 12px;
   }
-
+  
+  .reply-action-btn {
+    padding: 8px 16px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: white;
+    color: #666;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .reply-action-btn:hover {
+    background: #f5f5f5;
+    border-color: #18316d;
+    color: #18316d;
+  }
+  
+  .no-replies {
+    text-align: center;
+    color: #666;
+    padding: 32px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  
+  .replies-thread {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 16px 0;
+    padding: 0 12px;
+  }
+  
   .reply-bubble {
-    max-width: 95%;
+    padding: 12px 16px;
+    border-radius: 12px;
+    max-width: 80%;
   }
-} 
+  
+  .reply-bubble.admin {
+    background: #e3f2fd;
+    align-self: flex-start;
+  }
+  
+  .reply-bubble.user {
+    background: #f5f5f5;
+    align-self: flex-end;
+  }
+  
+  .reply-bubble p {
+    margin: 0 0 4px 0;
+    line-height: 1.4;
+  }
+  
+  .reply-time {
+    font-size: 12px;
+    color: #666;
+  }
+  
+  .reply-input {
+    padding: 16px;
+    border-top: 1px solid #eee;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .reply-input textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    resize: none;
+    height: 80px;
+    font-size: 14px;
+  }
+  
+  .reply-input textarea:focus {
+    outline: none;
+    border-color: #18316d;
+  }
+  
+  .send-reply-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: none;
+    background: #18316d;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    align-self: flex-end;
+  }
+  
+  .send-reply-btn:hover {
+    background: #122654;
+    transform: translateY(-2px);
+  }
+  
+  .send-reply-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+  }
+  
+  .new-reply-badge {
+    background: #f7a600;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  
+  .success-message {
+    background: #e8f5e9;
+    color: #2e7d32;
+    padding: 12px;
+    border-radius: 8px;
+    text-align: center;
+    animation: fadeIn 0.3s ease;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Mobile Styles */
+  @media (max-width: 768px) {
+    .user-contact-main {
+      padding: 20px 0;
+    }
+  
+    .contact-header-actions {
+      width: 95%;
+      margin-bottom: 16px;
+    }
+  
+    .contact-title {
+      font-size: 20px;
+    }
+  
+    .view-replies-btn {
+      padding: 8px 16px;
+      font-size: 14px;
+    }
+  
+    .contact-form-container,
+    .replies-container {
+      width: 95%;
+      padding: 20px;
+    }
+  
+    .form-group {
+      gap: 6px;
+    }
+  
+    .form-group label {
+      font-size: 14px;
+    }
+  
+    .form-group input,
+    .form-group textarea {
+      padding: 10px;
+      font-size: 14px;
+    }
+  
+    .send-message-btn {
+      padding: 12px;
+      font-size: 15px;
+    }
+  
+    .reply-card {
+      padding: 16px;
+    }
+  
+    .reply-message {
+      font-size: 14px;
+    }
+  
+    .reply-action-btn {
+      padding: 6px 12px;
+      font-size: 13px;
+    }
+  
+    .reply-input {
+      padding: 12px;
+    }
+  
+    .reply-input textarea {
+      height: 60px;
+    }
+  
+    .send-reply-btn {
+      width: 40px;
+      height: 40px;
+    }
+  
+    .reply-bubble {
+      max-width: 90%;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .contact-header-actions {
+      flex-direction: column;
+      gap: 12px;
+      align-items: flex-start;
+    }
+  
+    .contact-form-container,
+    .replies-container {
+      padding: 16px;
+    }
+  
+    .reply-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+  
+    .reply-actions {
+      flex-wrap: wrap;
+    }
+  
+    .reply-bubble {
+      max-width: 95%;
+    }
+  } 

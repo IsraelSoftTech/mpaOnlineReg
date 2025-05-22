@@ -8,6 +8,20 @@ import { AdmissionContext } from '../AdmissionContext';
 import { database } from '../../firebase';
 import { ref, push, onValue, update, off, get } from 'firebase/database';
 import UserNav from '../Shared/UserNav';
+import { 
+  IoCheckmarkCircleOutline,
+  IoWalletOutline,
+  IoPersonOutline,
+  IoCalendarOutline,
+  IoLocationOutline,
+  IoCallOutline,
+  IoStatsChartOutline,
+  IoBookOutline,
+  IoBusinessOutline,
+  IoImageOutline,
+  IoDocumentOutline,
+  IoTimeOutline
+} from 'react-icons/io5';
 
 const UserTrack = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -304,12 +318,12 @@ const UserTrack = () => {
         <div className="track-container">
           <div className="track-status-header">
             <div className="status-box">
-              <h3>Application Status</h3>
+              <h3><IoCheckmarkCircleOutline className="status-icon" /> Application Status</h3>
               <span className={`status-badge status-${status.toLowerCase()}`}>{status}</span>
             </div>
             {currentUserData.studentType === 'New Student' && (
               <div className="status-box">
-                <h3>Payment Status</h3>
+                <h3><IoWalletOutline className="status-icon" /> Payment Status</h3>
                 <span className={`status-badge status-${status === 'Admitted' ? 'done' : paymentStatus.toLowerCase().replace(' ', '-')}`}>
                   {status === 'Admitted' ? 'Done' : paymentStatus}
                 </span>
@@ -320,47 +334,47 @@ const UserTrack = () => {
             <h3>Application Details</h3>
             <div className="details-grid">
               <div className="detail-item">
-                <label>Full Name</label>
+                <label><IoPersonOutline className="detail-icon" /> Full Name</label>
                 <span>{currentUserData.name || currentUserData.fullName || 'Not provided'}</span>
               </div>
               <div className="detail-item">
-                <label>Student Type</label>
+                <label><IoPersonOutline className="detail-icon" /> Student Type</label>
                 <span className="student-type">{currentUserData.studentType || 'Not provided'}</span>
               </div>
               <div className="detail-item">
-                <label>Sex</label>
+                <label><IoPersonOutline className="detail-icon" /> Sex</label>
                 <span>{currentUserData.sex || 'Not provided'}</span>
               </div>
               <div className="detail-item">
-                <label>Date of Birth</label>
+                <label><IoCalendarOutline className="detail-icon" /> Date of Birth</label>
                 <span>{currentUserData.dob || 'Not provided'}</span>
               </div>
               <div className="detail-item">
-                <label>Place of Birth</label>
+                <label><IoLocationOutline className="detail-icon" /> Place of Birth</label>
                 <span>{currentUserData.pob || 'Not provided'}</span>
               </div>
               <div className="detail-item">
-                <label>Father's Name</label>
+                <label><IoPersonOutline className="detail-icon" /> Father's Name</label>
                 <span>{currentUserData.father || 'Not provided'}</span>
               </div>
               <div className="detail-item">
-                <label>Mother's Name</label>
+                <label><IoPersonOutline className="detail-icon" /> Mother's Name</label>
                 <span>{currentUserData.mother || 'Not provided'}</span>
               </div>
               <div className="detail-item">
-                <label>Guardian's Contact</label>
+                <label><IoCallOutline className="detail-icon" /> Guardian's Contact</label>
                 <span>{currentUserData.guardian || 'Not provided'}</span>
               </div>
               <div className="detail-item">
-                <label>Previous Average</label>
+                <label><IoStatsChartOutline className="detail-icon" /> Previous Average</label>
                 <span>{currentUserData.avg || 'Not provided'}</span>
               </div>
               <div className="detail-item">
-                <label>Form/Class</label>
+                <label><IoBookOutline className="detail-icon" /> Form/Class</label>
                 <span>{currentUserData.form || 'Not provided'}</span>
               </div>
               <div className="detail-item">
-                <label>Vocation Department</label>
+                <label><IoBusinessOutline className="detail-icon" /> Vocation Department</label>
                 <span>{currentUserData.vocation || 'Not provided'}</span>
               </div>
             </div>
@@ -368,7 +382,7 @@ const UserTrack = () => {
               <h3>Submitted Documents</h3>
               <div className="documents-grid">
                 <div className="document-item">
-                  <label>Student Picture</label>
+                  <label><IoImageOutline className="document-icon" /> Student Picture</label>
                   {currentUserData.picture ? (
                     <img src={currentUserData.picture} alt="Student" className="student-picture" />
                   ) : (
@@ -377,7 +391,7 @@ const UserTrack = () => {
                 </div>
                 {currentUserData.studentType === 'New Student' && (
                   <div className="document-item">
-                    <label>Pay to complete admission</label>
+                    <label><IoDocumentOutline className="document-icon" /> Pay to complete admission</label>
                     {currentUserData.report ? (
                       <button 
                         className="pay-admission-btn" 
@@ -398,7 +412,7 @@ const UserTrack = () => {
                 <div className={`timeline-item ${status !== 'Rejected' ? 'active' : 'rejected'}`}>
                   <div className="timeline-point"></div>
                   <div className="timeline-content">
-                    <h4>Application Submitted</h4>
+                    <h4><IoTimeOutline className="timeline-icon" /> Application Submitted</h4>
                     <p>{new Date(currentUserData.timestamp).toLocaleDateString()}</p>
                   </div>
                 </div>

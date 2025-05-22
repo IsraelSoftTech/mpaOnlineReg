@@ -1,6 +1,18 @@
 import React, { useState, useRef, useEffect, useContext } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { RiMenu3Line, RiCloseFill } from 'react-icons/ri';
+import { 
+  IoPersonOutline,
+  IoCalendarOutline,
+  IoLocationOutline,
+  IoCallOutline,
+  IoMailOutline,
+  IoStatsChartOutline,
+  IoBookOutline,
+  IoBusinessOutline,
+  IoImageOutline,
+  IoDocumentOutline
+} from 'react-icons/io5';
 import './UserAdmission.css';
 import { AdmissionContext } from '../AdmissionContext';
 import { ref, onValue } from 'firebase/database';
@@ -260,11 +272,11 @@ const UserAdmission = () => {
               </select>
             </div>
             <div className="form-row">
-              <label>Name</label>
+              <label><IoPersonOutline className="form-icon" /> Name</label>
               <input type="text" name="name" value={form.name} onChange={handleChange} placeholder="Full Name" required />
             </div>
             <div className="form-row">
-              <label>Sex</label>
+              <label><IoPersonOutline className="form-icon" /> Sex</label>
               <select name="sex" value={form.sex} onChange={handleChange} required>
                 <option value="">Select</option>
                 <option value="Male">Male</option>
@@ -272,7 +284,7 @@ const UserAdmission = () => {
               </select>
             </div>
             <div className="form-row">
-              <label>Academic Year</label>
+              <label><IoCalendarOutline className="form-icon" /> Academic Year</label>
               <select name="academicYear" value={form.academicYear} onChange={handleChange} required>
                 <option value="">Select Academic Year</option>
                 {academicYears.map(year => (
@@ -281,27 +293,27 @@ const UserAdmission = () => {
               </select>
             </div>
             <div className="form-row">
-              <label>Date of Birth</label>
+              <label><IoCalendarOutline className="form-icon" /> Date of Birth</label>
               <input type="date" name="dob" value={form.dob} onChange={handleChange} required />
             </div>
             <div className="form-row">
-              <label>Place of Birth</label>
+              <label><IoLocationOutline className="form-icon" /> Place of Birth</label>
               <input type="text" name="pob" value={form.pob} onChange={handleChange} placeholder="Place of Birth" required />
             </div>
             <div className="form-row">
-              <label>Father's Name</label>
+              <label><IoPersonOutline className="form-icon" /> Father's Name</label>
               <input type="text" name="father" value={form.father} onChange={handleChange} placeholder="Father's Name" required />
             </div>
             <div className="form-row">
-              <label>Mother's Name</label>
+              <label><IoPersonOutline className="form-icon" /> Mother's Name</label>
               <input type="text" name="mother" value={form.mother} onChange={handleChange} placeholder="Mother's Name" required />
             </div>
             <div className="form-row">
-              <label>Guardian's Telephone</label>
+              <label><IoCallOutline className="form-icon" /> Guardian's Telephone</label>
               <input type="tel" name="guardian" value={form.guardian} onChange={handleChange} placeholder="Phone Number" required />
             </div>
             <div className="form-row">
-              <label>Previous Average</label>
+              <label><IoStatsChartOutline className="form-icon" /> Previous Average</label>
               <input 
                 type="number" 
                 name="avg" 
@@ -315,7 +327,7 @@ const UserAdmission = () => {
               />
             </div>
             <div className="form-row">
-              <label>Seeking admission to class</label>
+              <label><IoBookOutline className="form-icon" /> Seeking admission to class</label>
               <select name="form" value={form.form} onChange={handleChange} required>
                 <option value="">Select Class</option>
                 {schoolClasses.map(cls => (
@@ -324,7 +336,7 @@ const UserAdmission = () => {
               </select>
             </div>
             <div className="form-row">
-              <label>Interested vocation department</label>
+              <label><IoBusinessOutline className="form-icon" /> Interested vocation department</label>
               <select name="vocation" value={form.vocation} onChange={handleChange} required>
                 <option value="">Select</option>
                 {departments.map(dept => (
@@ -338,7 +350,7 @@ const UserAdmission = () => {
               </div>
             )}
             <div className="form-row">
-              <label>Student Picture (Max 500KB)</label>
+              <label><IoImageOutline className="form-icon" /> Student Picture (Max 500KB)</label>
               <input 
                 type="file" 
                 name="picture" 
@@ -349,7 +361,7 @@ const UserAdmission = () => {
               <small className="file-hint">Recommended: JPG or PNG format, max 500KB</small>
             </div>
             <div className="form-row">
-              <label>Student Previous Report Card (Max 2MB)</label>
+              <label><IoDocumentOutline className="form-icon" /> Student Previous Report Card (Max 2MB)</label>
               <input 
                 type="file" 
                 name="report" 

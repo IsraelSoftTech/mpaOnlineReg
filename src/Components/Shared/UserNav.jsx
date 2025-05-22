@@ -1,6 +1,14 @@
 import React, { useState, useRef, useContext } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { RiMenu3Line, RiCloseFill } from 'react-icons/ri';
+import { 
+  IoInformationCircleOutline,
+  IoPersonAddOutline,
+  IoCheckmarkCircleOutline,
+  IoMailOutline,
+  IoPersonOutline,
+  IoLogOutOutline
+} from 'react-icons/io5';
 import { AdmissionContext } from '../AdmissionContext';
 import logo from '../../assets/logo.png';
 import './UserNav.css';
@@ -37,36 +45,42 @@ const UserNav = () => {
       <nav ref={menuRef} className={`app-nav ${isMenuOpen ? 'nav-open' : ''}`}>
         <div className="mobile-menu">
           <button className="app-nav-link logout" onClick={handleLogout}>
+            <IoLogOutOutline className="nav-icon" />
             Log out
           </button>
           <button 
             className={`app-nav-link${location.pathname === '/about' ? ' active' : ''}`}
             onClick={() => navigate('/about')}
           >
+            <IoInformationCircleOutline className="nav-icon" />
             About
           </button>
           <button 
             className={`app-nav-link${location.pathname === '/userAdmission' ? ' active' : ''}`}
             onClick={() => navigate('/userAdmission')}
           >
+            <IoPersonAddOutline className="nav-icon" />
             Admission
           </button>
           <button 
             className={`app-nav-link${location.pathname === '/usertrack' ? ' active' : ''}`}
             onClick={() => navigate('/usertrack')}
           >
+            <IoCheckmarkCircleOutline className="nav-icon" />
             Check Status
           </button>
           <button 
             className={`app-nav-link${location.pathname === '/contact' ? ' active' : ''}`}
             onClick={() => navigate('/contact')}
           >
+            <IoMailOutline className="nav-icon" />
             Contact
           </button>
           <button 
             className={`app-nav-link${location.pathname === '/profile' ? ' active' : ''}`}
             onClick={() => navigate('/profile')}
           >
+            <IoPersonOutline className="nav-icon" />
             Profile
           </button>
         </div>
@@ -75,33 +89,39 @@ const UserNav = () => {
             className={`app-nav-link${location.pathname === '/about' ? ' active' : ''}`}
             onClick={() => navigate('/about')}
           >
+            <IoInformationCircleOutline className="nav-icon" />
             About
           </button>
           <button 
             className={`app-nav-link${location.pathname === '/userAdmission' ? ' active' : ''}`}
             onClick={() => navigate('/userAdmission')}
           >
+            <IoPersonAddOutline className="nav-icon" />
             Admission
           </button>
           <button 
             className={`app-nav-link${location.pathname === '/usertrack' ? ' active' : ''}`}
             onClick={() => navigate('/usertrack')}
           >
+            <IoCheckmarkCircleOutline className="nav-icon" />
             Check Status
           </button>
           <button 
             className={`app-nav-link${location.pathname === '/contact' ? ' active' : ''}`}
             onClick={() => navigate('/contact')}
           >
+            <IoMailOutline className="nav-icon" />
             Contact
           </button>
           <button 
             className={`app-nav-link${location.pathname === '/profile' ? ' active' : ''}`}
             onClick={() => navigate('/profile')}
           >
+            <IoPersonOutline className="nav-icon" />
             Profile
           </button>
           <button className="app-nav-link logout" onClick={handleLogout}>
+            <IoLogOutOutline className="nav-icon" />
             Log out
           </button>
         </div>
