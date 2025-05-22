@@ -20,6 +20,9 @@ import Interviews from './Components/Interviews/Interviews';
 import Loader from './Components/Common/Loader';
 import Footer from './Components/Common/Footer';
 import './Components/common.css';
+import AdminReg from './Components/AdminRegistration/AdminReg';
+import AdminTrack from './Components/AdminTrack/AdminTrack';
+import AdminPayPage from './Components/AdminPayPage/AdminPayPage';
 
 // Add this style to ensure footer stays at bottom
 const appStyle = {
@@ -73,6 +76,9 @@ const AppContent = () => {
           <Route path="/idcards" element={<IDCards />} />
           <Route path="/admincontact" element={<AdminContact />} />
           <Route path="/interviews" element={<Interviews />} />
+          <Route path="/adminreg" element={<AdminReg />} />
+          <Route path="/admintrack" element={<AdminTrack />} />
+          <Route path="/adminpaypage" element={<AdminPayPage />} />
 
           {/* Default Routes */}
           <Route path="/" element={<Navigate to="/about" replace />} />

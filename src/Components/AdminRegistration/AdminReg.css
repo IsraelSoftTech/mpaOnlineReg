@@ -1,0 +1,38 @@
+.submit-btn {
+  background: #18316d;
+  color: #fff;
+  border: none;
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s;
+  margin-top: 12px;
+  width: 100%;
+}
+
+.submit-btn:hover {
+  background: #122451;
+}
+
+.submit-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.view-students-btn {
+  background: #4CAF50;
+  color: #fff;
+  border: none;
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s;
+  margin-top: 12px;
+  width: 100%;
+}
+
+.view-students-btn:hover {
+  background: #388E3C;
+}
