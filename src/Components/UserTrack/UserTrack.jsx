@@ -1,25 +1,21 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { RiMenu3Line, RiCloseFill } from 'react-icons/ri';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import '../UserAdmission/UserAdmission.css';
 import './UserTrack.css';
 import { AdmissionContext } from '../AdmissionContext';
-import logo from '../../assets/logo.png';
 import { database } from '../../firebase';
 import { ref, push, onValue, update, off, get } from 'firebase/database';
+import UserNav from '../Shared/UserNav';
 
 const UserTrack = () => {
-  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [showInterviewModal, setShowInterviewModal] = useState(false);
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [interviewSchedule, setInterviewSchedule] = useState(null);
   const [notifications, setNotifications] = useState([]);
-  const { currentUser, admissions, updatePaymentStatus, logout } = useContext(AdmissionContext);
-  const menuRef = React.useRef(null);
-  const buttonRef = React.useRef(null);
+  const { currentUser, admissions, updatePaymentStatus } = useContext(AdmissionContext);
   const navigate = useNavigate();
   const location = useLocation();
   const [hasExistingInterview, setHasExistingInterview] = useState(false);
@@ -111,13 +107,6 @@ const UserTrack = () => {
 
     checkExistingInterview();
   }, [currentUser]);
-
-  const toggleMenu = () => setIsMenuOpen((open) => !open);
-
-  const handleLogout = () => {
-    logout();
-    navigate('/about');
-  };
 
   // Get current user's admission data
   const currentUserData = admissions.find(admission => 
@@ -297,60 +286,9 @@ const UserTrack = () => {
   );
 
   return (
-    <div className="userad-wrapper">
+    <div className="user-track-container">
+      <UserNav />
       <ToastContainer position="top-right" autoClose={3000} />
-      <header className="app-header">
-        <div className="logo-section">
-          <img src={logo} alt="" className="app-logo" />
-          <span className="app-brand">MPASAT</span>
-        </div>
-        <button
-          ref={buttonRef}
-          className="menu-toggle"
-          onClick={toggleMenu}
-          aria-label="Toggle menu"
-        >
-          {isMenuOpen ? <RiCloseFill size={24} /> : <RiMenu3Line size={24} />}
-        </button>
-        <nav ref={menuRef} className={`app-nav ${isMenuOpen ? 'nav-open' : ''}`}>
-          <button 
-            className={`app-nav-link${location.pathname === '/about' ? ' active' : ''}`}
-            onClick={() => navigate('/about')}
-          >
-            About
-          </button>
-          <button 
-            className={`app-nav-link${location.pathname === '/userAdmission' ? ' active' : ''}`}
-            onClick={() => navigate('/userAdmission')}
-          >
-            Admission
-          </button>
-          <button 
-            className={`app-nav-link${location.pathname === '/usertrack' ? ' active' : ''}`}
-            onClick={() => navigate('/usertrack')}
-          >
-            Check Status
-          </button>
-          <button 
-            className={`app-nav-link${location.pathname === '/contact' ? ' active' : ''}`}
-            onClick={() => navigate('/contact')}
-          >
-            Contact
-          </button>
-          <button 
-            className={`app-nav-link${location.pathname === '/profile' ? ' active' : ''}`}
-            onClick={() => navigate('/profile')}
-          >
-            Profile
-          </button>
-          <button 
-            className="app-nav-link logout" 
-            onClick={handleLogout}
-          >
-            Log out
-          </button>
-        </nav>
-      </header>
       <main className="usertrack-main">
         <h2 className="userad-title-main">Track Your Admission</h2>
         {notifications.length > 0 && (

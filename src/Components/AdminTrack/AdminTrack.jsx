@@ -11,6 +11,116 @@ import { database } from '../../firebase';
 import { ref, push, onValue, update, off, get } from 'firebase/database';
 import AdminNav from '../Admin/AdminNav';
 
+// Move InterviewModal outside of AdminTrack
+const InterviewModal = ({ onClose, onSubmit, admissionData }) => {
+  const [formData, setFormData] = useState({
+    name: admissionData?.name || '',
+    class: admissionData?.form || '',
+    subject: 'Interview'
+  });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSubmit(formData);
+  };
+
+  return (
+    <div className="modal-overlay">
+      <div className="modal-content">
+        <h2>Book Interview</h2>
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label>Name:</label>
+            <input
+              type="text"
+              value={formData.name}
+              onChange={(e) => setFormData({...formData, name: e.target.value})}
+              required
+              disabled
+            />
+          </div>
+          <div className="form-group">
+            <label>Class:</label>
+            <input
+              type="text"
+              value={formData.class}
+              onChange={(e) => setFormData({...formData, class: e.target.value})}
+              required
+              disabled
+            />
+          </div>
+          <div className="form-group">
+            <label>Subject:</label>
+            <input
+              type="text"
+              value={formData.subject}
+              disabled
+            />
+          </div>
+          <div className="modal-buttons">
+            <button type="button" onClick={onClose} className="cancel-btn">Cancel</button>
+            <button type="submit" className="submit-btn">Book</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+// Move InterviewScheduleModal outside of AdminTrack
+const InterviewScheduleModal = ({ schedule, onClose }) => (
+  <div className="modal-overlay">
+    <div className="modal-content interview-schedule-modal">
+      <div className="modal-header">
+        <h2>Interview Schedule Details</h2>
+        <button className="close-button" onClick={onClose}>&times;</button>
+      </div>
+      <div className="modal-body">
+        <div className="schedule-details">
+          <div className="schedule-header">
+            <div className="schedule-icon">📅</div>
+            <h3>Interview Information</h3>
+          </div>
+          <div className="schedule-grid">
+            <div className="schedule-item">
+              <label>Date</label>
+              <span>{new Date(schedule.date).toLocaleDateString('en-US', { 
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              })}</span>
+            </div>
+            <div className="schedule-item">
+              <label>Time</label>
+              <span>{schedule.time}</span>
+            </div>
+            <div className="schedule-item">
+              <label>Location</label>
+              <span>{schedule.location}</span>
+            </div>
+            <div className="schedule-item">
+              <label>Interviewer</label>
+              <span>{schedule.interviewer}</span>
+            </div>
+            <div className="schedule-item full-width">
+              <label>Additional Notes</label>
+              <span>{schedule.notes || 'No additional notes provided'}</span>
+            </div>
+          </div>
+          <div className="schedule-reminder">
+            <p>Please arrive 10 minutes before your scheduled time.</p>
+            <p>Bring all necessary documents and identification.</p>
+          </div>
+        </div>
+      </div>
+      <div className="modal-footer">
+        <button className="close-btn" onClick={onClose}>Close</button>
+      </div>
+    </div>
+  </div>
+);
+
 const AdminTrack = () => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -27,6 +137,7 @@ const AdminTrack = () => {
   const [admissionData, setAdmissionData] = useState(null);
   const [allStudents, setAllStudents] = useState([]);
   const [selectedStudent, setSelectedStudent] = useState(null);
+  const [selectedSchedule, setSelectedSchedule] = useState(null);
 
   useEffect(() => {
     // Get admission data from location state
@@ -34,15 +145,18 @@ const AdminTrack = () => {
       setAdmissionData(location.state.admissionData);
       setIsLoading(false);
     } else if (location.state?.viewAll) {
-      // Fetch all registered students
+      // Fetch all registered students from AdminReg
       const admissionsRef = ref(database, 'admissions');
       const unsubscribe = onValue(admissionsRef, (snapshot) => {
         const data = snapshot.val();
         if (data) {
-          const students = Object.entries(data).map(([id, student]) => ({
-            id,
-            ...student
-          }));
+          // Filter students to only include those registered through AdminReg
+          const students = Object.entries(data)
+            .filter(([_, student]) => student.username === 'admin_registered')
+            .map(([id, student]) => ({
+              id,
+              ...student
+            }));
           setAllStudents(students);
           
           // If there's a selected student, update their data
@@ -123,16 +237,35 @@ const AdminTrack = () => {
         const snapshot = await get(interviewsRef);
         const interviews = snapshot.val() || {};
         const userInterviews = Object.values(interviews).filter(
-          interview => interview.username === admissionData.username
+          interview => interview.studentId === (selectedStudent?.id || admissionData.id) && interview.status === 'Scheduled'
         );
         setHasExistingInterview(userInterviews.length > 0);
+        
+        // If there's a scheduled interview, store its data
+        if (userInterviews.length > 0) {
+          setSelectedSchedule(userInterviews[0]);
+        }
       } catch (error) {
         console.error('Error checking existing interviews:', error);
       }
     };
 
-    checkExistingInterview();
-  }, [admissionData]);
+    // Set up real-time listener for interview updates
+    const unsubscribe = onValue(interviewsRef, (snapshot) => {
+      const interviews = snapshot.val() || {};
+      const userInterviews = Object.values(interviews).filter(
+        interview => interview.studentId === (selectedStudent?.id || admissionData.id) && interview.status === 'Scheduled'
+      );
+      setHasExistingInterview(userInterviews.length > 0);
+      
+      // If there's a scheduled interview, store its data
+      if (userInterviews.length > 0) {
+        setSelectedSchedule(userInterviews[0]);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [admissionData, selectedStudent]);
 
   // Listen for payment status changes
   useEffect(() => {
@@ -196,12 +329,18 @@ const AdminTrack = () => {
 
   const handleBookInterview = async (formData) => {
     try {
+      const studentId = selectedStudent?.id || admissionData?.id;
+      if (!studentId) {
+        toast.error('Student information not found');
+        return;
+      }
+
       // Check again for existing interview before booking
       const interviewsRef = ref(database, 'interviews');
       const snapshot = await get(interviewsRef);
       const interviews = snapshot.val() || {};
       const userInterviews = Object.values(interviews).filter(
-        interview => interview.username === admissionData.username
+        interview => interview.studentId === studentId
       );
 
       if (userInterviews.length > 0) {
@@ -211,12 +350,27 @@ const AdminTrack = () => {
       }
 
       // Proceed with booking if no existing interview
-      await push(interviewsRef, {
+      const newInterviewRef = await push(interviewsRef, {
         ...formData,
-        username: admissionData.username,
+        studentId,
+        username: selectedStudent?.username || admissionData?.username,
+        name: selectedStudent?.name || admissionData?.name,
+        class: selectedStudent?.form || admissionData?.form,
         timestamp: new Date().toISOString(),
         status: 'Pending'
       });
+
+      // Create a notification for the student
+      const notificationsRef = ref(database, 'notifications');
+      await push(notificationsRef, {
+        userId: selectedStudent?.username || admissionData?.username,
+        type: 'interview_schedule',
+        message: `Interview has been scheduled for ${formData.name}`,
+        timestamp: new Date().toISOString(),
+        read: false,
+        interviewId: newInterviewRef.key
+      });
+
       toast.success('Interview booked successfully!');
       setShowInterviewModal(false);
       setHasExistingInterview(true);
@@ -227,10 +381,26 @@ const AdminTrack = () => {
   };
 
   const handleViewSchedule = async (notification) => {
-    // Mark notification as read
-    const notificationRef = ref(database, `notifications/${notification.id}`);
-    await update(notificationRef, { read: true });
-    setShowScheduleModal(true);
+    try {
+      // Mark notification as read
+      const notificationRef = ref(database, `notifications/${notification.id}`);
+      await update(notificationRef, { read: true });
+
+      // Fetch the interview schedule details
+      const interviewRef = ref(database, `interviews/${notification.interviewId}`);
+      const interviewSnapshot = await get(interviewRef);
+      
+      if (interviewSnapshot.exists()) {
+        const interviewData = interviewSnapshot.val();
+        setSelectedSchedule(interviewData);
+        setShowScheduleModal(true);
+      } else {
+        toast.error('Interview schedule not found');
+      }
+    } catch (error) {
+      console.error('Error viewing schedule:', error);
+      toast.error('Failed to load interview schedule');
+    }
   };
 
   if (isLoading) {
@@ -357,13 +527,16 @@ const AdminTrack = () => {
                     </div>
                     {selectedStudent.studentType === 'New Student' && (
                       <div className="document-item">
-                        <label>Report Card</label>
-                        {selectedStudent.report ? (
-                          <a href={selectedStudent.report} target="_blank" rel="noopener noreferrer" className="view-document">
-                            View Report
-                          </a>
+                        <label>Interview Status</label>
+                        {hasExistingInterview ? (
+                          <button 
+                            className="view-interview-btn"
+                            onClick={() => setShowScheduleModal(true)}
+                          >
+                            View Interview Details
+                          </button>
                         ) : (
-                          <span className="no-document">Not uploaded</span>
+                          <span className="no-document">No interview scheduled</span>
                         )}
                       </div>
                     )}
@@ -398,7 +571,12 @@ const AdminTrack = () => {
                             {hasExistingInterview ? (
                               <div className="interview-status">
                                 <p className="interview-booked-message">Interview has been booked</p>
-                                <p className="interview-note">Please check notifications for updates</p>
+                                <button 
+                                  className="view-schedule-btn"
+                                  onClick={() => setShowScheduleModal(true)}
+                                >
+                                  View Interview Details
+                                </button>
                               </div>
                             ) : (
                               <button 
@@ -431,6 +609,7 @@ const AdminTrack = () => {
           <InterviewModal
             onClose={() => setShowInterviewModal(false)}
             onSubmit={handleBookInterview}
+            admissionData={selectedStudent || admissionData}
           />
         )}
         {showScheduleModal && interviewSchedule && (
@@ -460,91 +639,6 @@ const AdminTrack = () => {
       </div>
     );
   }
-
-  const InterviewModal = ({ onClose, onSubmit }) => {
-    const [formData, setFormData] = useState({
-      name: admissionData?.name || '',
-      class: admissionData?.form || '',
-      subject: 'Interview'
-    });
-
-    const handleSubmit = (e) => {
-      e.preventDefault();
-      onSubmit(formData);
-    };
-
-    return (
-      <div className="modal-overlay">
-        <div className="modal-content">
-          <h2>Book Interview</h2>
-          <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label>Name:</label>
-              <input
-                type="text"
-                value={formData.name}
-                onChange={(e) => setFormData({...formData, name: e.target.value})}
-                required
-                disabled
-              />
-            </div>
-            <div className="form-group">
-              <label>Class:</label>
-              <input
-                type="text"
-                value={formData.class}
-                onChange={(e) => setFormData({...formData, class: e.target.value})}
-                required
-                disabled
-              />
-            </div>
-            <div className="form-group">
-              <label>Subject:</label>
-              <input
-                type="text"
-                value={formData.subject}
-                disabled
-              />
-            </div>
-            <div className="modal-buttons">
-              <button type="button" onClick={onClose} className="cancel-btn">Cancel</button>
-              <button type="submit" className="submit-btn">Book</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    );
-  };
-
-  const InterviewScheduleModal = ({ schedule, onClose }) => (
-    <div className="modal-overlay">
-      <div className="modal-content">
-        <h2>Interview Schedule</h2>
-        <div className="schedule-details">
-          <p><strong>Date:</strong> {new Date(schedule.date).toLocaleDateString()}</p>
-          <p><strong>Time:</strong> {schedule.time}</p>
-          <p><strong>Mode:</strong> {schedule.mode}</p>
-          {schedule.link && (
-            <p>
-              <strong>Meeting Link:</strong>{' '}
-              <a href={schedule.link} target="_blank" rel="noopener noreferrer">
-                Join Meeting
-              </a>
-            </p>
-          )}
-          {schedule.notes && (
-            <div className="schedule-notes">
-              <strong>Additional Notes:</strong>
-              <p>{schedule.notes}</p>
-            </div>
-          )}
-        </div>
-        <div className="modal-buttons">
-          <button onClick={onClose} className="close-btn">Close</button>
-        </div>
-      </div>
-    </div>
-  );
 
   return (
     <div className="userad-wrapper">
@@ -646,13 +740,16 @@ const AdminTrack = () => {
                 </div>
                 {admissionData.studentType === 'New Student' && (
                   <div className="document-item">
-                    <label>Report Card</label>
-                    {admissionData.report ? (
-                      <a href={admissionData.report} target="_blank" rel="noopener noreferrer" className="view-document">
-                        View Report
-                      </a>
+                    <label>Interview Status</label>
+                    {hasExistingInterview ? (
+                      <button 
+                        className="view-interview-btn"
+                        onClick={() => setShowScheduleModal(true)}
+                      >
+                        View Interview Details
+                      </button>
                     ) : (
-                      <span className="no-document">Not uploaded</span>
+                      <span className="no-document">No interview scheduled</span>
                     )}
                   </div>
                 )}
@@ -687,7 +784,12 @@ const AdminTrack = () => {
                         {hasExistingInterview ? (
                           <div className="interview-status">
                             <p className="interview-booked-message">Interview has been booked</p>
-                            <p className="interview-note">Please check notifications for updates</p>
+                            <button 
+                              className="view-schedule-btn"
+                              onClick={() => setShowScheduleModal(true)}
+                            >
+                              View Interview Details
+                            </button>
                           </div>
                         ) : (
                           <button 
@@ -716,6 +818,7 @@ const AdminTrack = () => {
         <InterviewModal
           onClose={() => setShowInterviewModal(false)}
           onSubmit={handleBookInterview}
+          admissionData={selectedStudent || admissionData}
         />
       )}
       {showScheduleModal && interviewSchedule && (

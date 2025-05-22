@@ -6,6 +6,7 @@ import { AdmissionContext } from '../AdmissionContext';
 import { ref, onValue } from 'firebase/database';
 import { database } from '../../firebase';
 import logo from '../../assets/logo.png';
+import UserNav from '../Shared/UserNav';
 
 const generateAcademicYears = () => {
   const years = [];
@@ -235,61 +236,8 @@ const UserAdmission = () => {
   };
 
   return (
-    <div className="userad-wrapper">
-      {!hideContent && (
-        <header className="app-header">
-          <div className="logo-section">
-            <img src={logo}alt="" className="app-logo" />
-            <span className="app-brand">MPASAT</span>
-          </div>
-          <button
-            ref={buttonRef}
-            className="menu-toggle"
-            onClick={toggleMenu}
-            aria-label="Toggle menu"
-          >
-            {isMenuOpen ? <RiCloseFill size={24} /> : <RiMenu3Line size={24} />}
-          </button>
-          <nav ref={menuRef} className={`app-nav ${isMenuOpen ? 'nav-open' : ''}`}>
-            <button 
-              className={`app-nav-link${location.pathname === '/about' ? ' active' : ''}`}
-              onClick={() => navigate('/about')}
-            >
-              About
-            </button>
-            <button 
-              className={`app-nav-link${location.pathname === '/userAdmission' ? ' active' : ''}`}
-              onClick={() => navigate('/userAdmission')}
-            >
-              Admission
-            </button>
-            <button 
-              className={`app-nav-link${location.pathname === '/usertrack' ? ' active' : ''}`}
-              onClick={() => navigate('/usertrack')}
-            >
-              Check Status
-            </button>
-            <button 
-              className={`app-nav-link${location.pathname === '/contact' ? ' active' : ''}`}
-              onClick={() => navigate('/contact')}
-            >
-              Contact
-            </button>
-            <button 
-              className={`app-nav-link${location.pathname === '/profile' ? ' active' : ''}`}
-              onClick={() => navigate('/profile')}
-            >
-              Profile
-            </button>
-            <button 
-              className="app-nav-link logout" 
-              onClick={handleLogout}
-            >
-              Log out
-            </button>
-          </nav>
-        </header>
-      )}
+    <div className="user-admission-container">
+      <UserNav />
       <main className="userad-main">
         {!hideContent && <h2 className="userad-title-main">Admission Application</h2>}
         {success && (
@@ -455,9 +403,6 @@ const UserAdmission = () => {
           </div>
         )}
       </main>
-      {!hideContent && (
-        <div>{/* Your existing content */}</div>
-      )}
     </div>
   );
 };

@@ -1,10 +1,14 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { RiMenu3Line, RiCloseFill } from 'react-icons/ri';
 import './Signup.css';
 import { AdmissionContext } from '../AdmissionContext';
 import logo from '../../assets/logo.png';
 
 const Signup = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+  const buttonRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
   const { addAccount } = useContext(AdmissionContext);
@@ -13,6 +17,8 @@ const Signup = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const toggleMenu = () => setIsMenuOpen((open) => !open);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -77,16 +83,24 @@ const Signup = () => {
   };
 
   return (
-    <div className="signup-page-wrapper">
-      <header className="app-header">
+    <div className="signup-container">
+      <header className="signup-header">
         <div className="logo-section">
-          <img src={logo} alt="" className="app-logo" />
+          <img src={logo} alt="logo" className="signup-logo" />
           <span className="app-brand">MPASAT</span>
         </div>
-        <nav className="app-nav">
-          <Link to="/about" className={`app-nav-link${location.pathname === '/about' ? ' active' : ''}`}>About Us</Link>
-          <Link to="/signup" className={`app-nav-link${location.pathname === '/signup' ? ' active' : ''}`}>Sign Up</Link>
-          <Link to="/signin" className={`app-nav-link${location.pathname === '/signin' ? ' active' : ''}`}>Sign In</Link>
+        <button
+          ref={buttonRef}
+          className="menu-toggle"
+          onClick={toggleMenu}
+          aria-label="Toggle menu"
+        >
+          {isMenuOpen ? <RiCloseFill size={24} /> : <RiMenu3Line size={24} />}
+        </button>
+        <nav ref={menuRef} className={`signup-nav ${isMenuOpen ? 'nav-open' : ''}`}>
+          <button onClick={() => navigate('/about')}>About Us</button>
+          <button onClick={() => navigate('/signup')}>Sign Up</button>
+          <button onClick={() => navigate('/signin')}>Sign In</button>
         </nav>
       </header>
       <main className="signup-main-wrapper">

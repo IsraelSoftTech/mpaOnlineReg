@@ -3,10 +3,10 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { RiMenu3Line, RiCloseFill } from 'react-icons/ri';
 import { IoNotificationsOutline } from 'react-icons/io5';
 import { database } from '../../firebase';
-import { ref, onValue, off, get } from 'firebase/database';
+import { ref, onValue, off } from 'firebase/database';
 import logo from '../../assets/logo.png';
 import './AdminNav.css';
-import { Link } from 'react-router-dom';
+
 
 const AdminNav = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -240,7 +240,12 @@ const AdminNav = () => {
         >
           Interviews
         </button>
-        <Link to="/adminreg" className="admin-nav-link">Register</Link>
+        <button 
+          className={`app-nav-link${location.pathname === '/adminreg' || location.pathname === '/admintrack' ? ' active' : ''}`}
+          onClick={() => navigate('/adminreg')}
+        >
+          Register
+        </button>
         <button 
           className={`app-nav-link${location.pathname === '/admincontact' ? ' active' : ''}`}
           onClick={() => navigate('/admincontact')}

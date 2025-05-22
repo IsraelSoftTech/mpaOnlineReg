@@ -886,4 +886,134 @@
   .students-list {
     grid-template-columns: 1fr;
   }
+}
+
+.interview-schedule-modal {
+  max-width: 600px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.interview-schedule-modal .modal-header {
+  padding: 20px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.interview-schedule-modal .modal-header h2 {
+  margin: 0;
+  color: #333;
+  font-size: 1.5rem;
+}
+
+.interview-schedule-modal .modal-body {
+  padding: 20px;
+}
+
+.schedule-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.schedule-icon {
+  font-size: 24px;
+  background: #f0f7ff;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+}
+
+.schedule-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 1.2rem;
+}
+
+.schedule-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.schedule-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.schedule-item.full-width {
+  grid-column: 1 / -1;
+}
+
+.schedule-item label {
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.schedule-item span {
+  font-size: 1rem;
+  color: #333;
+  padding: 8px 12px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  border: 1px solid #eee;
+}
+
+.schedule-reminder {
+  background: #f0f7ff;
+  padding: 16px;
+  border-radius: 8px;
+  margin-top: 20px;
+}
+
+.schedule-reminder p {
+  margin: 8px 0;
+  color: #2c5282;
+  font-size: 0.9rem;
+}
+
+.view-interview-btn {
+  background: #4a90e2;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.view-interview-btn:hover {
+  background: #357abd;
+}
+
+.modal-footer {
+  padding: 16px 20px;
+  border-top: 1px solid #eee;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.close-btn {
+  background: #f8f9fa;
+  border: 1px solid #ddd;
+  padding: 8px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.close-btn:hover {
+  background: #e9ecef;
 } 

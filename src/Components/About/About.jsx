@@ -147,6 +147,7 @@ const About = () => {
     <div className="page-wrapper">
       <header className="header-about">
         <div className="logo"><img src={logo} alt=""/></div>
+        <div className="header-title">MPASAT</div>
         <button 
           ref={buttonRef}
           className="menu-toggle" 

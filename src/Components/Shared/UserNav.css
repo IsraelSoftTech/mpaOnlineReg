@@ -1,0 +1,129 @@
+.app-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 70px;
+  background-color: #18316d;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  z-index: 1001;
+}
+
+.app-logo {
+  height: 50px;
+  width: auto;
+}
+
+.app-brand {
+  color: white;
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 0.5rem;
+  z-index: 1001;
+}
+
+.app-nav {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.app-nav-link {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  transition: all 0.3s ease;
+}
+
+.app-nav-link:hover {
+  color: #ffd700;
+}
+
+.app-nav-link.active {
+  color: #ffd700;
+  font-weight: 600;
+}
+
+.logout {
+  color: #dc3545;
+}
+
+.logout:hover {
+  color: #c82333;
+}
+
+.mobile-menu {
+  display: none;
+}
+
+.desktop-menu {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .menu-toggle {
+    display: block;
+  }
+
+  .app-nav {
+    position: fixed;
+    top: 70px;
+    right: -100%;
+    width: 250px;
+    height: calc(100vh - 70px);
+    background-color: #18316d;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem;
+    transition: right 0.3s ease;
+  }
+
+  .app-nav.nav-open {
+    right: 0;
+  }
+
+  .mobile-menu {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .desktop-menu {
+    display: none;
+  }
+
+  .app-nav-link {
+    width: 100%;
+    text-align: left;
+    padding: 1rem;
+  }
+
+  .logout {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 0.5rem;
+  }
+} 

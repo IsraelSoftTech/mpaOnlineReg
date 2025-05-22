@@ -27,6 +27,15 @@
   width: auto;
 }
 
+.header-title {
+  color: white;
+  font-size: 1.8rem;
+  font-weight: 600;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
 .menu-toggle {
   display: none;
   background: none;
