@@ -3,10 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { 
   IoPersonOutline,
   IoMailOutline,
-  IoLockClosedOutline
+  IoLockClosedOutline,
+  IoPencilOutline,
+  IoCheckmarkOutline,
+  IoCloseOutline
 } from 'react-icons/io5';
 import { AdmissionContext } from '../AdmissionContext';
-import '../UserAdmission/UserAdmission.css';
 import './Profile.css';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -25,6 +27,7 @@ const Profile = () => {
   });
   const [successMessage, setSuccessMessage] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+  const [originalData, setOriginalData] = useState(null);
   
   const navigate = useNavigate();
 
@@ -36,12 +39,14 @@ const Profile = () => {
     }
 
     if (currentUserData) {
-      setFormData({
+      const initialData = {
         fullName: currentUserData.fullName || '',
         username: currentUserData.username || currentUser || '',
         email: currentUserData.email || '',
         password: currentUserData.password || ''
-      });
+      };
+      setFormData(initialData);
+      setOriginalData(initialData);
     }
   }, [currentUserData, currentUser, navigate]);
 
@@ -58,14 +63,7 @@ const Profile = () => {
   };
 
   const handleCancel = () => {
-    if (currentUserData) {
-      setFormData({
-        fullName: currentUserData.fullName || '',
-        username: currentUserData.username || currentUser || '',
-        email: currentUserData.email || '',
-        password: currentUserData.password || ''
-      });
-    }
+    setFormData(originalData);
     setIsEditing(false);
   };
 
@@ -76,13 +74,18 @@ const Profile = () => {
     try {
       const userRef = ref(database, `users/${currentUser}`);
       await update(userRef, formData);
+      setOriginalData(formData);
       setSuccessMessage('Profile updated successfully');
       setIsEditing(false);
       
-      // Clear success message after 3 seconds
-      setTimeout(() => {
-        setSuccessMessage('');
-      }, 3000);
+      toast.success('Profile updated successfully', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     } catch (error) {
       console.error('Error updating profile:', error);
       toast.error('Failed to update profile');
@@ -96,115 +99,117 @@ const Profile = () => {
   }
 
   return (
-    <div className="userad-wrapper">
-      <ToastContainer 
-        position="top-right" 
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={true}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      />
+    <div className="profile-page">
+      <ToastContainer />
       <UserNav />
-      <main className="userad-main">
-        <div className="profile-wrapper">
-          <div className="profile-container">
-            <h2 className="profile-title">Your Profile</h2>
-            {successMessage && (
-              <div className="profile-success-message">
-                {successMessage}
-              </div>
-            )}
-            <form onSubmit={handleSubmit} className="profile-form">
-              <div className="form-group">
-                <label htmlFor="fullName">
-                  <IoPersonOutline className="form-icon" /> Full Name
-                </label>
-                <input
-                  type="text"
-                  id="fullName"
-                  name="fullName"
-                  value={formData.fullName}
-                  onChange={handleInputChange}
-                  disabled={!isEditing}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="username">
-                  <IoPersonOutline className="form-icon" /> Username
-                </label>
-                <input
-                  type="text"
-                  id="username"
-                  name="username"
-                  value={formData.username}
-                  onChange={handleInputChange}
-                  disabled={!isEditing}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="email">
-                  <IoMailOutline className="form-icon" /> Email
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  disabled={!isEditing}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="password">
-                  <IoLockClosedOutline className="form-icon" /> Password
-                </label>
-                <input
-                  type="text"
-                  id="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  disabled={!isEditing}
-                  required
-                />
-              </div>
-              <div className="profile-actions">
-                {!isEditing ? (
+      <main className="profile-main">
+        <div className="profile-container">
+          <div className="profile-header">
+            <h2 className="profile-title">Profile Information</h2>
+           
+          </div>
+
+          <form onSubmit={handleSubmit} className="profile-form">
+            <div className="form-group">
+              <label htmlFor="fullName">
+                <IoPersonOutline className="form-icon" />
+                <span>Full Name</span>
+              </label>
+              <input
+                type="text"
+                id="fullName"
+                name="fullName"
+                value={formData.fullName}
+                onChange={handleInputChange}
+                disabled={!isEditing}
+                className={isEditing ? 'editing' : ''}
+                placeholder="Enter your full name"
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="username">
+                <IoPersonOutline className="form-icon" />
+                <span>Username</span>
+              </label>
+              <input
+                type="text"
+                id="username"
+                name="username"
+                value={formData.username}
+                onChange={handleInputChange}
+                disabled={!isEditing}
+                className={isEditing ? 'editing' : ''}
+                placeholder="Enter your username"
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="email">
+                <IoMailOutline className="form-icon" />
+                <span>Email</span>
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                disabled={!isEditing}
+                className={isEditing ? 'editing' : ''}
+                placeholder="Enter your email"
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="password">
+                <IoLockClosedOutline className="form-icon" />
+                <span>Password</span>
+              </label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleInputChange}
+                disabled={!isEditing}
+                className={isEditing ? 'editing' : ''}
+                placeholder="Enter your password"
+              />
+            </div>
+
+            <div className="profile-actions">
+              {!isEditing ? (
+                <button
+                  type="button"
+                  className="edit-btn"
+                  onClick={handleEdit}
+                >
+                  <IoPencilOutline />
+                  <span>Edit Profile</span>
+                </button>
+              ) : (
+                <div className="edit-actions">
+                  <button
+                    type="submit"
+                    className="save-btn"
+                    disabled={isSaving}
+                  >
+                    <IoCheckmarkOutline />
+                    <span>{isSaving ? 'Saving...' : 'Update Profile'}</span>
+                  </button>
                   <button
                     type="button"
-                    className="edit-btn"
-                    onClick={handleEdit}
+                    className="cancel-btn"
+                    onClick={handleCancel}
                   >
-                    Edit Profile
+                    <IoCloseOutline />
+                    <span>Cancel</span>
                   </button>
-                ) : (
-                  <>
-                    <button
-                      type="submit"
-                      className="save-btn"
-                      disabled={isSaving}
-                    >
-                      {isSaving ? 'Saving...' : 'Update Profile'}
-                    </button>
-                    <button
-                      type="button"
-                      className="cancel-btn"
-                      onClick={handleCancel}
-                    >
-                      Cancel
-                    </button>
-                  </>
-                )}
-              </div>
-            </form>
-          </div>
+                </div>
+              )}
+            </div>
+          </form>
         </div>
       </main>
     </div>

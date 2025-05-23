@@ -11,6 +11,8 @@ import {
 } from 'react-icons/io5';
 import { AdmissionContext } from '../AdmissionContext';
 import logo from '../../assets/logo.png';
+import SearchBar from './SearchBar';
+import UserNotif from './UserNotif';
 import './UserNav.css';
 
 const UserNav = () => {
@@ -25,7 +27,7 @@ const UserNav = () => {
 
   const handleLogout = () => {
     logout();
-    navigate('/about');
+    navigate('/login');
   };
 
   return (
@@ -33,6 +35,10 @@ const UserNav = () => {
       <div className="logo-section">
         <img src={logo} alt="logo" className="app-logo" />
         <span className="app-brand">MPASAT</span>
+      </div>
+      <div className="nav-actions">
+        <SearchBar />
+        <UserNotif />
       </div>
       <button
         ref={buttonRef}

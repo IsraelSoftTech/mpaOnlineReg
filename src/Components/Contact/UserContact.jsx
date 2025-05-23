@@ -1,14 +1,12 @@
 import React, { useState, useRef, useEffect, useContext } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { RiMenu3Line, RiCloseFill, RiMailSendLine, RiMessage2Line, RiSendPlaneLine } from 'react-icons/ri';
-import { ref, push, onValue, update, query, orderByChild, limitToFirst, get } from 'firebase/database';
+import { RiMenu3Line, RiCloseFill, RiMessage2Line } from 'react-icons/ri';
+import { ref, push, onValue } from 'firebase/database';
 import { database } from '../../firebase';
 import { AdmissionContext } from '../AdmissionContext';
 import './UserContact.css';
 import logo from '../../assets/logo.png';
-
-const MESSAGES_PER_PAGE = 10;
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+import UserNav from '../Shared/UserNav';
 
 const UserContact = () => {
   const navigate = useNavigate();
@@ -27,8 +25,6 @@ const UserContact = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
   const menuRef = useRef(null);
   const buttonRef = useRef(null);
 
@@ -73,12 +69,6 @@ const UserContact = () => {
 
     loadMessages();
   }, [currentUser, navigate]);
-
-  const handleLoadMore = () => {
-    if (!isLoading && hasMore) {
-      setPage(prev => prev + 1);
-    }
-  };
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
@@ -160,28 +150,7 @@ const UserContact = () => {
 
   return (
     <div className="user-contact-wrapper">
-      <header className="app-header">
-        <div className="logo-section">
-          <img src={logo} alt="logo" className="app-logo" />
-          <span className="app-brand">MPASAT</span>
-        </div>
-        <button
-          ref={buttonRef}
-          className="menu-toggle"
-          onClick={toggleMenu}
-          aria-label="Toggle menu"
-        >
-          {isMenuOpen ? <RiCloseFill size={24} /> : <RiMenu3Line size={24} />}
-        </button>
-        <nav ref={menuRef} className={`app-nav ${isMenuOpen ? 'nav-open' : ''}`}>
-          <button className={`app-nav-link${location.pathname === '/about' ? ' active' : ''}`} onClick={() => navigate('/about')}>About</button>
-          <button className={`app-nav-link${location.pathname === '/userAdmission' ? ' active' : ''}`} onClick={() => navigate('/userAdmission')}>Admission</button>
-          <button className={`app-nav-link${location.pathname === '/usertrack' ? ' active' : ''}`} onClick={() => navigate('/usertrack')}>Check Status</button>
-          <button className={`app-nav-link${location.pathname === '/contact' ? ' active' : ''}`} onClick={() => navigate('/contact')}>Contact</button>
-          <button className={`app-nav-link${location.pathname === '/profile' ? ' active' : ''}`} onClick={() => navigate('/profile')}>Profile</button>
-          <button className="app-nav-link logout" onClick={() => navigate('/about')}>Log out</button>
-        </nav>
-      </header>
+   <UserNav/>
 
       <main className="user-contact-main">
         <div className="contact-header-actions">
@@ -248,7 +217,7 @@ const UserContact = () => {
                 />
               </div>
               <button type="submit" className="send-message-btn">
-                <RiMailSendLine /> Send Message
+                Send Message
               </button>
             </form>
           </div>
@@ -267,9 +236,6 @@ const UserContact = () => {
                   <div key={message.id} className="reply-card">
                     <div className="reply-header">
                       <span className="reply-timestamp">{message.timestamp}</span>
-                      {message.hasNewReply && (
-                        <span className="new-reply-badge">New Reply</span>
-                      )}
                     </div>
                     <div className="reply-content">
                       <p className="reply-message">{message.message}</p>
@@ -293,7 +259,7 @@ const UserContact = () => {
                         onClick={() => handleUserReply(message.id)}
                         disabled={!replyText.trim()}
                       >
-                        <RiSendPlaneLine />
+                        Send Reply
                       </button>
                     </div>
                   </div>

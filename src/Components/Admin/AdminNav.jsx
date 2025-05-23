@@ -59,9 +59,7 @@ const AdminNav = () => {
         {isMenuOpen ? <RiCloseFill size={24} /> : <RiMenu3Line size={24} />}
       </button>
       <nav ref={menuRef} className={`app-nav ${isMenuOpen ? 'nav-open' : ''}`}>
-        <button className="app-nav-link logout mobile-only" onClick={handleLogout}>
-          Log out
-        </button>
+      
         <button 
           className={`app-nav-link${location.pathname === '/admin' ? ' active' : ''}`}
           onClick={() => navigate('/admin')}
