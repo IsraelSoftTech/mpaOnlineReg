@@ -17,7 +17,8 @@ const AdminPay = () => {
       if (data) {
         const paymentsList = Object.entries(data).map(([id, payment]) => ({
           id,
-          ...payment
+          ...payment,
+          status: payment.status || 'Pending' // Set default status if not present
         }))
         .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
         
@@ -121,7 +122,7 @@ const AdminPay = () => {
               <thead>
                 <tr>
                   <th>Date</th>
-                  <th>Sender Name</th>
+                  <th>Payer Name</th>
                   <th>Transaction ID</th>
                   <th>Amount</th>
                   <th>Status</th>
@@ -132,12 +133,12 @@ const AdminPay = () => {
                 {payments.map(payment => (
                   <tr key={payment.id}>
                     <td>{new Date(payment.timestamp).toLocaleDateString()}</td>
-                    <td>{payment.senderName}</td>
+                    <td>{payment.payerName}</td>
                     <td>{payment.transactionId}</td>
-                    <td>{payment.amount} {payment.currency}</td>
+                    <td>2000 XAF</td>
                     <td>
-                      <span className={`status-badge ${payment.status.toLowerCase().replace(' ', '-')}`}>
-                        {payment.status}
+                      <span className={`status-badge ${(payment.status || 'Pending').toLowerCase().replace(' ', '-')}`}>
+                        {payment.status || 'Pending'}
                       </span>
                     </td>
                     <td>
@@ -167,7 +168,7 @@ const AdminPay = () => {
                 ))}
                 {payments.length === 0 && (
                   <tr>
-                    <td colSpan="7" className="no-records">
+                    <td colSpan="6" className="no-records">
                       No payment records found
                     </td>
                   </tr>

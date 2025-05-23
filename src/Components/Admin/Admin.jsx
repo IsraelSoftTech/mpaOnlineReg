@@ -341,7 +341,7 @@ const Admin = () => {
                         >
                           <FaTrash className="admin-action-icon" />
                         </button>
-                      </td>
+                  </td>
                     </tr>
                   ))
                 ) : (

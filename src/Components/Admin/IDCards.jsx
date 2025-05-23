@@ -141,90 +141,90 @@ const IDCards = () => {
   return (
     <div className="id-cards-page">
       <AdminNav />
-     
-
-      <div className="id-cards-header no-print">
-        <h1>Student ID Cards</h1>
-        <button className="print-button" onClick={handlePrint}>
-          Print ID Cards
-        </button>
-      </div>
-
-      {showClassSelect && (
-        <div className="class-select-modal no-print">
-          <div className="modal-content">
-            <h2>Select Class</h2>
-            <select 
-              value={selectedClass} 
-              onChange={(e) => setSelectedClass(e.target.value)}
-            >
-              <option value="">Select a class</option>
-              {classes.map(cls => (
-                <option key={cls} value={cls}>{cls}</option>
-              ))}
-            </select>
-            <div className="modal-buttons">
-              <button onClick={() => setShowClassSelect(false)}>Cancel</button>
-          <button 
-                onClick={handlePrintClass} 
-                disabled={!selectedClass}
-          >
-                Print Selected Class
+      <div className="id-cards-content">
+        <div className="id-cards-header no-print">
+          <h1>Student ID Cards</h1>
+          <button className="print-button" onClick={handlePrint}>
+            Print ID Cards
           </button>
-            </div>
-          </div>
         </div>
-      )}
 
-      <div className="id-cards-container">
-        {displayedStudents.map(student => (
-          <div key={student.id} className="id-card">
-            <div className="school-header">
-              <img src={logo} alt="School Logo" className="school-logo" />
-              <div className="school-info">
-                <h1>MBAKWA PHOSPHATE ACADEMY OF SCIENCE, ARTS AND TECHNOLOGY</h1>
-                <h2>ST.LOUIS JUNIOR ACADEMY</h2>
-                <p>Mile 3 Nkwen-Bamenda, Cameroon</p>
-                <p>Reg. No. 697/L/MINESEC/SG/DESG/SDSEPESG/SSGEPESG of 1/12/2022</p>
-                <p>Tel: +237 679953185</p>
-                <p>E-mail: mbakwaphosphateacademy@gmail.com</p>
+        {showClassSelect && (
+          <div className="class-select-modal no-print">
+            <div className="modal-content">
+              <h2>Select Class</h2>
+              <select 
+                value={selectedClass} 
+                onChange={(e) => setSelectedClass(e.target.value)}
+              >
+                <option value="">Select a class</option>
+                {classes.map(cls => (
+                  <option key={cls} value={cls}>{cls}</option>
+                ))}
+              </select>
+              <div className="modal-buttons">
+                <button onClick={() => setShowClassSelect(false)}>Cancel</button>
+                <button 
+                  onClick={handlePrintClass} 
+                  disabled={!selectedClass}
+                >
+                  Print Selected Class
+                </button>
               </div>
-            </div>
-            <div className="id-title">
-              <h3>STUDENT ID CARD</h3>
-              <p>{student.academicYear || currentAcademicYear} Academic Year</p>
-            </div>
-            <div className="student-info">
-              <div className="student-details">
-                <table>
-                  <tbody>
-                    <tr><td><strong>Name:</strong></td><td>{student.name || ''}</td></tr>
-                    <tr><td><strong>Class:</strong></td><td>{student.class || ''}</td></tr>
-                    <tr><td><strong>Sex:</strong></td><td>{student.gender || ''}</td></tr>
-                    <tr><td><strong>Date of Birth:</strong></td><td>{student.dateOfBirth || ''}</td></tr>
-                    <tr><td><strong>Place of Birth:</strong></td><td>{student.placeOfBirth || ''}</td></tr>
-                    <tr><td><strong>Father's Name:</strong></td><td>{student.fatherName || ''}</td></tr>
-                    <tr><td><strong>Mother's Name:</strong></td><td>{student.motherName || ''}</td></tr>
-                    <tr><td><strong>Guardian's Contact:</strong></td><td>{student.guardianContact || ''}</td></tr>
-                  </tbody>
-                </table>
-              </div>
-              <div className="student-photo-container">
-                <PhotoComponent 
-                  photoUrl={student.photo}
-                  studentId={student.id}
-                  className="student-photo"
-                />
-              </div>
-            </div>
-            <div className="barcode">
-              <div className="student-id">ID: {student.id}</div>
             </div>
           </div>
-        ))}
+        )}
+
+        <div className="id-cards-container">
+          {displayedStudents.map(student => (
+            <div key={student.id} className="id-card">
+              <div className="school-header">
+                <img src={logo} alt="School Logo" className="school-logo" />
+                <div className="school-info">
+                  <h1>MBAKWA PHOSPHATE ACADEMY OF SCIENCE, ARTS AND TECHNOLOGY</h1>
+                  <h2>ST.LOUIS JUNIOR ACADEMY</h2>
+                  <p>Mile 3 Nkwen-Bamenda, Cameroon</p>
+                  <p>Reg. No. 697/L/MINESEC/SG/DESG/SDSEPESG/SSGEPESG of 1/12/2022</p>
+                  <p>Tel: +237 679953185</p>
+                  <p>E-mail: mbakwaphosphateacademy@gmail.com</p>
+                </div>
+              </div>
+              <div className="id-title">
+                <h3>STUDENT ID CARD</h3>
+                <p>{student.academicYear || currentAcademicYear} Academic Year</p>
+              </div>
+              <div className="student-info">
+                <div className="student-details">
+                  <table>
+                    <tbody>
+                      <tr><td><strong>Name:</strong></td><td>{student.name || ''}</td></tr>
+                      <tr><td><strong>Class:</strong></td><td>{student.class || ''}</td></tr>
+                      <tr><td><strong>Sex:</strong></td><td>{student.gender || ''}</td></tr>
+                      <tr><td><strong>Date of Birth:</strong></td><td>{student.dateOfBirth || ''}</td></tr>
+                      <tr><td><strong>Place of Birth:</strong></td><td>{student.placeOfBirth || ''}</td></tr>
+                      <tr><td><strong>Father's Name:</strong></td><td>{student.fatherName || ''}</td></tr>
+                      <tr><td><strong>Mother's Name:</strong></td><td>{student.motherName || ''}</td></tr>
+                      <tr><td><strong>Guardian's Contact:</strong></td><td>{student.guardianContact || ''}</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div className="student-photo-container">
+                  <PhotoComponent 
+                    photoUrl={student.photo}
+                    studentId={student.id}
+                    className="student-photo"
+                  />
+                </div>
+              </div>
+              <div className="barcode">
+                <div className="student-id">ID: {student.id}</div>
+              </div>
+            </div>
+          ))}
         </div>
+      </div>
     </div>
   );
 };
 
-export default IDCards; 
+export default IDCards;

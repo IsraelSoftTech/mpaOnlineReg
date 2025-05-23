@@ -10,6 +10,13 @@ import logo from '../../assets/logo.png';
 import campus1 from '../../assets/campus1.jpg';
 import campus2 from '../../assets/campus2.jpg';
 import campus3 from '../../assets/campus3.jpg';
+import campus4 from '../../assets/campus4.jpg';
+import campus5 from '../../assets/campus5.jpg';
+import campus6 from '../../assets/campus6.jpg';
+import campus7 from '../../assets/campus7.jpg';
+import campus8 from '../../assets/campus8.jpg';
+import campus9 from '../../assets/campus9.jpg';
+import campus10 from '../../assets/campus10.jpg';
 import { AdmissionContext } from '../AdmissionContext';
 import html2pdf from 'html2pdf.js';
 
@@ -26,7 +33,14 @@ const About = () => {
   const menuRef = useRef(null);
   const buttonRef = useRef(null);
   const fullText = 'Welcome to MPASAT';
-  const campusImages = [campus1, campus2, campus3];
+  const campusImages = [
+    campus1, campus2, campus3, campus4, campus5, 
+    campus6, campus7, campus8, campus9, campus10
+  ];
+  const [progress, setProgress] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
 
   useEffect(() => {
     let timeout;
@@ -90,14 +104,22 @@ const About = () => {
   }, [allImages]);
 
   useEffect(() => {
-    const campusInterval = setInterval(() => {
-      setCurrentCampusIndex((prevIndex) => 
-        prevIndex === campusImages.length - 1 ? 0 : prevIndex + 1
-      );
-    }, 3000);
-
-    return () => clearInterval(campusInterval);
-  }, []);
+    let interval;
+    if (!isPaused) {
+      interval = setInterval(() => {
+        setProgress((prev) => {
+          if (prev >= 100) {
+            setCurrentCampusIndex((prevIndex) => 
+              prevIndex === campusImages.length - 1 ? 0 : prevIndex + 1
+            );
+            return 0;
+          }
+          return prev + 1;
+        });
+      }, 30); // 3 seconds total duration (3000ms / 100 steps = 30ms per step)
+    }
+    return () => clearInterval(interval);
+  }, [isPaused]);
 
   useEffect(() => {
     const departmentsRef = ref(database, 'departments');
@@ -144,6 +166,41 @@ const About = () => {
     html2pdf().set(opt).from(element).save();
   };
 
+  const handleStoryClick = (index) => {
+    setCurrentCampusIndex(index);
+    setProgress(0);
+  };
+
+  const handleTouchStart = (e) => {
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > 50;
+    const isRightSwipe = distance < -50;
+    
+    if (isLeftSwipe) {
+      setCurrentCampusIndex((prev) => 
+        prev === campusImages.length - 1 ? 0 : prev + 1
+      );
+    }
+    if (isRightSwipe) {
+      setCurrentCampusIndex((prev) => 
+        prev === 0 ? campusImages.length - 1 : prev - 1
+      );
+    }
+    
+    setTouchStart(null);
+    setTouchEnd(null);
+  };
+
   return (
     <div className="page-wrapper">
       <header className="header-about">
@@ -176,6 +233,29 @@ const About = () => {
       </header>
 
       <main className="about-main">
+        {/* Campus Stories Section */}
+        <section className="campus-stories-section">
+          <div 
+            className="stories-container"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+          >
+            {campusImages.map((image, index) => (
+              <div 
+                key={index} 
+                className="story-item"
+                onClick={() => handleStoryClick(index)}
+              >
+                <img src={image} alt={`Campus ${index + 1}`} className="story-image" />
+                <div className="story-overlay">
+                  <span className="story-title"> {index + 1}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
         {/* Welcome Section */}
         <section className="about-welcome-section">
           <h1>
@@ -239,31 +319,6 @@ const About = () => {
               <p>Bamenda</p>
               <p>North West Region</p>
               <p>Cameroon</p>
-            </div>
-          </div>
-        </section>
-
-        {/* Campus Section */}
-        <section className="campus-section">
-          <h2>Our Campus</h2>
-          <div className="campus-slider">
-            <div className="slider-container">
-              <div className="slider-image-wrapper">
-                <img 
-                  src={campusImages[currentCampusIndex]} 
-                  alt={`Campus View ${currentCampusIndex + 1}`} 
-                  className="slider-image"
-                />
-              </div>
-              <div className="slider-indicators">
-                {campusImages.map((_, index) => (
-                  <span 
-                    key={index} 
-                    className={`slider-dot ${index === currentCampusIndex ? 'active' : ''}`}
-                    onClick={() => setCurrentCampusIndex(index)}
-                  />
-                ))}
-              </div>
             </div>
           </div>
         </section>

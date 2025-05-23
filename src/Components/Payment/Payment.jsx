@@ -1,127 +1,108 @@
-import React, { useState, useContext } from 'react';
-import { AdmissionContext } from '../AdmissionContext';
-import { ref, push, set } from 'firebase/database';
+import React, { useState } from 'react';
+import { ref, push } from 'firebase/database';
+import { useNavigate } from 'react-router-dom';
 import { database } from '../../firebase';
-import { toast } from 'react-toastify';
+import UserNav from '../Shared/UserNav';
 import './Payment.css';
 
 const Payment = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    class: '',
-    amount: '',
-    paymentMethod: ''
-  });
+  const [showDetails, setShowDetails] = useState(false);
+  const [transactionId, setTransactionId] = useState('');
+  const [payerName, setPayerName] = useState('');
+  const [success, setSuccess] = useState(false);
+  const [sending, setSending] = useState(false);
+  const navigate = useNavigate();
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const { currentUser } = useContext(AdmissionContext);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+  const handleProceed = () => {
+    window.open('https://checkout.fapshi.com/link/48024815', '_blank');
+    setShowDetails(true);
   };
 
-  const handleSubmit = async (e) => {
+  const handleSendDetails = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
-
+    if (!transactionId || !payerName) return;
+    setSending(true);
     try {
-      const paymentRef = ref(database, 'payments');
-      const newPaymentRef = push(paymentRef);
-      await set(newPaymentRef, {
-        ...formData,
-        status: 'Pending',
-        timestamp: Date.now(),
-        userId: currentUser?.uid
+      await push(ref(database, 'payments'), {
+        transactionId,
+        payerName,
+        timestamp: Date.now()
       });
-
-      toast.success('Payment submitted successfully!');
-      setFormData({
-        name: '',
-        class: '',
-        amount: '',
-        paymentMethod: ''
-      });
-    } catch (error) {
-      console.error('Error submitting payment:', error);
-      toast.error('Failed to submit payment. Please try again.');
-    } finally {
-      setIsSubmitting(false);
+      setSuccess(true);
+      setTimeout(() => {
+        setSuccess(false);
+        navigate('/usertrack');
+      }, 3000);
+    } catch (err) {
+      alert('Error saving payment details. Please try again.');
     }
+    setSending(false);
   };
 
   return (
-    <div className="payment-container">
-      <div className="payment-content">
-        <h1>Make a Payment</h1>
-        <form onSubmit={handleSubmit} className="payment-form">
-          <div className="form-group">
-            <label htmlFor="name">Student Name</label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-            />
-          </div>
+    <div className="admission-payment-page">
+      <UserNav />
+      <main className="admission-payment-main">
+        {!showDetails && (
+          <section className="admission-payment-section">
+            <h2>Payment for Admission</h2>
+            <div className="admission-payment-method">
+              <label>Payment Method:</label>
+              <span className="admission-payment-method-selected">MTN Momo/Orange Money</span>
+            </div>
+            <div className="admission-payment-fee">
+              <label>Payment Fee:</label>
+              <span className="admission-payment-fee-amount">2000 XAF</span>
+            </div>
+            <div className="admission-payment-alert">
+              <strong>Note:</strong> Make sure you enter a correct email when filling the payment form. You will receive payment details through it.
+            </div>
+            <button className="admission-payment-proceed-btn" onClick={handleProceed}>
+              Proceed
+            </button>
+          </section>
+        )}
 
-          <div className="form-group">
-            <label htmlFor="class">Class</label>
-            <select
-              id="class"
-              name="class"
-              value={formData.class}
-              onChange={handleChange}
-              required
-            >
-              <option value="">Select Class</option>
-              <option value="Grade 7">Grade 7</option>
-              <option value="Grade 8">Grade 8</option>
-              <option value="Grade 9">Grade 9</option>
-              <option value="Grade 10">Grade 10</option>
-              <option value="Grade 11">Grade 11</option>
-              <option value="Grade 12">Grade 12</option>
-            </select>
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="amount">Amount</label>
-            <input
-              type="number"
-              id="amount"
-              name="amount"
-              value={formData.amount}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="paymentMethod">Payment Method</label>
-            <select
-              id="paymentMethod"
-              name="paymentMethod"
-              value={formData.paymentMethod}
-              onChange={handleChange}
-              required
-            >
-              <option value="">Select Payment Method</option>
-              <option value="Cash">Cash</option>
-              <option value="Bank Transfer">Bank Transfer</option>
-              <option value="Mobile Money">Mobile Money</option>
-            </select>
-          </div>
-
-          <button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Processing...' : 'Submit Payment'}
-          </button>
-        </form>
-      </div>
+        {showDetails && (
+          <section className="admission-payment-form-section">
+            <h3>Enter Payment Details</h3>
+            <form className="admission-payment-form" onSubmit={handleSendDetails}>
+              <div className="admission-payment-form-group">
+                <label htmlFor="transactionId">Transaction ID (Sent through email)</label>
+                <input
+                  type="text"
+                  id="transactionId"
+                  value={transactionId}
+                  onChange={e => setTransactionId(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="admission-payment-form-group">
+                <label htmlFor="payerName">Payer Name</label>
+                <input
+                  type="text"
+                  id="payerName"
+                  value={payerName}
+                  onChange={e => setPayerName(e.target.value)}
+                  required
+                />
+              </div>
+              <button
+                className="admission-payment-send-btn"
+                type="submit"
+                disabled={sending}
+              >
+                {sending ? 'Sending...' : 'Send Details'}
+              </button>
+            </form>
+            {success && (
+              <div className="admission-payment-success">
+                Payment details sent successfully!
+              </div>
+            )}
+          </section>
+        )}
+      </main>
     </div>
   );
 };

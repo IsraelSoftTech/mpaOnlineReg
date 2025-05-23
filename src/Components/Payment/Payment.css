@@ -404,4 +404,201 @@
     border-radius: 4px;
     transition: width 0.3s ease;
     width: var(--progress-width);
-  } 
+  }
+
+.admission-payment-page {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+}
+
+.admission-payment-main {
+  padding: 100px 20px 40px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.admission-payment-section {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+.admission-payment-section h2 {
+  color: #18316d;
+  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+}
+
+.admission-payment-method,
+.admission-payment-fee {
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.admission-payment-method label,
+.admission-payment-fee label {
+  font-weight: 600;
+  color: #333;
+  min-width: 120px;
+}
+
+.admission-payment-method-selected,
+.admission-payment-fee-amount {
+  color: #18316d;
+  font-weight: 500;
+}
+
+.admission-payment-alert {
+  background-color: #fff3cd;
+  border: 1px solid #ffeeba;
+  color: #856404;
+  padding: 1rem;
+  border-radius: 4px;
+  margin: 1.5rem 0;
+}
+
+.admission-payment-proceed-btn {
+  background-color: #18316d;
+  color: white;
+  border: none;
+  padding: 0.8rem 2rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.admission-payment-proceed-btn:hover {
+  background-color: #142a5c;
+}
+
+.admission-payment-form-section {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.admission-payment-form-section h3 {
+  color: #18316d;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+}
+
+.admission-payment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.admission-payment-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.admission-payment-form-group label {
+  font-weight: 500;
+  color: #333;
+}
+
+.admission-payment-form-group input {
+  padding: 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.admission-payment-form-group input:focus {
+  outline: none;
+  border-color: #18316d;
+  box-shadow: 0 0 0 2px rgba(24, 49, 109, 0.1);
+}
+
+.admission-payment-send-btn {
+  background-color: #18316d;
+  color: white;
+  border: none;
+  padding: 0.8rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.admission-payment-send-btn:hover {
+  background-color: #142a5c;
+}
+
+.admission-payment-send-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.admission-payment-success {
+  background-color: #d4edda;
+  color: #155724;
+  padding: 1rem;
+  border-radius: 4px;
+  margin-top: 1rem;
+  text-align: center;
+  font-weight: 500;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .admission-payment-main {
+    padding: 80px 15px 30px;
+  }
+
+  .admission-payment-section,
+  .admission-payment-form-section {
+    padding: 1.5rem;
+  }
+
+  .admission-payment-section h2 {
+    font-size: 1.5rem;
+  }
+
+  .admission-payment-method,
+  .admission-payment-fee {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .admission-payment-method label,
+  .admission-payment-fee label {
+    min-width: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .admission-payment-main {
+    padding: 70px 10px 20px;
+  }
+
+  .admission-payment-section,
+  .admission-payment-form-section {
+    padding: 1rem;
+  }
+
+  .admission-payment-section h2 {
+    font-size: 1.3rem;
+  }
+
+  .admission-payment-form-section h3 {
+    font-size: 1.2rem;
+  }
+
+  .admission-payment-proceed-btn,
+  .admission-payment-send-btn {
+    padding: 0.7rem;
+  }
+} 
