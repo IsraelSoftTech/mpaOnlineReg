@@ -185,11 +185,6 @@ const AdminReg = () => {
         report: null,
         academicYear: ''
       });
-
-      // Wait for 3 seconds before redirecting
-      setTimeout(() => {
-        navigate('/admintrack');
-      }, 3000);
     } catch (error) {
       console.error('Error registering student:', error);
       toast.error('Failed to register student. Please try again.');
@@ -205,7 +200,7 @@ const AdminReg = () => {
         <h1>Register New Student</h1>
         {showSuccess && (
           <div className="success-message">
-            Student registered successfully! Redirecting to student list...
+            Student registered successfully!
           </div>
         )}
         <form onSubmit={handleSubmit} className="admin-reg-form">

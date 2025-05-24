@@ -11,7 +11,7 @@ import { ref as dbRef, set, push, update } from 'firebase/database';
 import logo from '../../assets/logo.png';
 import AdminNav from '../Admin/AdminNav';
 
-const FAPSHI_PAYMENT_LINK = 'https://checkout.fapshi.com/link/48024815';
+const FAPSHI_PAYMENT_LINK = 'https://checkout.fapshi.com/link/66659157';
 
 const AdminPayPage = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

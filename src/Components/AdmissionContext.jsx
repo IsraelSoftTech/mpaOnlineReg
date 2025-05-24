@@ -12,6 +12,7 @@ export const AdmissionProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [currentUserData, setCurrentUserData] = useState(null);
   const [currentPassword, setCurrentPassword] = useState(null);
+  const [announcements, setAnnouncements] = useState([]);
 
   // Filter admissions based on user role and current user
   const admissions = React.useMemo(() => {
@@ -401,6 +402,8 @@ export const AdmissionProvider = ({ children }) => {
       error,
       currentUser,
       currentUserData,
+      announcements,
+      setAnnouncements,
       addAccount,
       addAdmission,
       updateProfile,

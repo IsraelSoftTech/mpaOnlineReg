@@ -1,4 +1,4 @@
-.app-header {
+.user-header {
   position: fixed;
   top: 0;
   left: 0;
@@ -12,40 +12,34 @@
   padding: 0 2rem;
   z-index: 1000;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 80px;
 }
 
-.logo-section {
+.user-logo-section {
   display: flex;
   align-items: center;
   gap: 1rem;
 }
 
-.app-logo {
+.user-logo {
   height: 40px;
   width: auto;
 }
 
-.app-brand {
+.user-brand {
   color: #fff;
   font-size: 1.5rem;
   font-weight: 600;
   letter-spacing: 0.5px;
 }
 
-.nav-actions {
+.user-nav-actions {
   display: flex;
   align-items: center;
   gap: 1.5rem;
 }
 
-.brand-link {
-  display: flex;
-  align-items: center;
-  text-decoration: none;
-  color: inherit;
-}
-
-.menu-toggle {
+.user-menu-toggle {
   display: none;
   background: none;
   border: none;
@@ -56,17 +50,17 @@
   transition: transform 0.2s ease;
 }
 
-.menu-toggle:hover {
+.user-menu-toggle:hover {
   transform: scale(1.1);
 }
 
-.app-nav {
+.user-nav {
   display: flex;
   align-items: center;
   gap: 1.5rem;
 }
 
-.app-nav-link {
+.user-nav-link {
   background: none;
   border: none;
   color: #fff;
@@ -80,39 +74,31 @@
   gap: 0.5rem;
 }
 
-.app-nav-link:hover {
+.user-nav-link:hover {
   background: rgba(255, 255, 255, 0.1);
 }
 
-.app-nav-link.active {
+.user-nav-link.user-active {
   background: rgba(255, 255, 255, 0.2);
 }
 
-.app-nav-link.logout {
+.user-nav-link.user-logout {
   color: #ff4444;
 }
 
-.app-nav-link.logout:hover {
+.user-nav-link.user-logout:hover {
   background: rgba(255, 68, 68, 0.1);
 }
 
-.nav-icon {
+.user-nav-icon {
   font-size: 1.2rem;
 }
 
-.logout {
-  color: #dc3545;
-}
-
-.logout:hover {
-  color: #c82333;
-}
-
-.mobile-menu {
+.user-mobile-menu {
   display: none;
 }
 
-.desktop-menu {
+.user-desktop-menu {
   display: flex;
   align-items: center;
   gap: 1.5rem;
@@ -120,56 +106,49 @@
 
 /* Responsive Styles */
 @media (max-width: 992px) {
-  .app-header {
+  .user-header {
     padding: 0 1.5rem;
   }
 
-  .app-nav {
+  .user-nav {
     gap: 1rem;
   }
 
-  .app-nav-link {
+  .user-nav-link {
     padding: 0.5rem;
     font-size: 0.9rem;
   }
 }
 
 @media (max-width: 768px) {
-  .app-header {
+  .user-header {
     height: 70px;
     padding: 0 1rem;
-    position: relative;
+    position: fixed;
   }
 
-  .logo-section {
+  .user-logo-section {
     gap: 0.5rem;
-    display: flex;
-    align-items: center;
   }
 
-  .app-logo {
+  .user-logo {
     height: 35px;
   }
 
-  .app-brand {
+  .user-brand {
     font-size: 1.3rem;
-    margin-right: 0.25rem;
   }
 
-  .menu-toggle {
+  .user-menu-toggle {
     display: block;
     position: absolute;
     right: 1rem;
     top: 50%;
     transform: translateY(-50%);
+    z-index: 1001;
   }
 
-  .nav-actions {
-    gap: 0.5rem;
-    margin-left: 0.25rem;
-  }
-
-  .app-nav {
+  .user-nav {
     position: fixed;
     top: 70px;
     left: 0;
@@ -183,53 +162,62 @@
     visibility: hidden;
     transition: all 0.3s ease;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    height: auto;
+    max-height: calc(100vh - 70px);
+    overflow-y: auto;
   }
 
-  .app-nav.nav-open {
+  .user-nav.user-nav-open {
     transform: translateY(0);
     opacity: 1;
     visibility: visible;
   }
 
-  .app-nav-link {
-    width: 100%;
-    text-align: left;
-    padding: 0.75rem 1rem;
-    justify-content: flex-start;
-  }
-
-  .mobile-menu {
+  .user-mobile-menu {
     display: flex;
     flex-direction: column;
     width: 100%;
     gap: 0.5rem;
   }
 
-  .desktop-menu {
+  .user-desktop-menu {
     display: none;
+  }
+
+  .user-nav-link {
+    width: 100%;
+    text-align: left;
+    padding: 0.75rem 1rem;
+    justify-content: flex-start;
   }
 }
 
 @media (max-width: 480px) {
-  .app-header {
+  .user-header {
     padding: 0 0.75rem;
   }
 
-  .app-logo {
+  .user-logo {
     height: 30px;
   }
 
-  .app-brand {
+  .user-brand {
     font-size: 1.2rem;
     margin-right: 0.15rem;
   }
 
-  .nav-actions {
+  .user-nav-actions {
     position: absolute;
-  right: 105px;
+    right: 105px;
   }
 
-  .menu-toggle {
+  .user-menu-toggle {
     right: 0.75rem;
   }
+}
+
+/* Add a wrapper class to handle the spacing */
+.user-nav-wrapper {
+  margin-top: 80px;
+  padding-top: 20px;
 } 

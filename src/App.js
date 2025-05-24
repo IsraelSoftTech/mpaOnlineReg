@@ -23,6 +23,8 @@ import './Components/common.css';
 import AdminReg from './Components/AdminRegistration/AdminReg';
 import AdminTrack from './Components/AdminTrack/AdminTrack';
 import AdminPayPage from './Components/AdminPayPage/AdminPayPage';
+import UserResult from './Components/Results/UserResult';
+
 
 // Add this style to ensure footer stays at bottom
 const appStyle = {
@@ -66,6 +68,7 @@ const AppContent = () => {
           <Route path="/usertrack" element={<UserTrack />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/contact" element={<UserContact />} />
+          <Route path="/result" element={<UserResult />} />
 
           {/* Protected Admin Routes */}
           <Route path="/admin" element={<Admin />} />
@@ -79,6 +82,7 @@ const AppContent = () => {
           <Route path="/adminreg" element={<AdminReg />} />
           <Route path="/admintrack" element={<AdminTrack />} />
           <Route path="/adminpaypage" element={<AdminPayPage />} />
+       
 
           {/* Default Routes */}
           <Route path="/" element={<Navigate to="/about" replace />} />

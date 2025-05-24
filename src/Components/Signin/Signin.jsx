@@ -143,13 +143,6 @@ const Signin = () => {
               </span>
               <span className="signin-icon signin-action-icon" onClick={() => clearField('password')} title="Clear field">×</span>
             </div>
-            <div className="signin-links-row">
-              <span className="signin-forgot-link">Forgot password?<b>Reset</b></span>
-            </div>
-            <div className="signin-remember-row">
-              <input type="checkbox" id="remember" className="signin-checkbox" />
-              <label htmlFor="remember" className="signin-checkbox-label">Remember me next time</label>
-            </div>
             <button 
               type="submit" 
               className={`signin-button${isLoading ? ' loading' : ''}`}

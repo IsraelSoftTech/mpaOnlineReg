@@ -7,16 +7,6 @@ import { ref, onValue } from 'firebase/database';
 import { database } from '../../firebase';
 import './About.css';
 import logo from '../../assets/logo.png';
-import campus1 from '../../assets/campus1.jpg';
-import campus2 from '../../assets/campus2.jpg';
-import campus3 from '../../assets/campus3.jpg';
-import campus4 from '../../assets/campus4.jpg';
-import campus5 from '../../assets/campus5.jpg';
-import campus6 from '../../assets/campus6.jpg';
-import campus7 from '../../assets/campus7.jpg';
-import campus8 from '../../assets/campus8.jpg';
-import campus9 from '../../assets/campus9.jpg';
-import campus10 from '../../assets/campus10.jpg';
 import { AdmissionContext } from '../AdmissionContext';
 import html2pdf from 'html2pdf.js';
 
@@ -29,18 +19,9 @@ const About = () => {
   const [displayText, setDisplayText] = useState('');
   const [allImages, setAllImages] = useState([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [currentCampusIndex, setCurrentCampusIndex] = useState(0);
   const menuRef = useRef(null);
   const buttonRef = useRef(null);
   const fullText = 'Welcome to MPASAT';
-  const campusImages = [
-    campus1, campus2, campus3, campus4, campus5, 
-    campus6, campus7, campus8, campus9, campus10
-  ];
-  const [progress, setProgress] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
-  const [touchStart, setTouchStart] = useState(null);
-  const [touchEnd, setTouchEnd] = useState(null);
 
   useEffect(() => {
     let timeout;
@@ -104,24 +85,6 @@ const About = () => {
   }, [allImages]);
 
   useEffect(() => {
-    let interval;
-    if (!isPaused) {
-      interval = setInterval(() => {
-        setProgress((prev) => {
-          if (prev >= 100) {
-            setCurrentCampusIndex((prevIndex) => 
-              prevIndex === campusImages.length - 1 ? 0 : prevIndex + 1
-            );
-            return 0;
-          }
-          return prev + 1;
-        });
-      }, 30); // 3 seconds total duration (3000ms / 100 steps = 30ms per step)
-    }
-    return () => clearInterval(interval);
-  }, [isPaused]);
-
-  useEffect(() => {
     const departmentsRef = ref(database, 'departments');
     onValue(departmentsRef, (snapshot) => {
       const data = snapshot.val();
@@ -166,41 +129,6 @@ const About = () => {
     html2pdf().set(opt).from(element).save();
   };
 
-  const handleStoryClick = (index) => {
-    setCurrentCampusIndex(index);
-    setProgress(0);
-  };
-
-  const handleTouchStart = (e) => {
-    setTouchStart(e.targetTouches[0].clientX);
-  };
-
-  const handleTouchMove = (e) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
-
-  const handleTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-    
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > 50;
-    const isRightSwipe = distance < -50;
-    
-    if (isLeftSwipe) {
-      setCurrentCampusIndex((prev) => 
-        prev === campusImages.length - 1 ? 0 : prev + 1
-      );
-    }
-    if (isRightSwipe) {
-      setCurrentCampusIndex((prev) => 
-        prev === 0 ? campusImages.length - 1 : prev - 1
-      );
-    }
-    
-    setTouchStart(null);
-    setTouchEnd(null);
-  };
-
   return (
     <div className="page-wrapper">
       <header className="header-about">
@@ -233,29 +161,6 @@ const About = () => {
       </header>
 
       <main className="about-main">
-        {/* Campus Stories Section */}
-        <section className="campus-stories-section">
-          <div 
-            className="stories-container"
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
-          >
-            {campusImages.map((image, index) => (
-              <div 
-                key={index} 
-                className="story-item"
-                onClick={() => handleStoryClick(index)}
-              >
-                <img src={image} alt={`Campus ${index + 1}`} className="story-image" />
-                <div className="story-overlay">
-                  <span className="story-title"> {index + 1}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
         {/* Welcome Section */}
         <section className="about-welcome-section">
           <h1>
@@ -389,7 +294,37 @@ const About = () => {
                 </tr>
               </thead>
               <tbody>
-                {schoolClasses.map((classItem) => (
+                {[...schoolClasses]
+                  .sort((a, b) => {
+                    // Extract class numbers and letters
+                    const getClassInfo = (className) => {
+                      const match = className.match(/Form (\d+)(?:\s*\((\d+)\))?(?:\s*([A-Z]))?/);
+                      if (match) {
+                        const [_, form, subForm, section] = match;
+                        return {
+                          form: parseInt(form),
+                          subForm: subForm ? parseInt(subForm) : 0,
+                          section: section || ''
+                        };
+                      }
+                      return { form: 0, subForm: 0, section: '' };
+                    };
+
+                    const aInfo = getClassInfo(a.className);
+                    const bInfo = getClassInfo(b.className);
+
+                    // First compare by form number
+                    if (aInfo.form !== bInfo.form) {
+                      return aInfo.form - bInfo.form;
+                    }
+                    // Then by sub-form number
+                    if (aInfo.subForm !== bInfo.subForm) {
+                      return aInfo.subForm - bInfo.subForm;
+                    }
+                    // Finally by section letter
+                    return aInfo.section.localeCompare(bInfo.section);
+                  })
+                  .map((classItem) => (
                   <tr key={classItem.id}>
                     <td>{classItem.className}</td>
                     <td>{(classItem.admissionFee || 0).toLocaleString()} FCFA</td>

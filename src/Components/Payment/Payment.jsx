@@ -14,7 +14,7 @@ const Payment = () => {
   const navigate = useNavigate();
 
   const handleProceed = () => {
-    window.open('https://checkout.fapshi.com/link/48024815', '_blank');
+    window.open('https://checkout.fapshi.com/link/66659157', '_blank');
     setShowDetails(true);
   };
 

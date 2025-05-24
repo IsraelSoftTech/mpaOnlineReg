@@ -10,7 +10,8 @@ import {
   IoPersonAddOutline,
   IoCalendarOutline,
   IoPersonOutline,
-  IoMailOutline
+  IoMailOutline,
+  IoBarChartOutline
 } from 'react-icons/io5';
 import logo from '../../assets/logo.png';
 import './AdminNav.css';
@@ -123,6 +124,7 @@ const AdminNav = () => {
           <IoMailOutline className="nav-icon" />
           Contact
         </button>
+      
         <button className="app-nav-link logout desktop-only" onClick={handleLogout}>
           Log out
         </button>

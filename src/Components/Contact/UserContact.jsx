@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useContext } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { RiMenu3Line, RiCloseFill, RiMessage2Line } from 'react-icons/ri';
+import { RiMenu3Line, RiCloseFill, RiMessage2Line, RiSendPlaneLine } from 'react-icons/ri';
 import { ref, push, onValue } from 'firebase/database';
 import { database } from '../../firebase';
 import { AdmissionContext } from '../AdmissionContext';
@@ -11,10 +11,12 @@ import UserNav from '../Shared/UserNav';
 const UserContact = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { currentUser } = useContext(AdmissionContext);
+  const { currentUser, announcements, setAnnouncements } = useContext(AdmissionContext);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showReplies, setShowReplies] = useState(false);
-  const [replies, setReplies] = useState([]);
+  const [showSchoolMessages, setShowSchoolMessages] = useState(false);
+  const [userMessages, setUserMessages] = useState([]);
+  const [schoolMessages, setSchoolMessages] = useState([]);
   const [replyText, setReplyText] = useState('');
   const [formData, setFormData] = useState({
     fullName: '',
@@ -38,12 +40,13 @@ const UserContact = () => {
       try {
         setIsLoading(true);
         const messagesRef = ref(database, 'messages');
+        const announcementsRef = ref(database, 'announcements');
         
-        // Set up real-time listener for messages
-        const unsubscribe = onValue(messagesRef, (snapshot) => {
+        // Set up real-time listener for user messages
+        const unsubscribeMessages = onValue(messagesRef, (snapshot) => {
           const data = snapshot.val() || {};
-          const userMessages = Object.entries(data)
-            .filter(([_, msg]) => msg.userId === currentUser)
+          const filteredMessages = Object.entries(data)
+            .filter(([_, msg]) => msg.userId === currentUser.toString())
             .map(([id, msg]) => ({
               id,
               ...msg,
@@ -56,11 +59,28 @@ const UserContact = () => {
             }))
             .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
-          setReplies(userMessages);
+          setUserMessages(filteredMessages);
+        });
+
+        // Set up real-time listener for announcements
+        const unsubscribeAnnouncements = onValue(announcementsRef, (snapshot) => {
+          const data = snapshot.val() || {};
+          const announcementsList = Object.entries(data)
+            .map(([id, announcement]) => ({
+              id,
+              ...announcement,
+              timestamp: new Date(announcement.timestamp).toLocaleString()
+            }))
+            .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+          setAnnouncements(announcementsList);
           setIsLoading(false);
         });
 
-        return () => unsubscribe();
+        return () => {
+          unsubscribeMessages();
+          unsubscribeAnnouncements();
+        };
       } catch (error) {
         console.error('Error loading messages:', error);
         setIsLoading(false);
@@ -148,19 +168,37 @@ const UserContact = () => {
     }
   };
 
+  if (!currentUser) {
+    return null;
+  }
+
   return (
     <div className="user-contact-wrapper">
-   <UserNav/>
+      <UserNav/>
 
       <main className="user-contact-main">
         <div className="contact-header-actions">
           <h2 className="contact-title">Contact Us</h2>
-          <button 
-            className={`view-replies-btn${showReplies ? ' active' : ''}`}
-            onClick={() => setShowReplies(!showReplies)}
-          >
-            <RiMessage2Line /> {showReplies ? 'New Message' : 'View Replies'}
-          </button>
+          <div className="message-buttons">
+            <button 
+              className={`view-replies-btn${showReplies && !showSchoolMessages ? ' active' : ''}`}
+              onClick={() => {
+                setShowReplies(!showReplies);
+                setShowSchoolMessages(false);
+              }}
+            >
+              <RiMessage2Line /> {showReplies && !showSchoolMessages ? 'New Message' : 'View Messages'}
+            </button>
+            <button 
+              className={`school-messages-btn${showSchoolMessages ? ' active' : ''}`}
+              onClick={() => {
+                setShowSchoolMessages(!showSchoolMessages);
+                setShowReplies(true);
+              }}
+            >
+              <RiMessage2Line /> Messages from School
+            </button>
+          </div>
         </div>
 
         {!showReplies ? (
@@ -223,47 +261,84 @@ const UserContact = () => {
           </div>
         ) : (
           <div className="replies-container">
-            <h3 className="replies-title">Your Messages & Replies</h3>
+            <h3 className="replies-title">
+              {showSchoolMessages ? 'Messages from School' : 'Your Messages'}
+            </h3>
             {isLoading ? (
               <div className="loading-indicator">Loading messages...</div>
-            ) : replies.length === 0 ? (
-              <div className="no-replies">
-                No messages or replies yet.
+            ) : showSchoolMessages ? (
+              <div className="messages-list">
+                {announcements && announcements.length > 0 ? (
+                  announcements.map((announcement, index) => (
+                    <div key={index} className="message-card">
+                      <div className="message-header">
+                        <div className="message-info">
+                          <span className="message-sender">School Announcement</span>
+                          <span className="message-time">
+                            {new Date(announcement.timestamp).toLocaleString()}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="message-content">
+                        <p>{announcement.message}</p>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="no-messages">No announcements from school</div>
+                )}
               </div>
             ) : (
-              <div className="replies-list">
-                {replies.map(message => (
-                  <div key={message.id} className="reply-card">
-                    <div className="reply-header">
-                      <span className="reply-timestamp">{message.timestamp}</span>
-                    </div>
-                    <div className="reply-content">
-                      <p className="reply-message">{message.message}</p>
-                    </div>
-                    <div className="replies-thread">
-                      {message.replies && message.replies.map(reply => (
-                        <div key={reply.id} className={`reply-bubble ${reply.from}`}>
-                          <p>{reply.text}</p>
-                          <span className="reply-time">{reply.timestamp}</span>
+              <div className="messages-list">
+                {userMessages.length === 0 ? (
+                  <div className="no-messages">No messages yet</div>
+                ) : (
+                  userMessages.map((message) => (
+                    <div key={message.id} className="message-card">
+                      <div className="message-header">
+                        <div className="message-info">
+                          <span className="message-sender">
+                            {message.from === 'admin' ? 'School' : 'You'}
+                          </span>
+                          <span className="message-time">{message.timestamp}</span>
                         </div>
-                      ))}
+                        {message.status === 'unread' && (
+                          <span className="new-message-badge">New</span>
+                        )}
+                      </div>
+                      <div className="message-content">
+                        <p>{message.message}</p>
+                      </div>
+                      {message.replies && message.replies.length > 0 && (
+                        <div className="message-replies">
+                          {message.replies.map((reply) => (
+                            <div key={reply.id} className={`reply-bubble ${reply.from}`}>
+                              <p>{reply.text}</p>
+                              <span className="reply-time">{reply.timestamp}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      {message.from !== 'admin' && (
+                        <div className="reply-input">
+                          <textarea
+                            value={replyText}
+                            onChange={(e) => setReplyText(e.target.value)}
+                            placeholder="Type your reply..."
+                            rows="3"
+                          />
+                          <button
+                            className="send-reply-btn"
+                            onClick={() => handleUserReply(message.id)}
+                            disabled={!replyText.trim()}
+                          >
+                            <RiSendPlaneLine />
+                          </button>
+                        </div>
+                      )}
                     </div>
-                    <div className="reply-input">
-                      <textarea
-                        value={replyText}
-                        onChange={(e) => setReplyText(e.target.value)}
-                        placeholder="Type your reply..."
-                      />
-                      <button
-                        className="send-reply-btn"
-                        onClick={() => handleUserReply(message.id)}
-                        disabled={!replyText.trim()}
-                      >
-                        Send Reply
-                      </button>
-                    </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             )}
           </div>
