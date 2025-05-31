@@ -1,0 +1,371 @@
+.app-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+ 
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.app-logo {
+  height: 40px;
+  width: auto;
+}
+
+.app-brand {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #18316d;
+}
+
+.id-cards-page {
+  min-height: 100vh;
+  background: #f5f5f5;
+  position: relative;
+}
+
+.id-cards-content {
+  padding-top: 84px;
+  padding-left: 24px;
+  padding-right: 24px;
+  padding-bottom: 24px;
+}
+
+.id-cards-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.print-button {
+  background: #18316d;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.print-button:hover {
+  background: #122654;
+}
+
+.id-cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(3.8in, 1fr));
+  gap: 24px;
+  padding: 20px;
+}
+
+.id-card {
+  width: 3.8in;
+  height: 2.7in;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: relative;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+}
+
+/* School Header Styles */
+.school-header, .school-header-print {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.school-logo, .school-logo-print {
+  width: 35px;
+  height: 35px;
+  object-fit: contain;
+}
+
+.school-info, .school-info-print {
+  flex: 1;
+}
+
+.school-info h1, .school-info-print h1 {
+  font-size: 10px;
+  font-weight: bold;
+  color: #18316d;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.school-info h2, .school-info-print h2 {
+  font-size: 9px;
+  color: #333;
+  margin: 1px 0;
+  line-height: 1.2;
+}
+
+.school-info p, .school-info-print p {
+  font-size: 8px;
+  color: #666;
+  margin: 1px 0;
+  line-height: 1.2;
+}
+
+/* ID Title Styles */
+.id-title, .id-title-print {
+  text-align: center;
+  background: #18316d;
+  color: white;
+  padding: 2px;
+  margin: 2px 0;
+}
+
+.id-title h3, .id-title-print h3 {
+  font-size: 12px;
+  margin: 0;
+  font-weight: bold;
+}
+
+.id-title p, .id-title-print p {
+  font-size: 9px;
+  margin: 1px 0 0;
+}
+
+/* Student Info Styles */
+.student-info, .student-info-print {
+  display: flex;
+  gap: 8px;
+  padding: 4px 0;
+  flex: 1;
+}
+
+.student-details, .student-details-print {
+  flex: 1;
+}
+
+.student-details table, .student-details-print table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.student-details td, .student-details-print td {
+  font-size: 9px;
+  padding: 1px 3px;
+  vertical-align: top;
+  line-height: 1.3;
+}
+
+.student-details td:first-child, .student-details-print td:first-child {
+  width: 90px;
+  white-space: nowrap;
+}
+
+.student-details strong, .student-details-print strong {
+  color: #18316d;
+}
+
+.student-photo-container, .student-photo-container-print {
+  width: 0.85in;
+  height: 1in;
+  border: 1px solid #ddd;
+  overflow: hidden;
+  border-radius: 5px;
+}
+
+.student-photo, .student-photo-print {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Barcode/ID Styles */
+.barcode, .barcode-print {
+  text-align: right;
+  padding: 2px 4px;
+}
+
+.student-id {
+  font-size: 7px;
+  color: #18316d;
+  font-weight: bold;
+}
+
+/* Modal Styles */
+.class-select-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 24px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 400px;
+}
+
+.modal-content h2 {
+  margin: 0 0 16px;
+  color: #18316d;
+}
+
+.modal-content select {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 16px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.modal-buttons button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.modal-buttons button:first-child {
+  background: #ddd;
+}
+
+.modal-buttons button:last-child {
+  background: #18316d;
+  color: white;
+}
+
+.modal-buttons button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Print Styles */
+@media print {
+  .no-print, .class-select-modal, .modal-content, .modal-buttons {
+    display: none !important;
+  }
+
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    forced-color-adjust: exact !important;
+  }
+
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+  }
+
+  .id-cards-page {
+    padding: 0 !important;
+    background: white !important;
+    width: 100% !important;
+  }
+
+  .id-cards-container {
+    display: grid !important;
+    grid-template-columns: repeat(2, 3.8in) !important;
+    gap: 0 !important;
+    padding: 0 !important;
+    margin: 0 auto !important;
+    background: white !important;
+    justify-content: center !important;
+  }
+
+  .id-card {
+    width: 3.8in !important;
+    height: 2.7in !important;
+    margin: 0 !important;
+    padding: 8px !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    background: white !important;
+    border: 1px solid #ddd !important;
+    box-shadow: none !important;
+    transform: scale(1) !important;
+    zoom: 1 !important;
+    -webkit-transform-origin: left top !important;
+    transform-origin: left top !important;
+  }
+
+  .student-photo-container {
+    width: 0.85in !important;
+    height: 1in !important;
+    border: 1px solid #ddd !important;
+  }
+
+  .school-logo {
+    width: 35px !important;
+    height: 35px !important;
+  }
+
+  .school-info h1 {
+    font-size: 10px !important;
+  }
+
+  .school-info h2 {
+    font-size: 9px !important;
+  }
+
+  .school-info p {
+    font-size: 8px !important;
+  }
+
+  .id-title h3 {
+    font-size: 12px !important;
+  }
+
+  .id-title p {
+    font-size: 9px !important;
+  }
+
+  .student-details td {
+    font-size: 9px !important;
+    padding: 1px 3px !important;
+  }
+
+  .student-details td:first-child {
+    width: 90px !important;
+  }
+}
+
+/* Responsive Styles */
+@media screen and (max-width: 768px) {
+  .id-card {
+    width: 100%;
+    max-width: 3.8in;
+  }
+} 
